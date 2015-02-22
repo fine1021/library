@@ -1,0 +1,97 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
+
+android {
+    compileSdkVersion 18
+    buildToolsVersion "19.1.0"
+
+    defaultConfig {
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:18.+'
+    compile 'com.nineoldandroids:library:2.4.0'
+}
+
+def PROJ_GROUP="cn.edu.nuaa.Sunday"
+def PROJ_VERSION="1.0.0"
+def PROJ_NAME="shimmer"
+def PROJ_WEBSITEURL=""
+def PROJ_VCSURL=""
+def PROJ_DESCRIPTION="an android textView with a shimmering effect"
+def DEVELOPER_ID="fine1021"
+def DEVELOPER_NAME="fine"
+def DEVELOPER_EMAIL="fine1021@gmail.com"
+def BINTRAY_USER="fine1021"
+def BINTRAY_KEY="5302e50299aa36a2ede96e0b1932eb459a70c5d3"
+
+group = PROJ_GROUP
+version = PROJ_VERSION
+
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+            project {
+                packaging 'aar'
+                // Add your description here
+                name PROJ_DESCRIPTION
+                url PROJ_WEBSITEURL
+                // Set your license
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id DEVELOPER_ID
+                        name DEVELOPER_NAME
+                        email DEVELOPER_EMAIL
+                    }
+                }
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+bintray {
+    user = BINTRAY_USER
+    key = BINTRAY_KEY
+    configurations = ['archives']
+    pkg {
+        repo = "maven"
+        name = PROJ_NAME
+        websiteUrl = PROJ_WEBSITEURL
+        vcsUrl = PROJ_VCSURL
+        licenses = ["Apache-2.0"]
+        publish = true
+    }
+}
