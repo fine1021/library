@@ -27,6 +27,7 @@ def PROJ_VERSION="1.0.0"
 def PROJ_NAME="shimmer"
 def PROJ_WEBSITEURL="https://github.com/fine1021/library"
 def PROJ_VCSURL="https://github.com/fine1021/library.git"
+def PROJ_ISSUETRACKERURL="https://github.com/fine1021/library/issues"
 def PROJ_DESCRIPTION="an android textView with a shimmering effect"
 def DEVELOPER_ID="fine1021"
 def DEVELOPER_NAME="fine"
@@ -91,6 +92,7 @@ bintray {
         name = PROJ_NAME
         websiteUrl = PROJ_WEBSITEURL
         vcsUrl = PROJ_VCSURL
+        issueTrackerUrl = PROJ_ISSUETRACKERURL
         licenses = ["Apache-2.0"]
         publish = true
     }
