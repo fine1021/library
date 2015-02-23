@@ -98,11 +98,13 @@ bintray {
     pkg {
         repo = "maven"
         name = PROJ_NAME
+        desc = PROJ_DESCRIPTION
         websiteUrl = PROJ_WEBSITEURL
         vcsUrl = PROJ_VCSURL
         issueTrackerUrl = PROJ_ISSUETRACKERURL
         licenses = ["Apache-2.0"]
         publish = true
+        publicDownloadNumbers = true
     }
 }
 
