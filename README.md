@@ -1,6 +1,9 @@
-### shimmer library
+# shimmer library
 
-use the nineoldandroid library to make it work well on android 2.3. Easily reference the library in your Android projects using this dependency in your module's  `build.gradle`  file:
+use the nineoldandroid library to make it work well on android 2.3. 
+
+-
+Easily reference the library in your Android projects using this dependency in your module's  `build.gradle`  file:
 
 ```Gradle
 dependencies {
@@ -8,10 +11,10 @@ dependencies {
 }
 ```
 
-### showcaseview library
+# showcaseview library
 
 use the nineoldandroid library to make it work well on android 2.3
 
-### viewpagerindicator library 
+# viewpagerindicator library 
 
 make the library from ADT
