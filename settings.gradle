@@ -1,1 +1,1 @@
-include ':shimmer'
+include ':shimmer', ':showcaseview', ':viewpagerindicator'
