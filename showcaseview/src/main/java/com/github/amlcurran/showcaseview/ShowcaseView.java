@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.github.amlcurran.showcaseview.targets.Target;
@@ -48,6 +49,7 @@ public class ShowcaseView extends RelativeLayout
     private static final int HOLO_BLUE = Color.parseColor("#33B5E5");
 
     private final Button mEndButton;
+    private final ImageView mHandImageView;
     private final TextDrawer textDrawer;
     private final ShowcaseDrawer showcaseDrawer;
     private final ShowcaseAreaCalculator showcaseAreaCalculator;
@@ -101,6 +103,7 @@ public class ShowcaseView extends RelativeLayout
         fadeOutMillis = getResources().getInteger(android.R.integer.config_mediumAnimTime);
 
         mEndButton = (Button) LayoutInflater.from(context).inflate(R.layout.showcase_button, null);
+        mHandImageView = (ImageView) LayoutInflater.from(context).inflate(R.layout.handy, null);
         if (newStyle) {
             showcaseDrawer = new NewShowcaseDrawer(getResources());
         } else {
@@ -130,6 +133,16 @@ public class ShowcaseView extends RelativeLayout
             }
             addView(mEndButton);
         }
+        if (mHandImageView.getParent() == null) {
+            RelativeLayout.LayoutParams lps = (LayoutParams) generateDefaultLayoutParams();
+            lps.setMargins(0, 0, 0, 0);
+            mHandImageView.setLayoutParams(lps);
+            addView(mHandImageView);
+        } else {
+            RelativeLayout.LayoutParams lps = (LayoutParams) generateDefaultLayoutParams();
+            lps.setMargins(showcaseX, showcaseY, 0, 0);
+            mHandImageView.setLayoutParams(lps);
+        }
 
     }
 
@@ -147,7 +160,7 @@ public class ShowcaseView extends RelativeLayout
         }
         showcaseX = x;
         showcaseY = y;
-        //init();
+        init();
         invalidate();
     }
 
