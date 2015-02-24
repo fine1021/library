@@ -30,7 +30,7 @@ android {
 }
 
 def PROJ_GROUP="cn.edu.nuaa.Sunday"
-def PROJ_VERSION="1.0.1"
+def PROJ_VERSION="1.0.2"
 def PROJ_NAME="showcaseview"
 def PROJ_WEBSITEURL="https://github.com/fine1021/library"
 def PROJ_VCSURL="https://github.com/fine1021/library.git"

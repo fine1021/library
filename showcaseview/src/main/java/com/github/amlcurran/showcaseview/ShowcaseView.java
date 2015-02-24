@@ -60,6 +60,7 @@ public class ShowcaseView extends RelativeLayout
     private int showcaseX = -1;
     private int showcaseY = -1;
     private float scaleMultiplier = 1f;
+    private boolean handEnable = false;
 
     // Touch items
     private boolean hasCustomClickListener = false;
@@ -137,11 +138,13 @@ public class ShowcaseView extends RelativeLayout
             RelativeLayout.LayoutParams lps = (LayoutParams) generateDefaultLayoutParams();
             lps.setMargins(0, 0, 0, 0);
             mHandImageView.setLayoutParams(lps);
+            mHandImageView.setVisibility(GONE);
             addView(mHandImageView);
         } else {
             RelativeLayout.LayoutParams lps = (LayoutParams) generateDefaultLayoutParams();
             lps.setMargins(showcaseX, showcaseY, 0, 0);
             mHandImageView.setLayoutParams(lps);
+            mHandImageView.setVisibility(handEnable ? VISIBLE : GONE);
         }
 
     }
@@ -392,6 +395,10 @@ public class ShowcaseView extends RelativeLayout
         mEndButton.setVisibility(VISIBLE);
     }
 
+    public void setHandEnable(boolean enable) {
+        this.handEnable = enable;
+    }
+
     /**
      * Builder class which allows easier creation of {@link ShowcaseView}s.
      * It is recommended that you use this Builder class.
@@ -516,6 +523,15 @@ public class ShowcaseView extends RelativeLayout
 
         public Builder setShowcaseEventListener(OnShowcaseEventListener showcaseEventListener) {
             showcaseView.setOnShowcaseEventListener(showcaseEventListener);
+            return this;
+        }
+
+        /**
+         * Set whether show the hand indicator, this method must be called before setTarget.
+         * the hand indicator is not suitable for all scenes
+         */
+        public Builder setHandEnable(boolean enable) {
+            showcaseView.setHandEnable(enable);
             return this;
         }
     }
