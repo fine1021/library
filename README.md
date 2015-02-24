@@ -13,14 +13,14 @@ dependencies {
 
 # showcaseview library
 
-use the nineoldandroid library to make it work well on android 2.3
+remove nineoldandroid library from my old version , since there are some bugs on android 2.3 between nineoldandroid and fragment layout, but now it still can be used on android 2.3. I also use the hand-icon to make showcaseview more beautiful
 
 --
 Reference the library in your Android projects using this dependency in your module's  `build.gradle`  file:
 
 ```Gradle
 dependencies {
-    compile 'cn.edu.nuaa.Sunday:showcaseview:1.0.0'
+    compile 'cn.edu.nuaa.Sunday:showcaseview:1.0.1'
 }
 ```
 
