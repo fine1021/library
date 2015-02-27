@@ -18,7 +18,7 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:18.+'
+    compile 'com.android.support:support-v4:22.1.1'
 }
 
 def PROJ_GROUP="cn.edu.nuaa.Sunday"
@@ -32,13 +32,14 @@ def DEVELOPER_ID="fine1021"
 def DEVELOPER_NAME="fine"
 def DEVELOPER_EMAIL="fine1021@gmail.com"
 
-group = PROJ_GROUP
 version = PROJ_VERSION
+group = PROJ_GROUP
 
 install {
     repositories.mavenInstaller {
         // This generates POM.xml with proper parameters
         pom {
+            //noinspection GroovyAssignabilityCheck
             project {
                 packaging 'aar'
                 // Add your description here

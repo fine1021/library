@@ -527,7 +527,7 @@ public class ShowcaseView extends RelativeLayout
         }
 
         /**
-         * Set whether show the hand indicator, this method must be called before setTarget.
+         * Set whether show the hand indicator.
          * the hand indicator is not suitable for all scenes
          */
         public Builder setHandEnable(boolean enable) {

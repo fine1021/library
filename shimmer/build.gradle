@@ -5,20 +5,21 @@ apply plugin: 'com.github.dcendents.android-maven'
 android {
     compileSdkVersion 18
     buildToolsVersion "19.1.0"
-
     defaultConfig {
+        minSdkVersion 4
     }
-
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+    productFlavors {
+    }
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:18.+'
+    compile 'com.android.support:support-v4:22.1.1'
     compile 'com.nineoldandroids:library:2.4.0'
 }
 
@@ -33,13 +34,15 @@ def DEVELOPER_ID="fine1021"
 def DEVELOPER_NAME="fine"
 def DEVELOPER_EMAIL="fine1021@gmail.com"
 
-group = PROJ_GROUP
+
 version = PROJ_VERSION
+group = PROJ_GROUP
 
 install {
     repositories.mavenInstaller {
         // This generates POM.xml with proper parameters
         pom {
+            //noinspection GroovyAssignabilityCheck
             project {
                 packaging 'aar'
                 // Add your description here
@@ -59,6 +62,12 @@ install {
                         email DEVELOPER_EMAIL
                     }
                 }
+                scm {
+                    connection PROJ_VCSURL
+                    developerConnection PROJ_VCSURL
+                    url PROJ_WEBSITEURL
+                }
+
             }
         }
     }
