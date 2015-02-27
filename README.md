@@ -20,7 +20,7 @@ Reference the library in your Android projects using this dependency in your mod
 
 ```Gradle
 dependencies {
-    compile 'cn.edu.nuaa.Sunday:showcaseview:1.0.3'
+    compile 'cn.edu.nuaa.Sunday:showcaseview:1.0.2'
 }
 ```
 
