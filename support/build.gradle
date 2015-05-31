@@ -21,6 +21,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:support-v4:22.2.0'
 }
 
 Properties properties = new Properties()
@@ -30,7 +31,7 @@ publish {
     userOrg = 'fine1021'
     groupId = 'com.yxkang.android'
     artifactId = 'support'
-    publishVersion = '0.0.1'
+    publishVersion = '0.0.2'
     description = 'a support library for android'
     website = 'https://github.com/fine1021/library'
     issueTracker = "${website}/issues"

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--Gesture attrs-->
+    <declare-styleable name="Gesture">
+        <!--cycle normal color-->
+        <attr name="normal_color" format="color|reference" />
+        <!--normal cycle line width-->
+        <attr name="normal_width" format="dimension|reference" />
+        <!--cycle ontouch color-->
+        <attr name="ontouch_color" format="color|reference" />
+        <!--normal cycle ontouch line width-->
+        <attr name="ontouch_width" format="dimension|reference" />
+        <!--line color-->
+        <attr name="line_color" format="color|reference" />
+        <!--normal line width-->
+        <attr name="line_width" format="dimension|reference" />
+        <!--error color-->
+        <attr name="error_color" format="color|reference" />
+        <!--error line width-->
+        <attr name="error_width" format="dimension|reference" />
+
+    </declare-styleable>
+
+</resources>
