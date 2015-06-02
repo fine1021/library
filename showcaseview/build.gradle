@@ -27,6 +27,11 @@ android {
 
     defaultConfig {
     }
+
+    lintOptions {
+        abortOnError false
+        ignoreWarnings true
+    }
 }
 
 def PROJ_GROUP="cn.edu.nuaa.Sunday"
