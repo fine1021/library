@@ -4,7 +4,7 @@ package com.yxkang.android.util;
 import com.yxkang.android.widget.GesturePoint;
 
 /**
- * Created by fine on 2015/6/2.
+ * Created by fine on 2015/6/2. GestureHelper
  */
 public class GestureHelper {
 
