@@ -5,11 +5,11 @@ package com.yxkang.android.widget;
  */
 public class GesturePoint {
 
-    private float centerX;     // 中心x值
-    private float centerY;     // 中心y值
-    private float radius;      // 半径
-    private int id = -1;       // 点的唯一ID，默认值为-1
-    private boolean onTouch;   // 是否被点击
+    private float centerX;     
+    private float centerY;     
+    private float radius;      
+    private int id = -1;       
+    private boolean onTouch;   
 
     public float getCenterX() {
         return centerX;

@@ -11,11 +11,11 @@ public class GestureHelper {
     private static GesturePoint temp = new GesturePoint();
 
     /**
-     * 以起始点作为中心，建立直角坐标系，以X轴的正方向为0，按照逆时针方向一起加1
+	 * Positive direction of X axis is 0, contrarotate
      *
-     * @param start 起始点
-     * @param end   终止点
-     * @return 终止点相对于起始点的方位
+     * @param start start point
+     * @param end   end point
+     * @return  direction relative to start point
      */
     private static int calculateDirection(GesturePoint start, GesturePoint end) {
         if (start.getCenterY() == end.getCenterY()) {
@@ -38,11 +38,12 @@ public class GestureHelper {
     }
 
     /**
-     *
-     * @param start  起始点
-     * @param x  终止点的X坐标
-     * @param y  终止点的Y坐标
-     * @return  返回以起始点为圆心的圆，与起始点和终止点连线的交点
+     * The starting point as the center of the circle
+	 *
+     * @param start  start point
+     * @param x  end point X coordinates
+     * @param y  end point Y coordinates
+     * @return  the intersection of circle and line
      */
     public static GesturePoint calculateBoundaryPoint(GesturePoint start, float x, float y) {
         temp.setCenterX(x);
@@ -51,9 +52,11 @@ public class GestureHelper {
     }
 
     /**
-     * @param start 起始点
-     * @param end   终止点
-     * @return 返回以起始点为圆心的圆，与起始点和终止点连线的交点
+     * The starting point as the center of the circle
+     *
+     * @param start  start point
+     * @param end  end point
+     * @return  the intersection of circle and line
      */
     public static GesturePoint calculateBoundaryPoint(GesturePoint start, GesturePoint end) {
         GesturePoint point = new GesturePoint();
@@ -104,9 +107,11 @@ public class GestureHelper {
     }
 
     /**
-     * @param start 起始点
-     * @param end   终止点
-     * @return 返回以起始点为圆心的圆、以终止点为圆心的圆，与起始点和终止点连线的2个交点
+     * The starting point as the center of the circle, the end point as the center of the another circle
+     *
+     * @param start  start point
+     * @param end   end point
+     * @return  the intersection of circles and line, there are two points
      */
     public static GesturePoint[] calculateBoundaryPoints(GesturePoint start, GesturePoint end) {
         GesturePoint[] points = new GesturePoint[2];

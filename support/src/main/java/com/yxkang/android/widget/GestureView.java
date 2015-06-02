@@ -29,33 +29,36 @@ public class GestureView extends View {
 
     private static final String TAG = "GestureContentView";
 
-    private Paint paintNormal;                // 绘制普通未点击的圆的画笔
-    private Paint paintOnTouch;               // 绘制点击之后的圆的画笔
-    private Paint paintInnerCycle;            // 绘制点击之后内部的实心圆的画笔
-    private Paint paintLines;                 // 绘制直线的画笔
-    private Paint paintKeyError;              // 绘制验证时错误的圆的画笔
-    private Paint paintInnerError;            // 绘制验证时错误的内部的实心圆的画笔
+    private Paint paintNormal;
+    private Paint paintOnTouch;
+    private Paint paintInnerCycle;
+    private Paint paintLines;
+    private Paint paintKeyError;
+    private Paint paintInnerError;
 
-    private GesturePoint[] points = null;     // 9宫格的9个点集合
-    private boolean isDrawEnable = true;      // 是否允许绘制
-    private ArrayList<Integer> linePaths = new ArrayList<>();   // 记录手势的路径
+    private GesturePoint[] points = null;     // 9 points
+    private boolean isDrawEnable = true;      // is allowed to draw
+    private ArrayList<Integer> linePaths = new ArrayList<>();   // path of the gesture
     @SuppressWarnings("FieldCanBeLocal")
     private int firstPointID, secondPointID;
     private boolean isVerify;
     private GestureTouchListener listener;
     private String user_pwd;
 
-    private Canvas canvas;                    // 画布
-    private Bitmap bitmap;                    // 位图
+    private Canvas canvas;
+    private Bitmap bitmap;
 
     /**
-     * 不同状态下的色值
+     * default color values of different states
      */
     private int mNormalColor = Color.parseColor("#aaffffff");
     private int mOnTouchColor = Color.parseColor("#ff2db1e8");
     private int mLineColor = Color.parseColor("#ff2db1e8");
     private int mErrorColor = Color.parseColor("#ffff3030");
 
+    /**
+     * default width of different states
+     */
     private float mNormalWidth = 2;
     private float mOnTouchWidth = 2;
     private float mLineWidth = 5;
@@ -86,7 +89,7 @@ public class GestureView extends View {
     }
 
     /**
-     * 初始化各种画笔
+     * init the paints
      */
     private void initPaints() {
 
@@ -155,7 +158,7 @@ public class GestureView extends View {
             }
 
             Log.d(TAG, getWidth() + "/" + perSize);
-            bitmap = Bitmap.createBitmap(getWidth(), getWidth(), Bitmap.Config.ARGB_8888);  // 设置位图的宽高
+            bitmap = Bitmap.createBitmap(getWidth(), getWidth(), Bitmap.Config.ARGB_8888);   // set the size of bitmap
             canvas = new Canvas();
             canvas.setBitmap(bitmap);
 
@@ -167,66 +170,65 @@ public class GestureView extends View {
     @SuppressWarnings("SuspiciousNameCombination")
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, widthMeasureSpec);  // 重新调整大小，让其为正方形
+        super.onMeasure(widthMeasureSpec, widthMeasureSpec);     // Measure the height and width
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawBitmap(bitmap, 0, 0, null);        // 把我们画好的图形绘制到界面画布上
+        canvas.drawBitmap(bitmap, 0, 0, null);        // draw the bitmap on the canvas
     }
 
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
-        if (!isDrawEnable) {  // 处理结果的时候不允许绘制
+        if (!isDrawEnable) {
             return true;
         }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
 
                 firstPointID = getPointAt(event.getX(), event.getY());
-                if (firstPointID != -1) {           // 用户按下的位置在某个点内，则认为选中了该点
-                    if (!points[firstPointID].isOnTouched()) {   // 如果第一个点没有被画出来
+                if (firstPointID != -1) {
+                    if (!points[firstPointID].isOnTouched()) {   // if the point has not been drawn
                         canvas.drawCircle(points[firstPointID].getCenterX(), points[firstPointID].getCenterY(),
                                 points[firstPointID].getRadius(), paintOnTouch);
                         canvas.drawCircle(points[firstPointID].getCenterX(), points[firstPointID].getCenterY(),
                                 points[firstPointID].getRadius() / 4, paintInnerCycle);
                         points[firstPointID].setOnTouch(true);
                     }
-                    linePaths.add(firstPointID);    // 把该点加入到路径中去
+                    linePaths.add(firstPointID);    // add the point to path
                 }
                 invalidate();
                 break;
             case MotionEvent.ACTION_MOVE:
-                clearScreenAndDrawLines();       // 重绘图形
+                clearScreenAndDrawLines();       // redraw
 
                 secondPointID = getPointAt(event.getX(), event.getY());
 
-                // 代表当前用户手指处于点与点之前，第一次按下的位置和移动的位置均在点的范围外
-                if (firstPointID == -1 && secondPointID == -1) {
+                if (firstPointID == -1 && secondPointID == -1) {    // both the two points are on the outside
                     break;
                 } else {
-                    if (firstPointID == -1) {     // 第一次按下的位置在点的范围外，移动到了某个点的范围内，认为点击该点
-                        if (!points[secondPointID].isOnTouched()) {  // 如果该点没有被画出来
+                    if (firstPointID == -1) {     // the first point is on the outside, but the second point is on the inside
+                        if (!points[secondPointID].isOnTouched()) {  // if the point has not been drawn
                             canvas.drawCircle(points[secondPointID].getCenterX(), points[secondPointID].getCenterY(),
                                     points[secondPointID].getRadius(), paintOnTouch);
                             canvas.drawCircle(points[secondPointID].getCenterX(), points[secondPointID].getCenterY(),
                                     points[secondPointID].getRadius() / 4, paintInnerCycle);
                             points[secondPointID].setOnTouch(true);
                         }
-                        linePaths.add(secondPointID);      // 把该点加入到路径中去
+                        linePaths.add(secondPointID);      // add the point to path
 
-                        firstPointID = secondPointID;      // 赋值，把移动的那个点重新作为第一个点
-                    } else if (secondPointID == -1) {     // 移动的位置在点的范围外，跟随移动的位置划线
+                        firstPointID = secondPointID;      // Assign the point
+                    } else if (secondPointID == -1) {     //the first point is on the inside, but the second point is on the outside
                         GesturePoint boundaryPoint = GestureHelper.calculateBoundaryPoint(points[firstPointID], event.getX(), event.getY());
                         canvas.drawLine(boundaryPoint.getCenterX(), boundaryPoint.getCenterY(),
                                 event.getX(), event.getY(), paintLines);
-                    } else {             // 第一次按下的位置和移动的位置均在点的范围内
-                        if (firstPointID != secondPointID) {      // 如果两个点不为同一点则连线，否则就略过
+                    } else {             // both the two points are on the inside
+                        if (firstPointID != secondPointID) {      // if the first point is not equal with the second
 
-                            // 每次移动的时候就会重绘界面，此处仅仅只是描点，划线则交给重绘函数完成 clearScreenAndDrawLines()
+                            // Just to draw a point. call clearScreenAndDrawLines() method draw lines
 
-                            // 处理两个点之间的点，该点也要加入到路径中
+                            // check the point between the two points
                             Integer between = getPointBetween2(firstPointID, secondPointID);
                             if (between != -1) {
                                 if (!points[between].isOnTouched()) {
@@ -241,23 +243,23 @@ public class GestureView extends View {
 
                             Log.d(TAG, "middle : " + between);
 
-                            if (!points[secondPointID].isOnTouched()) {    // 如果第二个点没有被画出来
+                            if (!points[secondPointID].isOnTouched()) {    // if the point has not been drawn
                                 canvas.drawCircle(points[secondPointID].getCenterX(), points[secondPointID].getCenterY(),
                                         points[secondPointID].getRadius(), paintOnTouch);
                                 canvas.drawCircle(points[secondPointID].getCenterX(), points[secondPointID].getCenterY(),
                                         points[secondPointID].getRadius() / 4, paintInnerCycle);
                                 points[secondPointID].setOnTouch(true);
                             }
-                            linePaths.add(secondPointID);    // 把移动的点加入到路径中去，第一个点理论上已经加进去了
+                            linePaths.add(secondPointID);    // add the point to path
 
-                            firstPointID = secondPointID;    // 赋值，把移动的那个点重新作为第一个点
+                            firstPointID = secondPointID;    // Assign the point
                         }
                     }
                 }
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP:
-                clearScreenAndDrawLines();  // 重绘图形
+                clearScreenAndDrawLines();  // draw lines
 
                 if (isVerify) {
                     if (listener != null) listener.onVerifyGesture(matchUserPwd());
@@ -274,7 +276,7 @@ public class GestureView extends View {
     }
 
     /**
-     * 初始化九宫格界面，绘制9个点
+     * init the 9 points
      */
     private void initPoints() {
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
@@ -285,9 +287,12 @@ public class GestureView extends View {
     }
 
     /**
-     * 获取当前位置在那个点的范围内
+     * judge the given x/y is in which point of the nine points.
+     * if found, return the id of the point, Otherwise return -1
      *
-     * @return 如果找到了该点的ID，没有则返回-1
+     * @param x x coordinates of a point
+     * @param y y coordinates of a point
+     * @return the id of the point
      */
     private int getPointAt(float x, float y) {
         int id = -1;
@@ -300,6 +305,12 @@ public class GestureView extends View {
         return id;
     }
 
+    /**
+     *
+     * @param pointS  the id of one point
+     * @param pointE  the id of another point
+     * @return  the id of the point, which is between the two points
+     */
     private int getPointBetween2(int pointS, int pointE) {
         int id = -1;
         int abs = Math.abs(pointE - pointS);
@@ -319,11 +330,11 @@ public class GestureView extends View {
     }
 
     /**
-     * 清空屏幕的其他划痕，并且重绘已经保存的路径
+     * clear screen and draw the path lines
      */
     private void clearScreenAndDrawLines() {
         initPoints();
-        int first, second;        // 用来保存前后两个点的ID
+        int first, second;        // two points id
         Iterator<Integer> lines = linePaths.iterator();
         if (lines.hasNext()) {
             first = lines.next();
@@ -335,7 +346,7 @@ public class GestureView extends View {
                 points[first].setOnTouch(true);
             }
             while (lines.hasNext()) {
-                second = lines.next();  // 获取第二个点，绘制直线
+                second = lines.next();  // get the second point id, and draw line
                 GesturePoint[] boundaryPoints = GestureHelper.calculateBoundaryPoints(points[first], points[second]);
                 canvas.drawLine(boundaryPoints[0].getCenterX(), boundaryPoints[0].getCenterY(),
                         boundaryPoints[1].getCenterX(), boundaryPoints[1].getCenterY(), paintLines);
@@ -353,11 +364,11 @@ public class GestureView extends View {
     }
 
     /**
-     * 作为验证是用，绘制红色的路径改告诉用户
+     * draw the error path ,usually the color is red
      */
     private void drawErrorPath() {
         initPoints();
-        int first, second;        // 用来保存前后两个点的ID
+        int first, second;        // two points id
         Iterator<Integer> lines = linePaths.iterator();
         if (lines.hasNext()) {
             first = lines.next();
@@ -369,7 +380,7 @@ public class GestureView extends View {
                 points[first].setOnTouch(true);
             }
             while (lines.hasNext()) {
-                second = lines.next();  // 获取第二个点，绘制直线
+                second = lines.next();  // get the second point id, and draw line
                 GesturePoint[] boundaryPoints = GestureHelper.calculateBoundaryPoints(points[first], points[second]);
                 canvas.drawLine(boundaryPoints[0].getCenterX(), boundaryPoints[0].getCenterY(),
                         boundaryPoints[1].getCenterX(), boundaryPoints[1].getCenterY(), paintKeyError);
@@ -395,11 +406,11 @@ public class GestureView extends View {
     }
 
     /**
-     * 可获取绘图的图案编码和验证图案的结果
+     * set the listener
      *
-     * @param isVerify 是否为验证图案
-     * @param user_pwd 在验图案的时候传入的验证密码，如果不是验证图案可随意
-     * @param listener 触摸监听器
+     * @param isVerify if verify
+     * @param user_pwd verify password
+     * @param listener a callback
      */
     public void setOnTouchListener(boolean isVerify, String user_pwd, GestureTouchListener listener) {
         this.isVerify = isVerify;
@@ -408,13 +419,13 @@ public class GestureView extends View {
     }
 
     /**
-     * 清空所绘画的图案
+     * clear all the draws
      *
-     * @param delay 是否延迟一段时间后在清除所绘画的图案，该期间可用于显示错误的图案
+     * @param delay delay time
      */
     public void clearDrawWithDelay(long delay) {
         if (delay > 0) {
-            isDrawEnable = false;       // 此时暂时不允许绘制图形
+            isDrawEnable = false;
             drawErrorPath();
         }
         postDelayed(new clearRunnable(), delay);
@@ -426,28 +437,26 @@ public class GestureView extends View {
     private class clearRunnable implements Runnable {
         @Override
         public void run() {
-            linePaths.clear();          // 本次任务结束，清空路径
-            clearScreenAndDrawLines();  // 重绘图形
+            linePaths.clear();          // clear the path
+            clearScreenAndDrawLines();  // redraw
             isDrawEnable = true;
         }
     }
 
     /**
-     * Interface definition for a callback to be invoked when this view is on touch
+     * Interface definition for a callback to be invoked when this view is touched
      */
     public interface GestureTouchListener {
 
         /**
-         * 对于首次设置密码后的回调
          *
-         * @param pwd 返回用户设置的密码
+         * @param pwd password
          */
         void onDrawGesture(String pwd);
 
         /**
-         * 校验用户输入的密码正确与否
          *
-         * @param result 检验的结果
+         * @param result the result of verify
          */
         void onVerifyGesture(boolean result);
     }
