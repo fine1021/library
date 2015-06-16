@@ -38,7 +38,9 @@ public class StatusBarManager {
             activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 //            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
 
-            root.setPadding(0, getStatusBarHeight(activity), 0, 0);
+            if (root != null) {
+                root.setPadding(0, getStatusBarHeight(activity), 0, 0);
+            }
         }
     }
 }
