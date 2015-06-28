@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Sample</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="support_library">support library</string>
+    <string name="title_activity_support">SupportActivity</string>
+    <string name="security">security</string>
+    <string name="title_activity_security">SecurityActivity</string>
+    <string name="security_hint">输入待加密字符</string>
+    <string name="security_after_hint">加密后字符</string>
+</resources>
