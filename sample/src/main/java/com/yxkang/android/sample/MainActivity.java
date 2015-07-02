@@ -22,12 +22,30 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, SupportActivity.class));
             }
         });
+        findViewById(R.id.bt_asynctask).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                testAsyncTask();
+            }
+        });
 
     }
 
     @SuppressWarnings("ConstantConditions")
     private void initActionbar() {
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.blue)));
+    }
+
+    private void testAsyncTask() {
+        new MyAsyncTask().execute();
+        new MyAsyncTask().execute();
+        new MyAsyncTask().execute();
+        new MyAsyncTask().execute();
+        new MyAsyncTask().execute();
+        new MyAsyncTask().execute();
+        new MyAsyncTask().execute();
+        new MyAsyncTask().execute();
+        new MyAsyncTask().execute();
     }
 
     @Override

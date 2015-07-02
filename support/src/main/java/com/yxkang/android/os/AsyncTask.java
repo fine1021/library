@@ -94,7 +94,6 @@ public abstract class AsyncTask<Params, Progress, Result> {
     }
 
     private Result postResult(Result result) {
-        android.util.Log.d(LOG_TAG, String.valueOf(mTaskInvoked.get()));
         Message message = getHandler().obtainMessage(MESSAGE_POST_RESULT,
                 new AsyncTaskResult<Result>(this, result));
         message.sendToTarget();

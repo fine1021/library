@@ -18,14 +18,27 @@
             android:id="@+id/et_security_before"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/security_hint"/>
+            android:hint="@string/security_hint"
+            android:singleLine="true" />
 
         <EditText
             android:id="@+id/et_security_after"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/security_after_hint"/>
+            android:hint="@string/security_after_hint"
+            android:singleLine="true" />
 
+        <Button
+            android:id="@+id/bt_security_base64_e"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:text="@string/security_base64_e" />
+
+        <Button
+            android:id="@+id/bt_security_base64_d"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:text="@string/security_base64_d" />
 
 
     </LinearLayout>
