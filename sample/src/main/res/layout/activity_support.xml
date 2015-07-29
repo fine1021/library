@@ -8,13 +8,20 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/bt_spt_security"
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:text="@string/security"/>
+
+        <Button
+            android:id="@+id/bt_spt_image"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:text="@string/image"/>
 
     </LinearLayout>
 

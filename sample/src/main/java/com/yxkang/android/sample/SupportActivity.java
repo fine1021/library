@@ -22,6 +22,12 @@ public class SupportActivity extends AppCompatActivity {
                 startActivity(new Intent(SupportActivity.this, SecurityActivity.class));
             }
         });
+        findViewById(R.id.bt_spt_image).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SupportActivity.this, ImageActivity.class));
+            }
+        });
     }
 
     @SuppressWarnings("ConstantConditions")

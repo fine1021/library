@@ -1,4 +1,4 @@
-package com.yxkang.android.sample;
+package com.yxkang.android.sample.asynctask;
 
 import android.util.Log;
 

@@ -6,10 +6,12 @@
     <string name="support_library">support library</string>
     <string name="title_activity_support">SupportActivity</string>
     <string name="security">security</string>
+    <string name="image">image</string>
     <string name="title_activity_security">SecurityActivity</string>
     <string name="security_hint">输入待加密/解密字符</string>
     <string name="security_after_hint">加密/解密后字符</string>
     <string name="security_base64_e">base64加密</string>
     <string name="security_base64_d">base64解密</string>
     <string name="asynctask">Asynctask</string>
+    <string name="title_activity_image">ImageActivity</string>
 </resources>
