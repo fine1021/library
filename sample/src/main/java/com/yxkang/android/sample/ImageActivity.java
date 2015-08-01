@@ -2,6 +2,7 @@ package com.yxkang.android.sample;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.util.List;
 
 
+@SuppressWarnings("ConstantConditions")
 public class ImageActivity extends AppCompatActivity {
 
     private static final String TAG = ImageActivity.class.getSimpleName();
@@ -53,6 +55,7 @@ public class ImageActivity extends AppCompatActivity {
                 }
             }
         });
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.blue)));
 
     }
 

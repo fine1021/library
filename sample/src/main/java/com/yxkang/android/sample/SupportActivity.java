@@ -28,6 +28,12 @@ public class SupportActivity extends AppCompatActivity {
                 startActivity(new Intent(SupportActivity.this, ImageActivity.class));
             }
         });
+        findViewById(R.id.bt_spt_status_bar).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SupportActivity.this, StatusBarActivity.class));
+            }
+        });
     }
 
     @SuppressWarnings("ConstantConditions")

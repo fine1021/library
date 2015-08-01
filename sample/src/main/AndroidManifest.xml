@@ -31,6 +31,10 @@
             android:name=".ImageActivity"
             android:label="@string/title_activity_image">
         </activity>
+        <activity
+            android:name=".StatusBarActivity"
+            android:label="@string/title_activity_status_bar">
+        </activity>
     </application>
 
 </manifest>
