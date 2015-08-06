@@ -48,4 +48,55 @@ public class ScreenUtil {
         activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
         return new int[]{dm.widthPixels, dm.heightPixels};
     }
+
+
+    /**
+     * transform the dip to px, according to the phone density
+     *
+     * @param context context
+     * @param dpValue dp value
+     * @return px value
+     */
+    public static int dip2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
+    }
+
+    /**
+     * transform the px to dip, according to the phone density
+     *
+     * @param context context
+     * @param pxValue px value
+     * @return dip value
+     */
+    public static int px2dip(Context context, float pxValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (pxValue / scale + 0.5f);
+    }
+
+
+    /**
+     * transform the px to sp, according to the phone scaledDensity
+     *
+     * @param context context
+     * @param pxValue the px value
+     * @return sp value
+     */
+    public static int px2sp(Context context, float pxValue) {
+        final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
+        return (int) (pxValue / fontScale + 0.5f);
+    }
+
+
+    /**
+     * transform the sp to px, according to the phone scaledDensity
+     *
+     * @param context context
+     * @param spValue ap value
+     * @return px value
+     */
+    public static int sp2px(Context context, float spValue) {
+        final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
+        return (int) (spValue * fontScale + 0.5f);
+    }
 }
