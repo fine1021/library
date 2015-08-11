@@ -25,6 +25,18 @@
             android:layout_height="45dp"
             android:text="@string/asynctask" />
 
+        <Button
+            android:id="@+id/bt_display"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:text="@string/display_info" />
+
+        <Button
+            android:id="@+id/bt_gms"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:text="@string/gms" />
+
     </LinearLayout>
 
 

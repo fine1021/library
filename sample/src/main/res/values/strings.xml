@@ -16,4 +16,6 @@
     <string name="asynctask">Asynctask</string>
     <string name="title_activity_image">ImageActivity</string>
     <string name="title_activity_status_bar">StatusBarActivity</string>
+    <string name="display_info">display info</string>
+    <string name="gms">Open GMS</string>
 </resources>

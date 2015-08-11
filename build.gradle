@@ -4,6 +4,7 @@ buildscript {
     repositories {
         maven { url 'https://dl.bintray.com/dcendents/gradle-plugins' }
         maven { url 'https://dl.bintray.com/jfrog/jfrog-jars' }
+        maven { url 'https://dl.bintray.com/novoda/maven' }
         jcenter()
 //        mavenCentral()
     }
