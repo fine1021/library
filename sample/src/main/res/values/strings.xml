@@ -18,4 +18,7 @@
     <string name="title_activity_status_bar">StatusBarActivity</string>
     <string name="display_info">display info</string>
     <string name="gms">Open GMS</string>
+    <string name="title_activity_xml">XmlActivity</string>
+    <string name="xml">xml</string>
+    <string name="xml_pull_parser">xml_pull_parser</string>
 </resources>

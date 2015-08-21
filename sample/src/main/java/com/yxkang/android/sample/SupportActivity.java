@@ -34,6 +34,12 @@ public class SupportActivity extends AppCompatActivity {
                 startActivity(new Intent(SupportActivity.this, StatusBarActivity.class));
             }
         });
+        findViewById(R.id.bt_spt_xml).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SupportActivity.this, XmlActivity.class));
+            }
+        });
     }
 
     @SuppressWarnings("ConstantConditions")

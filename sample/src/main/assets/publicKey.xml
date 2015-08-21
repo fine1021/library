@@ -1,0 +1,16 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+    <soapenv:Body>
+        <ns:getCmsPublicKeyResponse xmlns:ns="http://impl.server.ws.api.pms.cms.hikvision.com">
+            <ns:return><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+           <root>
+                <errorMessage>获取CMS公钥成功！</errorMessage>
+                <publicKey>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQChoLU4lNPk0nGDvhJgeEXKvr1QxRCZ4QwQZla05cZ7mPAt5lx3
+                 H7vp8sCYVyhn3UHNhFFoB0CyVyw9FGhvn3A9+gTp1i780oU+ZLnH2lZbaNJXs9lPZv7mhQ1LWOJ88UTJ0WCFo5uyJ3uLu3P7Sk5V98mKVwpJSixtKYhX7qdwMQIDAQAB
+                </publicKey>
+                <result>true</result>
+                <errorCode>0</errorCode>
+	       </root>]]>
+            </ns:return>
+        </ns:getCmsPublicKeyResponse>
+    </soapenv:Body>
+</soapenv:Envelope>
