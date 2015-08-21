@@ -33,9 +33,10 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 
 publish {
     userOrg = 'fine1021'
+    repoName = 'maven'
     groupId = 'com.yxkang.android'
     artifactId = 'support'
-    publishVersion = '0.0.2'
+    publishVersion = '0.0.3'
     description = 'a support library for android'
     website = 'https://github.com/fine1021/library'
     issueTracker = "${website}/issues"

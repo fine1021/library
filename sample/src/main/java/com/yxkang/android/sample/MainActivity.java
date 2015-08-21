@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.bt_gms).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openApp("com.google.android.gms");
+                startApplication("com.google.android.gms");
             }
         });
     }
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param packageName pkg
      */
-    private void openApp(String packageName) {
+    private void startApplication(String packageName) {
         Intent resolveIntent = new Intent(Intent.ACTION_MAIN, null);
         resolveIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         resolveIntent.setPackage(packageName);
