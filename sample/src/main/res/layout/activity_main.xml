@@ -6,7 +6,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    tools:ignore="UnusedAttribute">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,25 +18,29 @@
             android:id="@+id/bt_support_library"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:text="@string/support_library" />
+            android:text="@string/support_library"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/bt_asynctask"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:text="@string/asynctask" />
+            android:text="@string/asynctask"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/bt_display"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:text="@string/display_info" />
+            android:text="@string/display_info"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/bt_gms"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:text="@string/gms" />
+            android:text="@string/gms"
+            android:textAllCaps="false" />
 
     </LinearLayout>
 

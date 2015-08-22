@@ -17,14 +17,15 @@ public abstract class XmlPullParserBase {
 
     private static final String charset = "utf-8";
     private static final String TAG = "XmlPullParserBase";
-    private static XmlPullParser parser = null;
+    private XmlPullParser parser = null;
     @SuppressWarnings("FieldCanBeLocal")
-    private static XmlPullParserFactory factory = null;
+    private XmlPullParserFactory factory = null;
 
-    static {
+    public XmlPullParserBase() {
         try {
             factory = XmlPullParserFactory.newInstance();
             parser = factory.newPullParser();
+            Log.i(TAG, "XmlPullParser Init Success !");
         } catch (XmlPullParserException e) {
             e.printStackTrace();
             Log.e(TAG, "XmlPullParser Init Failed !");
@@ -105,7 +106,7 @@ public abstract class XmlPullParserBase {
     }
 
     /**
-     * get the parser
+     * get the current parser
      *
      * @return parser
      */

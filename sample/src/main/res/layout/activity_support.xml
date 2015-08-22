@@ -6,7 +6,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.yxkang.android.sample.SupportActivity">
+    tools:context="com.yxkang.android.sample.SupportActivity"
+    tools:ignore="UnusedAttribute">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,25 +18,29 @@
             android:id="@+id/bt_spt_security"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:text="@string/security" />
+            android:text="@string/security"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/bt_spt_image"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:text="@string/image" />
+            android:text="@string/image"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/bt_spt_status_bar"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:text="@string/status_bar" />
+            android:text="@string/status_bar"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/bt_spt_xml"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:text="@string/xml" />
+            android:text="@string/xml"
+            android:textAllCaps="false" />
 
     </LinearLayout>
 

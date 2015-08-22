@@ -38,9 +38,12 @@ public class XmlParserMessage extends XmlPullParserBase {
                         for (int i = 0; i < count; i++) {
                             Log.d(TAG, getParser().getAttributeName(i) + " : " + getParser().getAttributeValue(i));
                         }
-                        content = safetyNextText();
-                        if (!TextUtils.isEmpty(content.trim())) {
-                            Log.d(TAG, title + " : " + content);
+
+                        if (title.equals("ns:return")) {
+                            content = safetyNextText();
+                            if (!TextUtils.isEmpty(content.trim())) {
+                                Log.d(TAG, title + " : " + content);
+                            }
                         }
                         break;
                     case XmlPullParser.END_TAG:
