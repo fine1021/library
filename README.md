@@ -36,3 +36,16 @@ dependencies {
     compile 'cn.edu.nuaa.Sunday:viewpagerindicator:1.0.0'
 }
 ```
+
+# support library
+
+a support library for android, include xmlhelper,asynctask,inageloader,widget (such as GestureView etc.) and some utils
+
+--
+Reference the library in your Android projects using this dependency in your module's  `build.gradle`  file:
+
+```Gradle
+dependencies {
+    compile 'com.yxkang.android:support:0.0.3'
+}
+```
