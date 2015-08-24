@@ -13,7 +13,7 @@
     <string name="security_after_hint">加密/解密后字符</string>
     <string name="security_base64_e">Base64加密</string>
     <string name="security_base64_d">Base64解密</string>
-    <string name="asynctask">Asynctask</string>
+    <string name="asynctask">AsyncTask</string>
     <string name="title_activity_image">ImageActivity</string>
     <string name="title_activity_status_bar">StatusBarActivity</string>
     <string name="display_info">Display Info</string>

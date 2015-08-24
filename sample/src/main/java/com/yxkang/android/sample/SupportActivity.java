@@ -8,6 +8,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.yxkang.android.sample.asynctask.MyAsyncTask;
+
 
 public class SupportActivity extends AppCompatActivity {
 
@@ -40,11 +42,29 @@ public class SupportActivity extends AppCompatActivity {
                 startActivity(new Intent(SupportActivity.this, XmlActivity.class));
             }
         });
+        findViewById(R.id.bt_spt_asynctask).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                testAsyncTask();
+            }
+        });
     }
 
     @SuppressWarnings("ConstantConditions")
     private void initActionbar() {
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.blue)));
+    }
+
+    private void testAsyncTask() {
+        new MyAsyncTask().execute();
+        new MyAsyncTask().execute();
+        new MyAsyncTask().execute();
+        new MyAsyncTask().execute();
+        new MyAsyncTask().execute();
+        new MyAsyncTask().execute();
+        new MyAsyncTask().execute();
+        new MyAsyncTask().execute();
+        new MyAsyncTask().execute();
     }
 
     @Override

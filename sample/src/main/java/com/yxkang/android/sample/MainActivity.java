@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.yxkang.android.sample.asynctask.MyAsyncTask;
 import com.yxkang.android.sample.bean.DisplayInfoBean;
 
 import java.util.List;
@@ -30,12 +29,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, SupportActivity.class));
-            }
-        });
-        findViewById(R.id.bt_asynctask).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                testAsyncTask();
             }
         });
         findViewById(R.id.bt_display).setOnClickListener(new View.OnClickListener() {
@@ -55,18 +48,6 @@ public class MainActivity extends AppCompatActivity {
     @SuppressWarnings("ConstantConditions")
     private void initActionbar() {
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.blue)));
-    }
-
-    private void testAsyncTask() {
-        new MyAsyncTask().execute();
-        new MyAsyncTask().execute();
-        new MyAsyncTask().execute();
-        new MyAsyncTask().execute();
-        new MyAsyncTask().execute();
-        new MyAsyncTask().execute();
-        new MyAsyncTask().execute();
-        new MyAsyncTask().execute();
-        new MyAsyncTask().execute();
     }
 
     /**
@@ -95,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         } else {
-            Toast.makeText(MainActivity.this, "open failed!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "can't find the application !", Toast.LENGTH_SHORT).show();
         }
 
     }
