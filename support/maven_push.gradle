@@ -6,8 +6,8 @@ def bintrayRepo = 'maven'
 def libraryGroup = 'com.yxkang.android'
 def libraryVersion = '0.0.3'
 def libraryName = 'support'
-def artifact = 'support'
-def userOrg = 'fine1021'
+def libraryArtifact = 'support'
+def repoUserOrg = 'fine1021'
 def libraryDescription = 'a support library for android'
 
 // uri
@@ -21,7 +21,7 @@ def developerName = 'fine'
 def developerEmail = 'fine1021@gmail.com'
 
 // licenses
-def licenses = ["Apache-2.0"]
+def allLicenses = ["Apache-2.0"]
 
 group = libraryGroup
 version = libraryVersion
@@ -33,7 +33,7 @@ install {
             project {
                 packaging 'aar'
                 groupId libraryGroup
-                artifactId artifact
+                artifactId libraryArtifact
 
                 // Add your description here
                 name libraryName
@@ -94,12 +94,12 @@ bintray {
     pkg {
         repo = bintrayRepo
         name = libraryName
-        userOrg = userOrg
+        userOrg = repoUserOrg
         desc = libraryDescription
         websiteUrl = siteUrl
         issueTrackerUrl = issueUrl
         vcsUrl = gitUrl
-        licenses = licenses
+        licenses = allLicenses
         publicDownloadNumbers = true
     }
 }
