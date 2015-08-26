@@ -21,4 +21,6 @@
     <string name="title_activity_xml">XmlActivity</string>
     <string name="xml">XML</string>
     <string name="xml_pull_parser"><![CDATA[XmlPullParser]]></string>
+    <string name="clear">Clear Cache</string>
+    <string name="wifiPwd">Wifi Pwd</string>
 </resources>

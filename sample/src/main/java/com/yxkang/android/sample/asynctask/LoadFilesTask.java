@@ -103,6 +103,9 @@ public class LoadFilesTask extends AsyncTask<Void, String, List<FileInfoBean>> {
                 list.add(info);
             }
         }
+        if (cursor != null) {
+            cursor.close();
+        }
         Collections.sort(list, new Comparator<Object>() {
 
             @Override

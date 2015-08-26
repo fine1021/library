@@ -49,6 +49,20 @@
             android:text="@string/asynctask"
             android:textAllCaps="false" />
 
+        <Button
+            android:id="@+id/bt_spt_clear"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:text="@string/clear"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/bt_spt_wifiPwd"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:text="@string/wifiPwd"
+            android:textAllCaps="false" />
+
     </LinearLayout>
 
 </com.yxkang.android.widget.ScrollViewExtend>
