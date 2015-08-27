@@ -3,7 +3,6 @@ package com.yxkang.android.sample;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -13,12 +12,12 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.yxkang.android.os.WeakReferenceHandler;
 import com.yxkang.android.sample.asynctask.MyAsyncTask;
 import com.yxkang.android.util.RootUtil;
 import com.yxkang.android.util.WifiPassword;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 
@@ -154,24 +153,20 @@ public class SupportActivity extends AppCompatActivity {
         mHandler.removeCallbacksAndMessages(null);
     }
 
-    private static class InternalHandler extends Handler {
+    private static class InternalHandler extends WeakReferenceHandler<SupportActivity> {
 
-        private WeakReference<SupportActivity> mActivity;
-
-        public InternalHandler(SupportActivity activity) {
-            mActivity = new WeakReference<>(activity);
+        public InternalHandler(SupportActivity reference) {
+            super(reference);
         }
 
         @Override
-        public void handleMessage(Message msg) {
+        protected void handleMessage(SupportActivity reference, Message msg) {
             switch (msg.what) {
                 case MESSAGE_POST_RESULT:
-                    if (mActivity.get() != null)
-                        mActivity.get().showToast((String) msg.obj);
+                    reference.showToast((String) msg.obj);
                     break;
                 case MESSAGE_POST_RESULT2:
-                    if (mActivity.get() != null)
-                        mActivity.get().showDialog((String) msg.obj);
+                    reference.showDialog((String) msg.obj);
                     break;
             }
         }
