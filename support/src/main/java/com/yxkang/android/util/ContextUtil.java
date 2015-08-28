@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.util.Log;
 
 import java.util.List;
 
@@ -15,35 +16,55 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class ContextUtil {
 
+    private static final String TAG = ContextUtil.class.getSimpleName();
+
+    /**
+     * indicate the operation is executed successfully
+     */
+    public static final int TYPE_SUCCESS = 0x01;
+    /**
+     * indicate the operation is executed failed
+     */
+    public static final int TYPE_FAILED = 0x02;
+    /**
+     * the case happens when the queryIntent result is more than one.
+     * so post the problem to the user, rather then execute randomly
+     */
+    public static final int TYPE_NOT_UNIQUE = 0x03;
+
     /**
      * start an application according to the given packageName
      *
      * @param packageContext Context
      * @param packageName    The name of the package that the component exists in.  Can
      *                       not be null.
-     * @return {@code true} if start success, otherwise {@code false}
+     * @return result type, such as {@link #TYPE_SUCCESS}, {@link #TYPE_FAILED} or {@link #TYPE_NOT_UNIQUE}
      */
-    public static boolean startApplication(Context packageContext, String packageName) {
+    public static int startApplication(Context packageContext, String packageName) {
         Intent resolve = new Intent(Intent.ACTION_MAIN);
         resolve.addCategory(Intent.CATEGORY_LAUNCHER);
         resolve.setPackage(packageName);
 
         PackageManager manager = packageContext.getPackageManager();
         List<ResolveInfo> list = manager.queryIntentActivities(resolve, 0);
-        if (list.size() > 0) {
+        if (list.size() > 1) {
+            Log.e(TAG, "the queryIntent result is more than one");
+            return TYPE_NOT_UNIQUE;
+        } else if (list.size() == 1) {
             ResolveInfo info = list.iterator().next();
             if (info != null) {
                 String pkg = info.activityInfo.packageName;
                 String cls = info.activityInfo.name;
 
+                Log.i(TAG, pkg + "/" + cls);
                 Intent application = new Intent();
                 application.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 application.setComponent(new ComponentName(pkg, cls));
                 packageContext.startActivity(application);
-                return true;
+                return TYPE_SUCCESS;
             }
         }
-        return false;
+        return TYPE_FAILED;
     }
 
 
@@ -52,27 +73,31 @@ public class ContextUtil {
      *
      * @param packageContext Context
      * @param action         The Intent action of one <code>Service</code>
-     * @return {@code true} if start success, otherwise {@code false}
+     * @return result type, such as {@link #TYPE_SUCCESS}, {@link #TYPE_FAILED} or {@link #TYPE_NOT_UNIQUE}
      * @see #getExplicitServiceIntent(Context, String)
      */
-    public static boolean startService(Context packageContext, String action) {
+    public static int startService(Context packageContext, String action) {
         Intent resolve = new Intent(action);
 
         PackageManager manager = packageContext.getPackageManager();
         List<ResolveInfo> list = manager.queryIntentServices(resolve, 0);
-        if (list.size() > 0) {
+        if (list.size() > 1) {
+            Log.e(TAG, "the queryIntent result is more than one");
+            return TYPE_NOT_UNIQUE;
+        } else if (list.size() == 1) {
             ResolveInfo info = list.iterator().next();
             if (info != null) {
                 String pkg = info.serviceInfo.packageName;
                 String cls = info.serviceInfo.name;
 
+                Log.i(TAG, pkg + "/" + cls);
                 Intent service = new Intent(action);
                 service.setComponent(new ComponentName(pkg, cls));
                 packageContext.startService(service);
-                return true;
+                return TYPE_SUCCESS;
             }
         }
-        return false;
+        return TYPE_FAILED;
     }
 
     /**
@@ -96,19 +121,23 @@ public class ContextUtil {
      *
      * @param packageContext Context
      * @param action         The Intent action of one <code>Service</code>
-     * @return the explicit intent if found, otherwise null
+     * @return the unique and explicit intent if found, otherwise null
      */
     public static Intent getExplicitServiceIntent(Context packageContext, String action) {
         Intent resolve = new Intent(action);
 
         PackageManager manager = packageContext.getPackageManager();
         List<ResolveInfo> list = manager.queryIntentServices(resolve, 0);
-        if (list.size() > 0) {
+        if (list.size() > 1) {
+            Log.e(TAG, "the queryIntent result is more than one");
+            return null;
+        } else if (list.size() == 1) {
             ResolveInfo info = list.iterator().next();
             if (info != null) {
                 String pkg = info.serviceInfo.packageName;
                 String cls = info.serviceInfo.name;
 
+                Log.i(TAG, pkg + "/" + cls);
                 Intent service = new Intent(action);
                 service.setComponent(new ComponentName(pkg, cls));
                 return service;

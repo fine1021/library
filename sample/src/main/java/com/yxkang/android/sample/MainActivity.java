@@ -53,8 +53,16 @@ public class MainActivity extends AppCompatActivity {
      * @param packageName pkg
      */
     private void startApplication(String packageName) {
-        if (!ContextUtil.startApplication(MainActivity.this, packageName)) {
-            Toast.makeText(MainActivity.this, "Can't Find The Application !", Toast.LENGTH_SHORT).show();
+        int result = ContextUtil.startApplication(MainActivity.this, packageName);
+        switch (result) {
+            case ContextUtil.TYPE_SUCCESS:
+                break;
+            case ContextUtil.TYPE_FAILED:
+                Toast.makeText(MainActivity.this, "Can't Find The Application !", Toast.LENGTH_SHORT).show();
+                break;
+            case ContextUtil.TYPE_NOT_UNIQUE:
+                Toast.makeText(MainActivity.this, "The Application Has More Then One Main Entry Point!", Toast.LENGTH_SHORT).show();
+                break;
         }
     }
 
