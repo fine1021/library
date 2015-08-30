@@ -9,11 +9,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import com.yxkang.android.os.SystemProperties;
 
 /**
- * Created by fine on 2015/6/17.
+ * StatusBarManager
  */
 public class StatusBarManager {
 
@@ -70,30 +69,9 @@ public class StatusBarManager {
         return result;
     }
 
-    @SuppressWarnings("TryWithIdenticalCatches")
-    private static String getSystemPropertiesValue(String key) {
-        String result = null;
-        try {
-            Class<?> sysClass = Class.forName("android.os.SystemProperties");
-            Method getMethod = sysClass.getDeclaredMethod("get", String.class);
-            result = (String) getMethod.invoke(sysClass, key);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        Log.d(TAG, key + " : " + result);
-        return result;
-    }
-
-
     public static boolean isHasNavigationBar(Activity activity) {
         boolean result = getSystemResourceBoolValue(activity, CONFIG_SHOW_NAVIGATION_BAR);
-        String navBarOverride = getSystemPropertiesValue(VIRTUAL_KEY);
+        String navBarOverride = SystemProperties.get(VIRTUAL_KEY);
         if (!TextUtils.isEmpty(navBarOverride)) {
             if (navBarOverride.equals("1")) result = false;
             else if (navBarOverride.equals("0")) result = true;

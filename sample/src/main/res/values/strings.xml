@@ -23,4 +23,5 @@
     <string name="xml_pull_parser"><![CDATA[XmlPullParser]]></string>
     <string name="clear">Clear Cache</string>
     <string name="wifiPwd">Wifi Pwd</string>
+    <string name="systemProperties">System Properties</string>
 </resources>

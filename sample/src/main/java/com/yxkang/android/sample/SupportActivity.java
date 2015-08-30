@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.yxkang.android.os.SystemProperties;
 import com.yxkang.android.os.WeakReferenceHandler;
 import com.yxkang.android.sample.asynctask.MyAsyncTask;
 import com.yxkang.android.util.RootUtil;
@@ -25,6 +26,7 @@ public class SupportActivity extends AppCompatActivity {
 
     private static final int MESSAGE_POST_RESULT = 0x1;
     private static final int MESSAGE_POST_RESULT2 = 0x2;
+    private static final int MESSAGE_POST_RESULT3 = 0x3;
     private final InternalHandler mHandler = new InternalHandler(this);
 
     @Override
@@ -72,6 +74,12 @@ public class SupportActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showWifiPwd();
+            }
+        });
+        findViewById(R.id.bt_spt_systemProperties).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSystemProperties();
             }
         });
     }
@@ -133,13 +141,37 @@ public class SupportActivity extends AppCompatActivity {
         }).start();
     }
 
-    public void showToast(String msg) {
+    private void showSystemProperties() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                StringBuilder builder = new StringBuilder();
+                String stringValue;
+                int intValue;
+                stringValue = SystemProperties.get("ro.build.display.id");
+                builder.append("id").append(" : ").append(stringValue).append("\n");
+                intValue = SystemProperties.getInt("ro.build.version.sdk", 0);
+                builder.append("sdk").append(" : ").append(intValue).append("\n");
+                stringValue = SystemProperties.get("ro.build.version.release");
+                builder.append("release").append(" : ").append(stringValue).append("\n");
+                stringValue = SystemProperties.get("ro.build.date");
+                builder.append("date").append(" : ").append(stringValue).append("\n");
+                stringValue = SystemProperties.get("ro.product.name");
+                builder.append("name").append(" : ").append(stringValue).append("\n");
+                stringValue = SystemProperties.get("ro.product.manufacturer");
+                builder.append("manufacturer").append(" : ").append(stringValue).append("\n");
+                mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_POST_RESULT3, builder.toString()));
+            }
+        }).start();
+    }
+
+    private void showToast(String msg) {
         Toast.makeText(SupportActivity.this, msg, Toast.LENGTH_LONG).show();
     }
 
-    public void showDialog(String content) {
+    private void showDialog(String content, String title) {
         new MaterialDialog.Builder(SupportActivity.this)
-                .title("WifiPwd")
+                .title(title)
                 .titleGravity(GravityEnum.CENTER)
                 .content(content)
                 .contentGravity(GravityEnum.CENTER)
@@ -166,7 +198,10 @@ public class SupportActivity extends AppCompatActivity {
                     reference.showToast((String) msg.obj);
                     break;
                 case MESSAGE_POST_RESULT2:
-                    reference.showDialog((String) msg.obj);
+                    reference.showDialog((String) msg.obj, "WifiPwd");
+                    break;
+                case MESSAGE_POST_RESULT3:
+                    reference.showDialog((String) msg.obj, "Properties");
                     break;
             }
         }
