@@ -13,6 +13,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -30,6 +33,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     private static CrashHandler sHandler = null;
     private Thread.UncaughtExceptionHandler mDefaultHandler;
     private Context mContext;
+    private long mTime = 1000;
 
     private CrashHandler() {
     }
@@ -47,13 +51,20 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         Thread.setDefaultUncaughtExceptionHandler(this);
     }
 
+    /**
+     * @param time sleep time
+     */
+    public void setTime(long time) {
+        mTime = time;
+    }
+
     @Override
     public void uncaughtException(Thread thread, Throwable ex) {
         if (!handleException(ex) && mDefaultHandler != null) {
             mDefaultHandler.uncaughtException(thread, ex);
         } else {
             try {
-                Thread.sleep(3000);
+                Thread.sleep(mTime);
             } catch (InterruptedException e) {
                 Log.e(TAG, "Error : ", e);
             }
@@ -68,7 +79,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             return false;
         }
 
-        final String msg = ex.getLocalizedMessage();
+        final String msg = getCrashInfo(ex);
         if (TextUtils.isEmpty(msg)) {
             Log.w(TAG, "exception msg is empty");
             return false;
@@ -78,7 +89,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             @Override
             public void run() {
                 Looper.prepare();
-                write(getCrashInfo(msg));
+                write(getSystemInfo(msg));
                 Toast.makeText(mContext, "sorry for crash!", Toast.LENGTH_LONG).show();
                 Looper.loop();
             }
@@ -86,12 +97,14 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         return true;
     }
 
-    private String getCrashInfo(String bundle) {
+    private String getSystemInfo(String bundle) {
         StringBuilder builder = new StringBuilder();
         String stringValue;
         int intValue;
         stringValue = SystemProperties.get("ro.build.display.id");
         builder.append("id").append(" : ").append(stringValue).append("\n");
+        stringValue = SystemProperties.get("ro.build.version.incremental");
+        builder.append("incremental").append(" : ").append(stringValue).append("\n");
         intValue = SystemProperties.getInt("ro.build.version.sdk", 0);
         builder.append("sdk").append(" : ").append(intValue).append("\n");
         stringValue = SystemProperties.get("ro.build.version.release");
@@ -106,14 +119,29 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         return builder.toString();
     }
 
+    private String getCrashInfo(Throwable ex) {
+        StringBuilder builder = new StringBuilder();
+        Writer info = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(info);
+        ex.printStackTrace(printWriter);
+        Throwable cause = ex.getCause();
+        while (cause != null) {
+            cause.printStackTrace(printWriter);
+            cause = cause.getCause();
+        }
+        builder.append(ex.getLocalizedMessage()).append("\n");
+        builder.append(info.toString()).append("\n");
+        return builder.toString();
+    }
+
     private String getCurrentTime() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss", Locale.CHINA);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss", Locale.CHINA);
         Date date = new Date(System.currentTimeMillis());
         return sdf.format(date);
     }
 
     private void write(String msg) {
-        File dir = new File(LOG_DIR);
+        File dir = new File(LOG_DIR, mContext.getPackageName());
         if (!dir.exists()) {
             dir.mkdirs();
         }

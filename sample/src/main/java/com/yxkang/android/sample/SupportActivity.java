@@ -82,6 +82,12 @@ public class SupportActivity extends AppCompatActivity {
                 showSystemProperties();
             }
         });
+        findViewById(R.id.bt_spt_crashHandler).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SupportActivity.this, CrashActivity.class));
+            }
+        });
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -150,6 +156,8 @@ public class SupportActivity extends AppCompatActivity {
                 int intValue;
                 stringValue = SystemProperties.get("ro.build.display.id");
                 builder.append("id").append(" : ").append(stringValue).append("\n");
+                stringValue = SystemProperties.get("ro.build.version.incremental");
+                builder.append("incremental").append(" : ").append(stringValue).append("\n");
                 intValue = SystemProperties.getInt("ro.build.version.sdk", 0);
                 builder.append("sdk").append(" : ").append(intValue).append("\n");
                 stringValue = SystemProperties.get("ro.build.version.release");

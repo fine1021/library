@@ -151,8 +151,8 @@ public class SystemProperties {
     public static void set(String key, String val) {
         try {
             Class<?> sysClass = Class.forName("android.os.SystemProperties");
-            Method getMethod = sysClass.getDeclaredMethod("set", String.class, String.class);
-            getMethod.invoke(sysClass, key, val);
+            Method setMethod = sysClass.getDeclaredMethod("set", String.class, String.class);
+            setMethod.invoke(sysClass, key, val);
             Log.d(TAG, key + " : " + val);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-//apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 23
@@ -27,22 +27,22 @@ dependencies {
     compile 'com.android.support:support-v4:23.0.0'
 }
 
-//Properties properties = new Properties()
-//properties.load(project.rootProject.file('local.properties').newDataInputStream())
-//
-//publish {
-//    userOrg = 'fine1021'
-//    repoName = 'maven'
-//    groupId = 'com.yxkang.android'
-//    artifactId = 'support'
-//    publishVersion = '0.0.3'
-//    description = 'a support library for android'
-//    website = 'https://github.com/fine1021/library'
-//    issueTracker = "${website}/issues"
-//    repository = "${website}.git"
-//    bintrayUser = properties.getProperty("bintray.user")
-//    bintrayKey = properties.getProperty("bintray.apikey")
-//    dryRun = false
-//}
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
-apply from: './maven_push.gradle'
+publish {
+    userOrg = 'fine1021'
+    repoName = 'maven'
+    groupId = 'com.yxkang.android'
+    artifactId = 'support'
+    publishVersion = '0.0.4-beta'
+    description = 'a support library for android'
+    website = 'https://github.com/fine1021/library'
+    issueTracker = "${website}/issues"
+    repository = "${website}.git"
+    bintrayUser = properties.getProperty("bintray.user")
+    bintrayKey = properties.getProperty("bintray.apikey")
+    dryRun = false
+}
+
+//apply from: './maven_push.gradle'

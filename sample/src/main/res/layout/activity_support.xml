@@ -62,11 +62,19 @@
             android:layout_height="45dp"
             android:text="@string/wifiPwd"
             android:textAllCaps="false" />
+
         <Button
             android:id="@+id/bt_spt_systemProperties"
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:text="@string/systemProperties"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/bt_spt_crashHandler"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:text="@string/crashHandler"
             android:textAllCaps="false" />
 
     </LinearLayout>
