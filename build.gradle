@@ -2,6 +2,7 @@
 
 buildscript {
     repositories {
+        maven { url 'https://dl.bintray.com/android/android-tools' }
         maven { url 'https://dl.bintray.com/dcendents/gradle-plugins' }
         maven { url 'https://dl.bintray.com/jfrog/jfrog-jars' }
         maven { url 'https://dl.bintray.com/novoda/maven' }
