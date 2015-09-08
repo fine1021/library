@@ -98,6 +98,7 @@ public class MediaFile {
     public static final int FILE_TYPE_MS_POWERPOINT = 106;
     public static final int FILE_TYPE_ZIP = 107;
     public static final int FILE_TYPE_RAR = 108;
+    public static final int FILE_TYPE_APE = 109;
 
     public static class MediaFileType {
         public int fileType;
@@ -188,6 +189,7 @@ public class MediaFile {
         addFileType("XLS", FILE_TYPE_MS_EXCEL, "application/vnd.ms-excel");
         addFileType("PPT", FILE_TYPE_MS_POWERPOINT, "application/mspowerpoint");
         addFileType("FLAC", FILE_TYPE_FLAC, "audio/flac");
+        addFileType("APE", FILE_TYPE_APE, "audio/ape");
         addFileType("ZIP", FILE_TYPE_ZIP, "application/zip");
         addFileType("RAR", FILE_TYPE_RAR, "application/rar");
         addFileType("MPG", FILE_TYPE_MP2PS, "video/mp2p");
@@ -198,7 +200,7 @@ public class MediaFile {
         return ((fileType >= FIRST_AUDIO_FILE_TYPE &&
                 fileType <= LAST_AUDIO_FILE_TYPE) ||
                 (fileType >= FIRST_MIDI_FILE_TYPE &&
-                        fileType <= LAST_MIDI_FILE_TYPE));
+                        fileType <= LAST_MIDI_FILE_TYPE) || fileType == FILE_TYPE_APE);
     }
 
     public static boolean isAudioFileType(String path) {
