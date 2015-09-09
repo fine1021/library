@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.yxkang.android.image.ImageDownloader;
 import com.yxkang.android.image.ImageLoader;
+import com.yxkang.android.media.MediaFile;
 import com.yxkang.android.sample.R;
 import com.yxkang.android.sample.bean.FileInfoBean;
 
@@ -102,9 +103,7 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
 
     private void showImage(int first, int count) {
 
-        imageLoader.startTask();
-
-        for (int i = first; i < first + count && !imageLoader.isTaskCancelled(); i++) {
+        for (int i = first; i < first + count; i++) {
 
             final FileInfoBean info = list.get(i);
 
@@ -119,14 +118,18 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
                         if (imageView != null && bitmap != null) {
                             info.setFileIcon(new BitmapDrawable(context.getResources(), bitmap));
                             info.setUpdate(true);
-                            if (!imageLoader.isTaskCancelled()) imageView.setImageDrawable(info.getFileIcon());
-                            Log.d(TAG, "onImageLoaderSuccess : " + uri);
+                            imageView.setImageDrawable(info.getFileIcon());
                         }
                     }
 
                     @Override
                     public void onImageLoaderFail(String uri) {
-
+                        String filePath = ImageDownloader.Protocol.FILE.crop(uri);
+                        if (MediaFile.isVideoFileType(filePath)) {
+                            info.setFileIcon(videoIcon);
+                            info.setUpdate(true);
+                            imageView.setImageDrawable(info.getFileIcon());
+                        }
                     }
 
                     @Override
@@ -135,6 +138,11 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
                             imageView.setImageDrawable(defaultIcon);
                         }
                         Log.d(TAG, "onImageLoaderStart : " + uri);
+                    }
+
+                    @Override
+                    public void onImageLoaderCancel(String uri) {
+
                     }
                 });
             } else {
@@ -145,7 +153,7 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
     }
 
     public void cancelTask() {
-        imageLoader.cancelTask();
+        imageLoader.cancelCurrentTask();
     }
 
     @Override
@@ -174,8 +182,10 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
     }
 
     public void loadFiles(List<FileInfoBean> fileInfos) {
+        this.cancelTask();
         this.list.clear();
         this.list.addAll(fileInfos);
+        this.isFirstEnter = true;
     }
 }
 

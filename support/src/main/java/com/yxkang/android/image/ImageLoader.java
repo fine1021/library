@@ -12,6 +12,9 @@ import android.util.Log;
 import com.yxkang.android.media.MediaFile;
 import com.yxkang.android.util.BitmapUtil;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -27,16 +30,17 @@ public class ImageLoader {
     private static final String TAG = ImageLoader.class.getSimpleName();
     private static InternalHandler sHandler;
 
+    private final Object mMutex = new Object();
+
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
     private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
     private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
     private static final int KEEP_ALIVE = 1;
 
-    private static final int MESSAGE_POST_PROGRESS = 0x1;
-    private static final int MESSAGE_POST_RESULT_FAIL = 0x2;
-    private static final int MESSAGE_POST_RESULT_SUCCESS = 0x3;
+    private static final int MESSAGE_POST_TASK_START = 0x1;
+    private static final int MESSAGE_POST_TASK_FAIL = 0x2;
+    private static final int MESSAGE_POST_TASK_SUCCESS = 0x3;
 
-    private final AtomicBoolean mTaskCancelled = new AtomicBoolean(false);
 
     private static final BlockingQueue<Runnable> sPoolWorkQueue = new LinkedBlockingQueue<>();
 
@@ -50,6 +54,8 @@ public class ImageLoader {
 
     private static volatile ExecutorService mImageThreadPool = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE,
             KEEP_ALIVE, TimeUnit.MILLISECONDS, sPoolWorkQueue, sThreadFactory);
+
+    private static final List<ImageLoaderTask> sTaskQueue = Collections.synchronizedList(new ArrayList<ImageLoaderTask>());
 
     private static final int maxMemory = (int) Runtime.getRuntime().maxMemory();
     private static final int mCacheSize = maxMemory / 8;
@@ -97,16 +103,16 @@ public class ImageLoader {
 
     public void displayImageAsync(String uri, OnImageLoaderListener listener) {
 
-        if (isTaskCancelled()) return;
-
         ImageLoaderTask task = new ImageLoaderTask(listener, null, uri);
 
-        sendMessage(MESSAGE_POST_PROGRESS, task);
+        addTask(task);
+
+        sendMessage(MESSAGE_POST_TASK_START, task);
 
         task.bitmap = getCacheBitmap(uri);
         if (task.bitmap != null) {
-            sendMessage(MESSAGE_POST_RESULT_SUCCESS, task);
             Log.i(TAG, "displayCacheBitmap : " + uri);
+            sendMessage(MESSAGE_POST_TASK_SUCCESS, task);
         } else {
 
             if (ImageDownloader.Protocol.FILE.belongsTo(uri)) {
@@ -119,23 +125,33 @@ public class ImageLoader {
     }
 
 
-    public void startTask() {
-        mTaskCancelled.set(false);
-    }
-
-    public void cancelTask() {
-        mTaskCancelled.set(true);
+    public void cancelCurrentTask() {
+        for (ImageLoaderTask task : sTaskQueue) {
+            task.cancelTask.set(true);
+        }
+        sTaskQueue.clear();
         sPoolWorkQueue.clear();
     }
 
-    public boolean isTaskCancelled() {
-        return mTaskCancelled.get();
+    private void addTask(ImageLoaderTask task) {
+        if (!sTaskQueue.contains(task)) {
+            sTaskQueue.add(task);
+        }
     }
 
+    private void removeTask(ImageLoaderTask task) {
+        if (sTaskQueue.contains(task)) {
+            sTaskQueue.remove(task);
+        }
+    }
+
+
     private void sendMessage(int what, ImageLoaderTask task) {
-        if (!isTaskCancelled()) {
+        if (!task.cancelTask.get()) {
             Message message = getHandler().obtainMessage(what, task);
             message.sendToTarget();
+        } else {
+            Log.w(TAG, "task has been canceled ! uri : " + task.uri);
         }
     }
 
@@ -150,13 +166,15 @@ public class ImageLoader {
 
             ImageLoaderTask task = (ImageLoaderTask) msg.obj;
             switch (msg.what) {
-                case MESSAGE_POST_PROGRESS:
+                case MESSAGE_POST_TASK_START:
                     task.listener.onImageLoaderStart(task.uri);
                     break;
-                case MESSAGE_POST_RESULT_FAIL:
+                case MESSAGE_POST_TASK_FAIL:
+                    Log.w(TAG, "loadImageFail : " + task.uri);
                     task.listener.onImageLoaderFail(task.uri);
                     break;
-                case MESSAGE_POST_RESULT_SUCCESS:
+                case MESSAGE_POST_TASK_SUCCESS:
+                    Log.i(TAG, "loadImageSuccess : " + task.uri);
                     task.listener.onImageLoaderSuccess(task.uri, task.bitmap);
                     break;
             }
@@ -172,21 +190,38 @@ public class ImageLoader {
             @Override
             public Boolean call() throws Exception {
 
-                if (MediaFile.isImageFileType(filePath)) {
-                    task.bitmap = BitmapUtil.createImageThumbnail(filePath, 200, 200);
-                } else if (MediaFile.isVideoFileType(filePath)) {
-                    task.bitmap = BitmapUtil.createVideoThumbnail(filePath, MediaStore.Images.Thumbnails.MICRO_KIND);
-                }
+                /**
+                 * use mutex to lock the operation, only one thread can do the operation
+                 */
+                synchronized (mMutex) {
 
-                if (task.bitmap != null) {
-                    sendMessage(MESSAGE_POST_RESULT_SUCCESS, task);
-                    Log.i(TAG, "loadImageSuccess : " + task.uri);
-                    addCacheBitmap(task.uri, task.bitmap);
-                } else {
-                    sendMessage(MESSAGE_POST_RESULT_FAIL, task);
-                    Log.i(TAG, "loadImageFail : " + task.uri);
+                    if (task.cancelTask.get()) {
+                        Log.w(TAG, "loadImageCancel-1 : " + task.uri);
+                        task.listener.onImageLoaderCancel(task.uri);
+                        return false;
+                    }
+
+                    if (MediaFile.isImageFileType(filePath)) {
+                        task.bitmap = BitmapUtil.createImageThumbnail(filePath, 200, 200);
+                    } else if (MediaFile.isVideoFileType(filePath)) {
+                        task.bitmap = BitmapUtil.createVideoThumbnail(filePath, MediaStore.Images.Thumbnails.MICRO_KIND);
+                    }
+
+                    if (task.cancelTask.get()) {
+                        Log.w(TAG, "loadImageCancel-2 : " + task.uri);
+                        task.listener.onImageLoaderCancel(task.uri);
+                        return false;
+                    }
+
+                    if (task.bitmap != null) {
+                        sendMessage(MESSAGE_POST_TASK_SUCCESS, task);
+                        addCacheBitmap(task.uri, task.bitmap);
+                    } else {
+                        sendMessage(MESSAGE_POST_TASK_FAIL, task);
+                    }
+                    removeTask(task);
+                    return true;
                 }
-                return true;
             }
         };
 
@@ -202,6 +237,7 @@ public class ImageLoader {
         final OnImageLoaderListener listener;
         Bitmap bitmap;
         final String uri;
+        AtomicBoolean cancelTask = new AtomicBoolean(false);
 
         public ImageLoaderTask(OnImageLoaderListener listener, Bitmap bitmap, String uri) {
             this.listener = listener;
@@ -218,6 +254,8 @@ public class ImageLoader {
         void onImageLoaderSuccess(String uri, Bitmap bitmap);
 
         void onImageLoaderFail(String uri);
+
+        void onImageLoaderCancel(String uri);
     }
 
 }

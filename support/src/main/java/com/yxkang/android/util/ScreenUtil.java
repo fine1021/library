@@ -9,6 +9,7 @@ import android.view.WindowManager;
 /**
  * Created by fine on 2015/6/17.
  */
+@SuppressWarnings("ALL")
 public class ScreenUtil {
 
     /**
@@ -58,7 +59,7 @@ public class ScreenUtil {
      * @return px value
      */
     public static int dip2px(Context context, float dpValue) {
-        final float scale = context.getResources().getDisplayMetrics().density;
+        float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
     }
 
@@ -70,7 +71,7 @@ public class ScreenUtil {
      * @return dip value
      */
     public static int px2dip(Context context, float pxValue) {
-        final float scale = context.getResources().getDisplayMetrics().density;
+        float scale = context.getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
     }
 
@@ -83,7 +84,7 @@ public class ScreenUtil {
      * @return sp value
      */
     public static int px2sp(Context context, float pxValue) {
-        final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
+        float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
         return (int) (pxValue / fontScale + 0.5f);
     }
 
@@ -96,7 +97,7 @@ public class ScreenUtil {
      * @return px value
      */
     public static int sp2px(Context context, float spValue) {
-        final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
+        float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
         return (int) (spValue * fontScale + 0.5f);
     }
 }
