@@ -1,11 +1,10 @@
 package com.yxkang.android.image;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.v4.util.LruCache;
 import android.util.Log;
 
@@ -24,13 +23,31 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+@SuppressWarnings("ALL")
 public class ImageLoader {
 
     private static final String TAG = ImageLoader.class.getSimpleName();
     private static InternalHandler sHandler;
 
+    /**
+     * use mutex to lock the create bitmap operation
+     */
     private final Object mMutex = new Object();
+
+    /**
+     * Iterator and for-each are unsafe-Thread Operation, they don't allow to
+     * modify the content of List when accessing. use the ReentrantReadWriteLock
+     * to avoid the problem
+     */
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
+
+    private Context context;
+
+    private int mThumbnailWidth;
+
+    private int mThumbnailHeight;
 
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
     private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
@@ -47,7 +64,7 @@ public class ImageLoader {
     private static final ThreadFactory sThreadFactory = new ThreadFactory() {
         private final AtomicInteger mCount = new AtomicInteger(1);
 
-        public Thread newThread(@NonNull Runnable r) {
+        public Thread newThread(Runnable r) {
             return new Thread(r, "ImageLoaderThread #" + mCount.getAndIncrement());
         }
     };
@@ -69,6 +86,25 @@ public class ImageLoader {
 
     };
 
+    public ImageLoader(Context context) {
+        this.context = context;
+        int dpi = context.getResources().getDisplayMetrics().densityDpi;
+        if (dpi < 300) {
+            mThumbnailWidth = 200;
+            mThumbnailHeight = 150;
+        } else if (dpi < 400) {
+            mThumbnailWidth = 300;
+            mThumbnailHeight = 250;
+        } else {
+            mThumbnailWidth = 400;
+            mThumbnailHeight = 350;
+        }
+    }
+
+    public void setThumbnailSize(int width, int height) {
+        mThumbnailWidth = width;
+        mThumbnailHeight = height;
+    }
 
     public void addCacheBitmap(String key, Bitmap bitmap) {
         synchronized (mMemoryCache) {
@@ -126,22 +162,45 @@ public class ImageLoader {
 
 
     public void cancelCurrentTask() {
-        for (ImageLoaderTask task : sTaskQueue) {
-            task.cancelTask.set(true);
+
+        lock.readLock().lock();
+        try {
+            for (ImageLoaderTask task : sTaskQueue) {
+                task.cancelTask.set(true);
+            }
+        } finally {
+            lock.readLock().unlock();
         }
-        sTaskQueue.clear();
+
+        lock.writeLock().lock();
+        try {
+            sTaskQueue.clear();
+        } finally {
+            lock.writeLock().unlock();
+        }
+
         sPoolWorkQueue.clear();
     }
 
     private void addTask(ImageLoaderTask task) {
-        if (!sTaskQueue.contains(task)) {
-            sTaskQueue.add(task);
+        lock.writeLock().lock();
+        try {
+            if (!sTaskQueue.contains(task)) {
+                sTaskQueue.add(task);
+            }
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
     private void removeTask(ImageLoaderTask task) {
-        if (sTaskQueue.contains(task)) {
-            sTaskQueue.remove(task);
+        lock.writeLock().lock();
+        try {
+            if (sTaskQueue.contains(task)) {
+                sTaskQueue.remove(task);
+            }
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
@@ -191,7 +250,7 @@ public class ImageLoader {
             public Boolean call() throws Exception {
 
                 /**
-                 * use mutex to lock the operation, only one thread can do the operation
+                 * use mutex to lock the operation, only one thread can handle
                  */
                 synchronized (mMutex) {
 
@@ -202,9 +261,9 @@ public class ImageLoader {
                     }
 
                     if (MediaFile.isImageFileType(filePath)) {
-                        task.bitmap = BitmapUtil.createImageThumbnail(filePath, 200, 200);
+                        task.bitmap = BitmapUtil.createImageThumbnail(filePath, mThumbnailWidth, mThumbnailHeight);
                     } else if (MediaFile.isVideoFileType(filePath)) {
-                        task.bitmap = BitmapUtil.createVideoThumbnail(filePath, MediaStore.Images.Thumbnails.MICRO_KIND);
+                        task.bitmap = BitmapUtil.createVideoThumbnail(filePath, mThumbnailWidth, mThumbnailHeight);
                     }
 
                     if (task.cancelTask.get()) {
@@ -237,7 +296,7 @@ public class ImageLoader {
         final OnImageLoaderListener listener;
         Bitmap bitmap;
         final String uri;
-        AtomicBoolean cancelTask = new AtomicBoolean(false);
+        final AtomicBoolean cancelTask = new AtomicBoolean(false);
 
         public ImageLoaderTask(OnImageLoaderListener listener, Bitmap bitmap, String uri) {
             this.listener = listener;

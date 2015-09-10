@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
-import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.FileDescriptor;
@@ -14,13 +13,13 @@ import java.io.IOException;
 /**
  * Bitmap Utils
  */
+@SuppressWarnings("ALL")
 public class BitmapUtil {
 
     private static final String TAG = "BitmapUtil";
 
     private static final int UNCONSTRAINED = -1;
 
-    public static final int TARGET_SIZE_MICRO_THUMBNAIL = 96;
 
     public static Bitmap createImageThumbnail(String filePath, int reqWidth, int reqHeight) {
         Bitmap bm = null;
@@ -55,22 +54,20 @@ public class BitmapUtil {
                 Log.e(TAG, "", ex);
             }
         }
+
+        bm = ThumbnailUtils.extractThumbnail(bm, reqWidth, reqHeight, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+
         return bm;
     }
 
-    /**
-     * Create a video thumbnail for a video. May return null if the video is
-     * corrupt or the format is not supported.
-     *
-     * @param filePath the path of video file
-     * @param kind     could be MINI_KIND or MICRO_KIND
-     */
-    public static Bitmap createVideoThumbnail(String filePath, int kind) {
+    public static Bitmap createVideoThumbnail(String filePath, int reqWidth, int reqHeight) {
         Bitmap bitmap = null;
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         try {
             retriever.setDataSource(filePath);
-            bitmap = retriever.getFrameAtTime();
+            bitmap = retriever.getFrameAtTime(0);
+        } catch (IllegalArgumentException ex) {
+            // Assume this is a corrupt video file
         } catch (RuntimeException ex) {
             // Assume this is a corrupt video file.
         } finally {
@@ -81,25 +78,8 @@ public class BitmapUtil {
             }
         }
 
-        if (bitmap == null) return null;
+        bitmap = ThumbnailUtils.extractThumbnail(bitmap, reqWidth, reqHeight, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
 
-        if (kind == MediaStore.Images.Thumbnails.MINI_KIND) {
-            // Scale down the bitmap if it's too large.
-            int width = bitmap.getWidth();
-            int height = bitmap.getHeight();
-            int max = Math.max(width, height);
-            if (max > 512) {
-                float scale = 512f / max;
-                int w = Math.round(scale * width);
-                int h = Math.round(scale * height);
-                bitmap = Bitmap.createScaledBitmap(bitmap, w, h, true);
-            }
-        } else if (kind == MediaStore.Images.Thumbnails.MICRO_KIND) {
-            bitmap = ThumbnailUtils.extractThumbnail(bitmap,
-                    TARGET_SIZE_MICRO_THUMBNAIL,
-                    TARGET_SIZE_MICRO_THUMBNAIL,
-                    ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
-        }
         return bitmap;
     }
 

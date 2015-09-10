@@ -50,7 +50,7 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
     public ImageAdapter(Context context, GridView mGridView) {
         this.context = context;
         this.mGridView = mGridView;
-        this.imageLoader = new ImageLoader();
+        this.imageLoader = new ImageLoader(context);
         this.mGridView.setOnScrollListener(this);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
             this.defaultIcon = context.getResources().getDrawable(R.mipmap.ic_action_picture);

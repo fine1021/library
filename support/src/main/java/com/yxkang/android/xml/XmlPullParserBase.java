@@ -13,12 +13,12 @@ import java.io.Reader;
 import java.io.StringReader;
 
 
+@SuppressWarnings("ALL")
 public abstract class XmlPullParserBase {
 
     private static final String charset = "utf-8";
     private static final String TAG = "XmlPullParserBase";
     private XmlPullParser parser = null;
-    @SuppressWarnings("FieldCanBeLocal")
     private XmlPullParserFactory factory = null;
 
     public XmlPullParserBase() {
@@ -83,7 +83,6 @@ public abstract class XmlPullParserBase {
      * @throws XmlPullParserException
      * @see #parse(Reader)
      */
-    @SuppressWarnings("unused")
     public final void parse(String xml) throws XmlPullParserException {
         parse(new StringReader(xml));
     }

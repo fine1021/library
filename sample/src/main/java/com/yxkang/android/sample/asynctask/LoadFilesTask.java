@@ -59,6 +59,10 @@ public class LoadFilesTask extends AsyncTask<Void, String, List<FileInfoBean>> {
             }
         }
 
+        if (cursor != null) {
+            cursor.close();
+        }
+
         uri = Images.Media.EXTERNAL_CONTENT_URI;
         Log.d(TAG, uri.toString());
 
@@ -78,6 +82,10 @@ public class LoadFilesTask extends AsyncTask<Void, String, List<FileInfoBean>> {
                 info.setDateModified(cursor.getLong(cursor.getColumnIndex(MediaColumns.DATE_MODIFIED)));
                 list.add(info);
             }
+        }
+
+        if (cursor != null) {
+            cursor.close();
         }
 
         uri = Audio.Media.EXTERNAL_CONTENT_URI;

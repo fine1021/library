@@ -6,7 +6,7 @@
     <ImageView
         android:id="@+id/item_thumbnail"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="150dp"
         android:scaleType="center"
         android:contentDescription="@string/app_name"
         android:src="@mipmap/ic_action_picture"/>
