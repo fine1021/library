@@ -150,6 +150,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <h2>Order of execution</h2>
  * <p>tasks are executed on a pool of threads allowing multiple tasks to operate in parallel.</p>
  */
+@SuppressWarnings("ALL")
 public abstract class AsyncTask<Params, Progress, Result> {
 
     private static final String LOG_TAG = "AsyncTask";
@@ -226,8 +227,7 @@ public abstract class AsyncTask<Params, Progress, Result> {
     }
 
     private Result postResult(Result result) {
-        Message message = getHandler().obtainMessage(MESSAGE_POST_RESULT,
-                new AsyncTaskResult<Result>(this, result));
+        Message message = getHandler().obtainMessage(MESSAGE_POST_RESULT, new AsyncTaskResult<>(this, result));
         message.sendToTarget();
         return result;
     }
@@ -237,7 +237,6 @@ public abstract class AsyncTask<Params, Progress, Result> {
      *
      * @return The current status.
      */
-    @SuppressWarnings("unused")
     public final Status getStatus() {
         return mStatus;
     }
@@ -305,7 +304,6 @@ public abstract class AsyncTask<Params, Progress, Result> {
      * @see #cancel(boolean)
      * @see #isCancelled()
      */
-    @SuppressWarnings({"UnusedParameters", "unused"})
     protected void onCancelled(Result result) {
         onCancelled();
     }
@@ -338,11 +336,10 @@ public abstract class AsyncTask<Params, Progress, Result> {
      * @see #onProgressUpdate
      * @see #doInBackground
      */
-    @SuppressWarnings({"unchecked", "unused"})
     protected final void publishProgress(Progress... values) {
         if (!isCancelled()) {
             getHandler().obtainMessage(MESSAGE_POST_PROGRESS,
-                    new AsyncTaskResult<Progress>(this, values)).sendToTarget();
+                    new AsyncTaskResult<>(this, values)).sendToTarget();
         }
     }
 
@@ -420,7 +417,6 @@ public abstract class AsyncTask<Params, Progress, Result> {
      * @throws IllegalStateException If {@link #getStatus()} returns either
      *                               {@link AsyncTask.Status#RUNNING} or {@link AsyncTask.Status#FINISHED}.
      */
-    @SuppressWarnings("unused")
     public final AsyncTask<Params, Progress, Result> execute(Params... params) {
         if (mStatus != Status.PENDING) {
             switch (mStatus) {
@@ -464,7 +460,6 @@ public abstract class AsyncTask<Params, Progress, Result> {
             super(Looper.getMainLooper());
         }
 
-        @SuppressWarnings({"unchecked", "RawUseOfParameterizedType"})
         @Override
         public void handleMessage(Message msg) {
             AsyncTaskResult<?> result = (AsyncTaskResult<?>) msg.obj;
