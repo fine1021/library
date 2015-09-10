@@ -15,8 +15,8 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.yxkang.android.image.ImageDownloader;
 import com.yxkang.android.image.ImageLoader;
+import com.yxkang.android.image.ImageProtocol;
 import com.yxkang.android.media.MediaFile;
 import com.yxkang.android.sample.R;
 import com.yxkang.android.sample.bean.FileInfoBean;
@@ -110,7 +110,7 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
             final ImageView imageView = (ImageView) mGridView.findViewWithTag(info.getAbsolutePath());
 
             if (!info.isUpdate()) {
-                String uri = ImageDownloader.Protocol.FILE.wrap(info.getAbsolutePath());
+                String uri = ImageProtocol.FILE.wrap(info.getAbsolutePath());
                 imageLoader.displayImageAsync(uri, new ImageLoader.OnImageLoaderListener() {
 
                     @Override
@@ -124,7 +124,7 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
 
                     @Override
                     public void onImageLoaderFail(String uri) {
-                        String filePath = ImageDownloader.Protocol.FILE.crop(uri);
+                        String filePath = ImageProtocol.FILE.crop(uri);
                         if (MediaFile.isVideoFileType(filePath)) {
                             info.setFileIcon(videoIcon);
                             info.setUpdate(true);
@@ -137,7 +137,7 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
                         if (imageView != null) {
                             imageView.setImageDrawable(defaultIcon);
                         }
-                        Log.d(TAG, "onImageLoaderStart : " + uri);
+                        Log.d(TAG, "onLoaderStart : " + uri);
                     }
 
                     @Override

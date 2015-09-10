@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.v4.util.LruCache;
 import android.util.Log;
 
 import com.yxkang.android.media.MediaFile;
@@ -45,8 +44,14 @@ public class ImageLoader {
 
     private Context context;
 
+    /**
+     * Thumbnail image width
+     */
     private int mThumbnailWidth;
 
+    /**
+     * Thumbnail image height
+     */
     private int mThumbnailHeight;
 
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
@@ -54,11 +59,17 @@ public class ImageLoader {
     private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
     private static final int KEEP_ALIVE = 1;
 
+    /**
+     * Post message type
+     */
     private static final int MESSAGE_POST_TASK_START = 0x1;
     private static final int MESSAGE_POST_TASK_FAIL = 0x2;
     private static final int MESSAGE_POST_TASK_SUCCESS = 0x3;
 
 
+    /**
+     * The threadPool block queue
+     */
     private static final BlockingQueue<Runnable> sPoolWorkQueue = new LinkedBlockingQueue<>();
 
     private static final ThreadFactory sThreadFactory = new ThreadFactory() {
@@ -72,20 +83,16 @@ public class ImageLoader {
     private static volatile ExecutorService mImageThreadPool = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE,
             KEEP_ALIVE, TimeUnit.MILLISECONDS, sPoolWorkQueue, sThreadFactory);
 
+    /**
+     * The task list, use save all the executed task
+     */
     private static final List<ImageLoaderTask> sTaskQueue = Collections.synchronizedList(new ArrayList<ImageLoaderTask>());
 
-    private static final int maxMemory = (int) Runtime.getRuntime().maxMemory();
-    private static final int mCacheSize = maxMemory / 8;
-    private static final LruCache<String, Bitmap> mMemoryCache = new LruCache<String, Bitmap>(mCacheSize) {
-
-        @Override
-        protected int sizeOf(String key, Bitmap value) {
-
-            return value.getRowBytes() * value.getHeight();
-        }
-
-    };
-
+    /**
+     * Constructor
+     *
+     * @param context The current context.
+     */
     public ImageLoader(Context context) {
         this.context = context;
         int dpi = context.getResources().getDisplayMetrics().densityDpi;
@@ -101,29 +108,15 @@ public class ImageLoader {
         }
     }
 
+    /**
+     * set the thumbnail size
+     *
+     * @param width  thumbnail width
+     * @param height thumbnail height
+     */
     public void setThumbnailSize(int width, int height) {
         mThumbnailWidth = width;
         mThumbnailHeight = height;
-    }
-
-    public void addCacheBitmap(String key, Bitmap bitmap) {
-        synchronized (mMemoryCache) {
-            if (getCacheBitmap(key) == null && bitmap != null) {
-                mMemoryCache.put(key, bitmap);
-            }
-        }
-    }
-
-    public Bitmap getCacheBitmap(String key) {
-        synchronized (mMemoryCache) {
-            return mMemoryCache.get(key);
-        }
-    }
-
-    public void clearMemoryCache() {
-        synchronized (mMemoryCache) {
-            mMemoryCache.evictAll();
-        }
     }
 
 
@@ -145,22 +138,24 @@ public class ImageLoader {
 
         sendMessage(MESSAGE_POST_TASK_START, task);
 
-        task.bitmap = getCacheBitmap(uri);
+        task.bitmap = ImageCache.getInstance().getCacheBitmap(uri);
         if (task.bitmap != null) {
             Log.i(TAG, "displayCacheBitmap : " + uri);
             sendMessage(MESSAGE_POST_TASK_SUCCESS, task);
         } else {
 
-            if (ImageDownloader.Protocol.FILE.belongsTo(uri)) {
+            if (ImageProtocol.FILE.belongsTo(uri)) {
                 loadImage(task);
-            } else if (ImageDownloader.Protocol.HTTP.belongsTo(uri) || ImageDownloader.Protocol.HTTPS.belongsTo(uri)) {
+            } else if (ImageProtocol.HTTP.belongsTo(uri) || ImageProtocol.HTTPS.belongsTo(uri)) {
                 downloadImage(task);
             }
         }
 
     }
 
-
+    /**
+     * cancel all the tasks
+     */
     public void cancelCurrentTask() {
 
         lock.readLock().lock();
@@ -241,8 +236,13 @@ public class ImageLoader {
     }
 
 
+    /**
+     * load the image in local file system
+     *
+     * @param task ImageLoaderTask
+     */
     private void loadImage(final ImageLoaderTask task) {
-        final String filePath = ImageDownloader.Protocol.FILE.crop(task.uri);
+        final String filePath = ImageProtocol.FILE.crop(task.uri);
 
         Callable<Boolean> callable = new Callable<Boolean>() {
 
@@ -274,7 +274,7 @@ public class ImageLoader {
 
                     if (task.bitmap != null) {
                         sendMessage(MESSAGE_POST_TASK_SUCCESS, task);
-                        addCacheBitmap(task.uri, task.bitmap);
+                        ImageCache.getInstance().addCacheBitmap(task.uri, task.bitmap);
                     } else {
                         sendMessage(MESSAGE_POST_TASK_FAIL, task);
                     }
@@ -291,6 +291,9 @@ public class ImageLoader {
 
     }
 
+    /**
+     * a ImageLoader helper class, save the current task
+     */
     private static class ImageLoaderTask {
 
         final OnImageLoaderListener listener;
@@ -306,6 +309,9 @@ public class ImageLoader {
 
     }
 
+    /**
+     * a callback when loading the image
+     */
     public interface OnImageLoaderListener {
 
         void onImageLoaderStart(String uri);
