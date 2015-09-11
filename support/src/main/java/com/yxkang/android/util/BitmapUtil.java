@@ -55,7 +55,11 @@ public class BitmapUtil {
             }
         }
 
-        bm = ThumbnailUtils.extractThumbnail(bm, reqWidth, reqHeight, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+/*        try {
+            bm = ThumbnailUtils.extractThumbnail(bm, reqWidth, reqHeight, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+        } catch (OutOfMemoryError oom) {
+            Log.e(TAG, "Unable to extractThumbnail " + filePath + ". OutOfMemoryError.", oom);
+        }*/
 
         return bm;
     }
@@ -78,7 +82,11 @@ public class BitmapUtil {
             }
         }
 
-        bitmap = ThumbnailUtils.extractThumbnail(bitmap, reqWidth, reqHeight, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+        try {
+            bitmap = ThumbnailUtils.extractThumbnail(bitmap, reqWidth, reqHeight, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+        } catch (OutOfMemoryError oom) {
+            Log.e(TAG, "Unable to extractThumbnail " + filePath + ". OutOfMemoryError.", oom);
+        }
 
         return bitmap;
     }

@@ -44,6 +44,8 @@ public class ImageLoader {
 
     private Context context;
 
+    private ImageCacheManager manager;
+
     /**
      * Thumbnail image width
      */
@@ -106,6 +108,7 @@ public class ImageLoader {
             mThumbnailWidth = 400;
             mThumbnailHeight = 350;
         }
+        this.manager = new ImageCacheManager();
     }
 
     /**
@@ -138,7 +141,7 @@ public class ImageLoader {
 
         sendMessage(MESSAGE_POST_TASK_START, task);
 
-        task.bitmap = ImageCache.getInstance().getCacheBitmap(uri);
+        task.bitmap = manager.getBitmapFromMemory(uri);
         if (task.bitmap != null) {
             Log.i(TAG, "displayCacheBitmap : " + uri);
             sendMessage(MESSAGE_POST_TASK_SUCCESS, task);
@@ -267,6 +270,9 @@ public class ImageLoader {
                     }
 
                     if (task.cancelTask.get()) {
+                        if (task.bitmap != null) {
+                            manager.putBitmapToMemory(task.uri, task.bitmap);
+                        }
                         Log.w(TAG, "loadImageCancel-2 : " + task.uri);
                         task.listener.onImageLoaderCancel(task.uri);
                         return false;
@@ -274,7 +280,7 @@ public class ImageLoader {
 
                     if (task.bitmap != null) {
                         sendMessage(MESSAGE_POST_TASK_SUCCESS, task);
-                        ImageCache.getInstance().addCacheBitmap(task.uri, task.bitmap);
+                        manager.putBitmapToMemory(task.uri, task.bitmap);
                     } else {
                         sendMessage(MESSAGE_POST_TASK_FAIL, task);
                     }
