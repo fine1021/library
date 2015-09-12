@@ -1,4 +1,4 @@
-package com.yxkang.android.image;
+package com.yxkang.android.image.core;
 
 import java.util.Locale;
 

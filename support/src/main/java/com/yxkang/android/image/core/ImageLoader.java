@@ -1,4 +1,4 @@
-package com.yxkang.android.image;
+package com.yxkang.android.image.core;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
+import com.yxkang.android.image.cache.CacheManager;
 import com.yxkang.android.media.MediaFile;
 import com.yxkang.android.util.BitmapUtil;
 
@@ -44,7 +45,7 @@ public class ImageLoader {
 
     private Context context;
 
-    private ImageCacheManager manager;
+    private CacheManager cacheManager;
 
     /**
      * Thumbnail image width
@@ -102,13 +103,13 @@ public class ImageLoader {
             mThumbnailWidth = 200;
             mThumbnailHeight = 150;
         } else if (dpi < 400) {
+            mThumbnailWidth = 250;
+            mThumbnailHeight = 200;
+        } else {
             mThumbnailWidth = 300;
             mThumbnailHeight = 250;
-        } else {
-            mThumbnailWidth = 400;
-            mThumbnailHeight = 350;
         }
-        this.manager = new ImageCacheManager();
+        this.cacheManager = new CacheManager();
     }
 
     /**
@@ -141,7 +142,7 @@ public class ImageLoader {
 
         sendMessage(MESSAGE_POST_TASK_START, task);
 
-        task.bitmap = manager.getBitmapFromMemory(uri);
+        task.bitmap = cacheManager.getBitmapFromMemory(uri);
         if (task.bitmap != null) {
             Log.i(TAG, "displayCacheBitmap : " + uri);
             sendMessage(MESSAGE_POST_TASK_SUCCESS, task);
@@ -264,14 +265,14 @@ public class ImageLoader {
                     }
 
                     if (MediaFile.isImageFileType(filePath)) {
-                        task.bitmap = BitmapUtil.createImageThumbnail(filePath, mThumbnailWidth, mThumbnailHeight);
+                        task.bitmap = BitmapUtil.createImageThumbnail(filePath, mThumbnailWidth, mThumbnailHeight, true);
                     } else if (MediaFile.isVideoFileType(filePath)) {
-                        task.bitmap = BitmapUtil.createVideoThumbnail(filePath, mThumbnailWidth, mThumbnailHeight);
+                        task.bitmap = BitmapUtil.createVideoThumbnail(filePath, mThumbnailWidth, mThumbnailHeight, true);
                     }
 
                     if (task.cancelTask.get()) {
                         if (task.bitmap != null) {
-                            manager.putBitmapToMemory(task.uri, task.bitmap);
+                            cacheManager.putBitmapToMemory(task.uri, task.bitmap);
                         }
                         Log.w(TAG, "loadImageCancel-2 : " + task.uri);
                         task.listener.onImageLoaderCancel(task.uri);
@@ -280,7 +281,7 @@ public class ImageLoader {
 
                     if (task.bitmap != null) {
                         sendMessage(MESSAGE_POST_TASK_SUCCESS, task);
-                        manager.putBitmapToMemory(task.uri, task.bitmap);
+                        cacheManager.putBitmapToMemory(task.uri, task.bitmap);
                     } else {
                         sendMessage(MESSAGE_POST_TASK_FAIL, task);
                     }

@@ -107,7 +107,6 @@ public class LoadFilesTask extends AsyncTask<Void, String, List<FileInfoBean>> {
                 info.setDateAdd(cursor.getLong(cursor.getColumnIndex(MediaColumns.DATE_ADDED)));
                 info.setDateModified(cursor.getLong(cursor.getColumnIndex(MediaColumns.DATE_MODIFIED)));
                 info.setFileIcon(drawable);
-                info.setUpdate(true);
                 list.add(info);
             }
         }

@@ -21,7 +21,7 @@ public class BitmapUtil {
     private static final int UNCONSTRAINED = -1;
 
 
-    public static Bitmap createImageThumbnail(String filePath, int reqWidth, int reqHeight) {
+    public static Bitmap createImageThumbnail(String filePath, int reqWidth, int reqHeight, boolean extract) {
         Bitmap bm = null;
         FileInputStream stream = null;
         try {
@@ -35,7 +35,6 @@ public class BitmapUtil {
                 return null;
             }
             options.inSampleSize = computeSampleSize(options, Math.min(reqWidth, reqHeight), reqWidth * reqHeight);
-            Log.d(TAG, String.valueOf(options.inSampleSize));
             options.inJustDecodeBounds = false;
 
             options.inDither = false;
@@ -55,16 +54,18 @@ public class BitmapUtil {
             }
         }
 
-/*        try {
-            bm = ThumbnailUtils.extractThumbnail(bm, reqWidth, reqHeight, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
-        } catch (OutOfMemoryError oom) {
-            Log.e(TAG, "Unable to extractThumbnail " + filePath + ". OutOfMemoryError.", oom);
-        }*/
+        if (extract) {
+            try {
+                bm = ThumbnailUtils.extractThumbnail(bm, reqWidth, reqHeight, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+            } catch (OutOfMemoryError oom) {
+                Log.e(TAG, "Unable to extractThumbnail " + filePath + ". OutOfMemoryError.", oom);
+            }
+        }
 
         return bm;
     }
 
-    public static Bitmap createVideoThumbnail(String filePath, int reqWidth, int reqHeight) {
+    public static Bitmap createVideoThumbnail(String filePath, int reqWidth, int reqHeight, boolean extract) {
         Bitmap bitmap = null;
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         try {
@@ -82,10 +83,12 @@ public class BitmapUtil {
             }
         }
 
-        try {
-            bitmap = ThumbnailUtils.extractThumbnail(bitmap, reqWidth, reqHeight, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
-        } catch (OutOfMemoryError oom) {
-            Log.e(TAG, "Unable to extractThumbnail " + filePath + ". OutOfMemoryError.", oom);
+        if (extract) {
+            try {
+                bitmap = ThumbnailUtils.extractThumbnail(bitmap, reqWidth, reqHeight, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+            } catch (OutOfMemoryError oom) {
+                Log.e(TAG, "Unable to extractThumbnail " + filePath + ". OutOfMemoryError.", oom);
+            }
         }
 
         return bitmap;
@@ -128,5 +131,21 @@ public class BitmapUtil {
         } else {
             return upperBound;
         }
+    }
+
+    private static int computeSampleSize2(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        int roundedSize = 0;
+        float w = options.outWidth;
+        float h = options.outHeight;
+
+        if (w <= reqWidth && h <= reqHeight) {
+            roundedSize = 1;
+        } else {
+            int scaleW = Math.round(w / reqWidth);
+            int scaleH = Math.round(h / reqHeight);
+            roundedSize = Math.max(scaleW, scaleH);
+        }
+
+        return roundedSize;
     }
 }

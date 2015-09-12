@@ -15,8 +15,8 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.yxkang.android.image.ImageLoader;
-import com.yxkang.android.image.ImageProtocol;
+import com.yxkang.android.image.core.ImageLoader;
+import com.yxkang.android.image.core.ImageProtocol;
 import com.yxkang.android.media.MediaFile;
 import com.yxkang.android.sample.R;
 import com.yxkang.android.sample.bean.FileInfoBean;
@@ -46,6 +46,7 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
     private int mFirstVisibleItem;
 
     private int mVisibleItemCount;
+
 
     public ImageAdapter(Context context, GridView mGridView) {
         this.context = context;
@@ -93,7 +94,7 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
         holder.imageView.setTag(info.getAbsolutePath());
         holder.textView.setText(info.getFileTitle());
 
-        if (!info.isUpdate()) {
+        if (!MediaFile.isAudioFileType(info.getAbsolutePath())) {
             holder.imageView.setImageDrawable(defaultIcon);
         } else {
             holder.imageView.setImageDrawable(info.getFileIcon());
@@ -109,7 +110,7 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
 
             final ImageView imageView = (ImageView) mGridView.findViewWithTag(info.getAbsolutePath());
 
-            if (!info.isUpdate()) {
+            if (!MediaFile.isAudioFileType(info.getAbsolutePath())) {
                 String uri = ImageProtocol.FILE.wrap(info.getAbsolutePath());
                 imageLoader.displayImageAsync(uri, new ImageLoader.OnImageLoaderListener() {
 
@@ -117,7 +118,6 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
                     public void onImageLoaderSuccess(String uri, Bitmap bitmap) {
                         if (imageView != null && bitmap != null) {
                             info.setFileIcon(new BitmapDrawable(context.getResources(), bitmap));
-                            info.setUpdate(true);
                             imageView.setImageDrawable(info.getFileIcon());
                         }
                     }
@@ -127,7 +127,6 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
                         String filePath = ImageProtocol.FILE.crop(uri);
                         if (MediaFile.isVideoFileType(filePath)) {
                             info.setFileIcon(videoIcon);
-                            info.setUpdate(true);
                             imageView.setImageDrawable(info.getFileIcon());
                         }
                     }

@@ -13,7 +13,6 @@ public class FileInfoBean {
     private long dateAdd;
     private long dateModified;
     private Drawable fileIcon;
-    private boolean update = false;
 
     public long getId() {
         return id;
@@ -85,14 +84,6 @@ public class FileInfoBean {
 
     public void setFileIcon(Drawable fileIcon) {
         this.fileIcon = fileIcon;
-    }
-
-    public boolean isUpdate() {
-        return update;
-    }
-
-    public void setUpdate(boolean update) {
-        this.update = update;
     }
 
 }

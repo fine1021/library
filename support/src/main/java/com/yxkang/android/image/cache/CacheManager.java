@@ -1,20 +1,26 @@
-package com.yxkang.android.image;
+package com.yxkang.android.image.cache;
 
 import android.graphics.Bitmap;
 
-import com.yxkang.android.image.cache.ImageCacheMemory;
-import com.yxkang.android.image.cache.ImageCacheSDCard;
+import com.yxkang.android.image.cache.disk.DiskCache;
+import com.yxkang.android.image.cache.memory.LruMemoryCache;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * ImageCacheManager
+ * CacheManager
  */
 @SuppressWarnings("ALL")
-public class ImageCacheManager {
+public class CacheManager {
 
     private boolean isCache2Memory = true;
     private boolean isCache2SDCard = true;
+    private DiskCache diskCache = new DiskCache();
+
+    public CacheManager() {
+        this.diskCache.setOptions(DiskCache.OPTIONS_RECYCLE_INPUT);
+    }
 
     public boolean isCache2Memory() {
         return isCache2Memory;
@@ -34,7 +40,7 @@ public class ImageCacheManager {
 
     public void putBitmapToMemory(String key, Bitmap bitmap) {
         if (isCache2Memory) {
-            ImageCacheMemory.getInstance().putCacheBitmap(key, bitmap);
+            LruMemoryCache.getInstance().put(key, bitmap);
         } else {
             throw new UnsupportedOperationException("has't enable memory cache strategy !");
         }
@@ -42,7 +48,7 @@ public class ImageCacheManager {
 
     public Bitmap getBitmapFromMemory(String key) {
         if (isCache2Memory) {
-            return ImageCacheMemory.getInstance().getCacheBitmap(key);
+            return LruMemoryCache.getInstance().get(key);
         } else {
             throw new UnsupportedOperationException("has't enable memory cache strategy !");
         }
@@ -50,29 +56,29 @@ public class ImageCacheManager {
 
     public void putBitmapToSDCard(String key, InputStream inputStream) {
         if (isCache2SDCard) {
-            ImageCacheSDCard.getInstance().putCacheBitmap(key, inputStream);
+            try {
+                diskCache.put(key, inputStream);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else {
-            throw new UnsupportedOperationException("has't enable sdcard cache strategy !");
+            throw new UnsupportedOperationException("has't enable disk cache strategy !");
         }
     }
 
     public void putBitmapToSDCard(String key, Bitmap bitmap) {
         if (isCache2SDCard) {
-            ImageCacheSDCard.getInstance().putCacheBitmap(key, bitmap);
+            try {
+                diskCache.put(key, bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else {
-            throw new UnsupportedOperationException("has't enable sdcard cache strategy !");
-        }
-    }
-
-    public Bitmap getBitmapFromSDCard(String key) {
-        if (isCache2SDCard) {
-            return ImageCacheSDCard.getInstance().getCacheBitmap(key);
-        } else {
-            throw new UnsupportedOperationException("has't enable sdcard cache strategy !");
+            throw new UnsupportedOperationException("has't enable disk cache strategy !");
         }
     }
 
     public String memoryStatisticalData() {
-        return ImageCacheMemory.getInstance().toString();
+        return LruMemoryCache.getInstance().toString();
     }
 }
