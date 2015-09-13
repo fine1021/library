@@ -9,14 +9,20 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * SoftMemoryCache
+ * SoftMemoryCache, LRU algorithm
  */
 @SuppressWarnings("ALL")
 public class SoftMemoryCache implements MemoryCache {
 
     private static final String TAG = SoftMemoryCache.class.getSimpleName();
 
-    private static final LinkedHashMap<String, SoftReference<Bitmap>> mSoftCache = new LinkedHashMap<>(0, 0.75f, true);
+    private static final LinkedHashMap<String, SoftReference<Bitmap>> mSoftCache = new LinkedHashMap<String, SoftReference<Bitmap>>(0, 0.75f, true) {
+        @Override
+        protected boolean removeEldestEntry(Entry eldest) {
+            return super.removeEldestEntry(eldest);
+        }
+
+    };
 
     private static SoftMemoryCache instance = null;
 

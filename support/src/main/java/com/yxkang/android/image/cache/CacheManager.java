@@ -41,6 +41,7 @@ public class CacheManager {
     public void putBitmapToMemory(String key, Bitmap bitmap) {
         if (isCache2Memory) {
             LruMemoryCache.getInstance().put(key, bitmap);
+//            SoftMemoryCache.getInstance().put(key, bitmap);
         } else {
             throw new UnsupportedOperationException("has't enable memory cache strategy !");
         }
@@ -49,6 +50,7 @@ public class CacheManager {
     public Bitmap getBitmapFromMemory(String key) {
         if (isCache2Memory) {
             return LruMemoryCache.getInstance().get(key);
+//            return SoftMemoryCache.getInstance().get(key);
         } else {
             throw new UnsupportedOperationException("has't enable memory cache strategy !");
         }

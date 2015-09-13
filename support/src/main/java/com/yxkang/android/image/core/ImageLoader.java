@@ -142,7 +142,7 @@ public class ImageLoader {
 
         sendMessage(MESSAGE_POST_TASK_START, task);
 
-        task.bitmap = cacheManager.getBitmapFromMemory(uri);
+        task.bitmap = getCacheBitmap(uri);
         if (task.bitmap != null) {
             Log.i(TAG, "displayCacheBitmap : " + uri);
             sendMessage(MESSAGE_POST_TASK_SUCCESS, task);
@@ -155,6 +155,10 @@ public class ImageLoader {
             }
         }
 
+    }
+
+    public Bitmap getCacheBitmap(String key) {
+        return cacheManager.getBitmapFromMemory(key);
     }
 
     /**

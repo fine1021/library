@@ -95,7 +95,13 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
         holder.textView.setText(info.getFileTitle());
 
         if (!MediaFile.isAudioFileType(info.getAbsolutePath())) {
-            holder.imageView.setImageDrawable(defaultIcon);
+            String key = ImageProtocol.FILE.wrap(info.getAbsolutePath());
+            Bitmap bitmap = imageLoader.getCacheBitmap(key);
+            if (bitmap != null) {
+                holder.imageView.setImageDrawable(new BitmapDrawable(context.getResources(), bitmap));
+            } else {
+                holder.imageView.setImageDrawable(defaultIcon);
+            }
         } else {
             holder.imageView.setImageDrawable(info.getFileIcon());
         }
