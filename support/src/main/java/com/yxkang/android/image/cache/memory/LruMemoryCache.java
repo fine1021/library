@@ -22,7 +22,9 @@ public class LruMemoryCache implements MemoryCache {
 
     /**
      * {@link LruCache} is implemented by {@link LinkedHashMap}, generate a access ordering list.
-     * LRU algorithm, put the least recently used object to tail of the list
+     * LRU algorithm, put the least recently used object to tail of the list.
+     * <br/>
+     * {@code put}, {@code get}, and {@code putAll} these methods will change the order of the entries
      */
     private static final LruCache<String, Bitmap> mLruCache = new LruCache<String, Bitmap>(mLruCacheSize) {
 
@@ -42,7 +44,7 @@ public class LruMemoryCache implements MemoryCache {
 
     private static LruMemoryCache instance = null;
 
-    private LruMemoryCache() {
+    protected LruMemoryCache() {
     }
 
     public static LruMemoryCache getInstance() {
@@ -81,7 +83,6 @@ public class LruMemoryCache implements MemoryCache {
         synchronized (mLruCache) {
             mLruCache.evictAll();
         }
-        instance = null;
     }
 
     public void recycle(String key, Bitmap bitmap) {
