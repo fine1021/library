@@ -39,7 +39,7 @@ publish {
     repoName = 'maven'
     groupId = 'com.yxkang.android'
     artifactId = 'support'
-    publishVersion = '0.0.3'
+    publishVersion = '0.0.4'
     description = 'a support library for android'
     website = 'https://github.com/fine1021/library'
     issueTracker = "${website}/issues"
