@@ -17,7 +17,7 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
      * The first real entry is header.nxt, and the last is header.prv.
      * If the map is empty, header.next == header && header.prev == header.
      */
-    transient LFULinkedEntry<K, V> header;
+    transient LfuLinkedEntry<K, V> header;
 
     /**
      * True if LFU ordered, false if insertion ordered.
@@ -49,19 +49,19 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
 
     @Override
     void init() {
-        header = new LFULinkedEntry<>();
+        header = new LfuLinkedEntry<>();
     }
 
-    static class LFULinkedEntry<K, V> extends HashMapEntry<K, V> {
+    static class LfuLinkedEntry<K, V> extends HashMapEntry<K, V> {
 
-        LFULinkedEntry<K, V> next1;
-        LFULinkedEntry<K, V> prev1;
+        LfuLinkedEntry<K, V> next1;
+        LfuLinkedEntry<K, V> prev1;
         long accessCount;
 
         /**
          * Create the header entry
          */
-        LFULinkedEntry() {
+        LfuLinkedEntry() {
             super(null, null, 0, null);
             prev1 = next1 = this;
             this.accessCount = 1;
@@ -70,7 +70,7 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
         /**
          * Create a normal entry
          */
-        public LFULinkedEntry(K key, V value, int hash, HashMapEntry<K, V> next, LFULinkedEntry<K, V> next1, LFULinkedEntry<K, V> prev) {
+        public LfuLinkedEntry(K key, V value, int hash, HashMapEntry<K, V> next, LfuLinkedEntry<K, V> next1, LfuLinkedEntry<K, V> prev) {
             super(key, value, hash, next);
             this.next1 = next1;
             this.prev1 = prev;
@@ -79,41 +79,41 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
     }
 
     public Entry<K, V> eldest() {
-        LFULinkedEntry<K, V> eldest = header.next1;
+        LfuLinkedEntry<K, V> eldest = header.next1;
         return eldest != header ? eldest : null;
     }
 
 
     @Override
     void addNewEntry(K key, V value, int hash, int index) {
-        LFULinkedEntry<K, V> header = this.header;
+        LfuLinkedEntry<K, V> header = this.header;
 
         // Remove eldest entry if instructed to do so.
-        LFULinkedEntry<K, V> eldest = header.next1;
+        LfuLinkedEntry<K, V> eldest = header.next1;
         if (eldest != header && removeEldestEntry(eldest)) {
             remove(eldest.key);
         }
 
         // Create new entry, link it on to list, and put it into table
-        LFULinkedEntry<K, V> oldTail = header.prev1;
-        LFULinkedEntry<K, V> newTail = new LFULinkedEntry<>(
+        LfuLinkedEntry<K, V> oldTail = header.prev1;
+        LfuLinkedEntry<K, V> newTail = new LfuLinkedEntry<>(
                 key, value, hash, table[index], header, oldTail);
         table[index] = oldTail.next1 = header.prev1 = newTail;
     }
 
     @Override
     void addNewEntryForNullKey(V value) {
-        LFULinkedEntry<K, V> header = this.header;
+        LfuLinkedEntry<K, V> header = this.header;
 
         // Remove eldest entry if instructed to do so.
-        LFULinkedEntry<K, V> eldest = header.next1;
+        LfuLinkedEntry<K, V> eldest = header.next1;
         if (eldest != header && removeEldestEntry(eldest)) {
             remove(eldest.key);
         }
 
         // Create new entry, link it on to list, and put it into table
-        LFULinkedEntry<K, V> oldTail = header.prev1;
-        LFULinkedEntry<K, V> newTail = new LFULinkedEntry<>(
+        LfuLinkedEntry<K, V> oldTail = header.prev1;
+        LfuLinkedEntry<K, V> newTail = new LfuLinkedEntry<>(
                 null, value, 0, null, header, oldTail);
         entryForNullKey = oldTail.next1 = header.prev1 = newTail;
     }
@@ -121,10 +121,10 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
     // use for constructorPutAll
     @Override
     HashMapEntry<K, V> constructorNewEntry(K key, V value, int hash, HashMapEntry<K, V> first) {
-        LFULinkedEntry<K, V> header = this.header;
-        LFULinkedEntry<K, V> oldTail = header.prev1;
-        LFULinkedEntry<K, V> newTail
-                = new LFULinkedEntry<>(key, value, hash, first, header, oldTail);
+        LfuLinkedEntry<K, V> header = this.header;
+        LfuLinkedEntry<K, V> oldTail = header.prev1;
+        LfuLinkedEntry<K, V> newTail
+                = new LfuLinkedEntry<>(key, value, hash, first, header, oldTail);
         return oldTail.next1 = header.prev1 = newTail;
     }
 
@@ -146,7 +146,7 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
             if (e == null)
                 return null;
             if (accessLFU)
-                transform((LFULinkedEntry<K, V>) e);
+                transform((LfuLinkedEntry<K, V>) e);
             return e.value;
         }
 
@@ -157,7 +157,7 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
             K eKey = e.key;
             if (eKey == key || (e.hash == hash && key.equals(eKey))) {
                 if (accessLFU)
-                    transform((LFULinkedEntry<K, V>) e);
+                    transform((LfuLinkedEntry<K, V>) e);
                 return e.value;
             }
         }
@@ -169,14 +169,14 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
      * this method is invoked whenever the value of a  pre-existing entry is
      * read by Map.get or modified by Map.put.
      */
-    private void transform(LFULinkedEntry<K, V> e) {
+    private void transform(LfuLinkedEntry<K, V> e) {
 
         // Add access count
         e.accessCount++;
         // Modify count
         modCount++;
         // Get the next
-        LFULinkedEntry<K, V> next = e.next1;
+        LfuLinkedEntry<K, V> next = e.next1;
         if (e.accessCount < next.accessCount) {
             return;                   // no need to do anything
         }
@@ -197,8 +197,8 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
         }
         if (!done) {
             // Relink e as tail in the list
-            LFULinkedEntry<K, V> header = this.header;
-            LFULinkedEntry<K, V> oldTail = header.prev1;
+            LfuLinkedEntry<K, V> header = this.header;
+            LfuLinkedEntry<K, V> oldTail = header.prev1;
             e.next1 = header;
             e.prev1 = oldTail;
             oldTail.next1 = header.prev1 = e;
@@ -208,13 +208,13 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
     @Override
     void preModify(HashMapEntry<K, V> e) {
         if (accessLFU) {
-            transform((LFULinkedEntry<K, V>) e);
+            transform((LfuLinkedEntry<K, V>) e);
         }
     }
 
     @Override
     void postRemove(HashMapEntry<K, V> e) {
-        LFULinkedEntry<K, V> e1 = (LFULinkedEntry<K, V>) e;
+        LfuLinkedEntry<K, V> e1 = (LfuLinkedEntry<K, V>) e;
         e1.prev1.next1 = e1.next1;
         e1.next1.prev1 = e1.prev1;
         e1.next1 = e1.prev1 = null;   // Help the GC (for performance)
@@ -223,7 +223,7 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
     @Override
     public boolean containsValue(Object value) {
         if (value == null) {
-            for (LFULinkedEntry<K, V> header = this.header, e = header.next1;
+            for (LfuLinkedEntry<K, V> header = this.header, e = header.next1;
                  e != header; e = e.next1) {
                 if (e.value == null) {
                     return true;
@@ -233,7 +233,7 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
         }
 
         // for not null value
-        for (LFULinkedEntry<K, V> header = this.header, e = header.next1;
+        for (LfuLinkedEntry<K, V> header = this.header, e = header.next1;
              e != header; e = e.next1) {
             if (value.equals(e.value)) {
                 return true;
@@ -247,28 +247,28 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
         super.clear();
 
         // Help the GC (for performance)
-        LFULinkedEntry<K, V> header = this.header;
-        for (LFULinkedEntry<K, V> e = header.next1; e != header; ) {
-            LFULinkedEntry<K, V> next = e.next1;
+        LfuLinkedEntry<K, V> header = this.header;
+        for (LfuLinkedEntry<K, V> e = header.next1; e != header; ) {
+            LfuLinkedEntry<K, V> next = e.next1;
             e.prev1 = e.next1 = null;
             e = next;
         }
         header.prev1 = header.next1 = header;
     }
 
-    private abstract class LFULinkedHashIterator<T> implements Iterator<T> {
-        LFULinkedEntry<K, V> next = header.next1;
-        LFULinkedEntry<K, V> lastReturned = null;
+    private abstract class LfuLinkedHashIterator<T> implements Iterator<T> {
+        LfuLinkedEntry<K, V> next = header.next1;
+        LfuLinkedEntry<K, V> lastReturned = null;
         int expectedModCount = modCount;
 
         public final boolean hasNext() {
             return next != header;
         }
 
-        final LFULinkedEntry<K, V> nextEntry() {
+        final LfuLinkedEntry<K, V> nextEntry() {
             if (modCount != expectedModCount)
                 throw new ConcurrentModificationException();
-            LFULinkedEntry<K, V> e = next;
+            LfuLinkedEntry<K, V> e = next;
             if (e == header)
                 throw new NoSuchElementException();
             next = e.next1;
@@ -286,21 +286,21 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
         }
     }
 
-    private final class KeyIterator extends LFULinkedHashIterator<K> {
+    private final class KeyIterator extends LfuLinkedHashIterator<K> {
         @Override
         public K next() {
             return nextEntry().key;
         }
     }
 
-    private final class ValueIterator extends LFULinkedHashIterator<V> {
+    private final class ValueIterator extends LfuLinkedHashIterator<V> {
         @Override
         public V next() {
             return nextEntry().value;
         }
     }
 
-    private final class EntryIterator extends LFULinkedHashIterator<Map.Entry<K, V>> {
+    private final class EntryIterator extends LfuLinkedHashIterator<Map.Entry<K, V>> {
         @Override
         public Entry<K, V> next() {
             return nextEntry();
