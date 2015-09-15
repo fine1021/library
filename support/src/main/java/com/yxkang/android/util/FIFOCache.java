@@ -4,10 +4,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * FIFOCache
+ * FifoCache
  */
 @SuppressWarnings("ALL")
-public class FIFOCache<K, V> {
+public class FifoCache<K, V> {
 
     private final LinkedHashMap<K, V> map;
 
@@ -28,7 +28,7 @@ public class FIFOCache<K, V> {
      *                the maximum number of entries in the cache. For all other caches,
      *                this is the maximum sum of the sizes of the entries in this cache.
      */
-    public FIFOCache(int maxSize) {
+    public FifoCache(int maxSize) {
         if (maxSize <= 0) {
             throw new IllegalArgumentException("maxSize <= 0");
         }

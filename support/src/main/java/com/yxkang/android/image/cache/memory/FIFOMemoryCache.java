@@ -3,23 +3,23 @@ package com.yxkang.android.image.cache.memory;
 import android.graphics.Bitmap;
 import android.util.Log;
 
-import com.yxkang.android.util.FIFOCache;
+import com.yxkang.android.util.FifoCache;
 
 /**
- * FIFOMemoryCache
+ * FifoMemoryCache
  */
 @SuppressWarnings("ALL")
-public class FIFOMemoryCache implements MemoryCache {
+public class FifoMemoryCache implements MemoryCache {
 
-    private static final String TAG = FIFOMemoryCache.class.getSimpleName();
+    private static final String TAG = FifoMemoryCache.class.getSimpleName();
 
     /**
-     * params for StrongReference {@link FIFOCache}
+     * params for StrongReference {@link FifoCache}
      */
     private static final int maxMemory = (int) Runtime.getRuntime().maxMemory();
-    private static final int mFIFOCacheSize = maxMemory / 8;
+    private static final int mFifoCacheSize = maxMemory / 8;
 
-    private static final FIFOCache<String, Bitmap> mFIFOCache = new FIFOCache<String, Bitmap>(mFIFOCacheSize) {
+    private static final FifoCache<String, Bitmap> mFifoCache = new FifoCache<String, Bitmap>(mFifoCacheSize) {
         @Override
         protected void entryRemoved(boolean evicted, String key, Bitmap oldValue, Bitmap newValue) {
             if (oldValue != null && !oldValue.isRecycled()) {
@@ -36,44 +36,44 @@ public class FIFOMemoryCache implements MemoryCache {
 
     @Override
     public void put(String key, Bitmap bitmap) {
-        synchronized (mFIFOCache) {
+        synchronized (mFifoCache) {
             if (get(key) == null && bitmap != null) {
-                mFIFOCache.put(key, bitmap);
+                mFifoCache.put(key, bitmap);
             }
         }
     }
 
     @Override
     public Bitmap get(String key) {
-        synchronized (mFIFOCache) {
-            return mFIFOCache.get(key);
+        synchronized (mFifoCache) {
+            return mFifoCache.get(key);
         }
     }
 
     @Override
     public Bitmap remove(String key) {
-        synchronized (mFIFOCache) {
-            return mFIFOCache.remove(key);
+        synchronized (mFifoCache) {
+            return mFifoCache.remove(key);
         }
     }
 
     @Override
     public void clear() {
-        synchronized (mFIFOCache) {
-            mFIFOCache.evictAll();
+        synchronized (mFifoCache) {
+            mFifoCache.evictAll();
         }
     }
 
     public synchronized final int hitCount() {
-        return mFIFOCache.hitCount();
+        return mFifoCache.hitCount();
     }
 
     public synchronized final int missCount() {
-        return mFIFOCache.missCount();
+        return mFifoCache.missCount();
     }
 
     @Override
     public synchronized final String toString() {
-        return mFIFOCache.toString();
+        return mFifoCache.toString();
     }
 }

@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
- * LFULinkedHashMap
+ * LfuLinkedHashMap
  */
-public class LFULinkedHashMap<K, V> extends HashMap<K, V> {
+public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
 
 
     /**
@@ -24,25 +24,25 @@ public class LFULinkedHashMap<K, V> extends HashMap<K, V> {
      */
     private final boolean accessLFU;
 
-    public LFULinkedHashMap() {
+    public LfuLinkedHashMap() {
         init();
         accessLFU = false;
     }
 
-    public LFULinkedHashMap(int capacity) {
+    public LfuLinkedHashMap(int capacity) {
         this(capacity, DEFAULT_LOAD_FACTOR);
     }
 
-    public LFULinkedHashMap(int capacity, float loadFactor) {
+    public LfuLinkedHashMap(int capacity, float loadFactor) {
         this(capacity, loadFactor, false);
     }
 
-    public LFULinkedHashMap(int capacity, float loadFactor, boolean accessLFU) {
+    public LfuLinkedHashMap(int capacity, float loadFactor, boolean accessLFU) {
         super(capacity, loadFactor);
         this.accessLFU = accessLFU;
     }
 
-    public LFULinkedHashMap(Map<? extends K, ? extends V> map) {
+    public LfuLinkedHashMap(Map<? extends K, ? extends V> map) {
         this(capacityForInitSize(map.size()));
         constructorPutAll(map);
     }
@@ -280,7 +280,7 @@ public class LFULinkedHashMap<K, V> extends HashMap<K, V> {
                 throw new ConcurrentModificationException();
             if (lastReturned == null)
                 throw new IllegalStateException();
-            LFULinkedHashMap.this.remove(lastReturned.key);
+            LfuLinkedHashMap.this.remove(lastReturned.key);
             lastReturned = null;
             expectedModCount = modCount;
         }

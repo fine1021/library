@@ -8,7 +8,7 @@ import java.util.Map;
 @SuppressWarnings("ALL")
 public class LfuCache<K, V> {
 
-    private final LFULinkedHashMap<K, V> map;
+    private final LfuLinkedHashMap<K, V> map;
 
     /**
      * Size of this cache in units. Not necessarily the number of elements.
@@ -32,7 +32,7 @@ public class LfuCache<K, V> {
             throw new IllegalArgumentException("maxSize <= 0");
         }
         this.maxSize = maxSize;
-        this.map = new LFULinkedHashMap<>(0, 0.75f, true);
+        this.map = new LfuLinkedHashMap<>(0, 0.75f, true);
     }
 
     /**
@@ -315,7 +315,7 @@ public class LfuCache<K, V> {
      * recently accessed to most least frequently accessed.
      */
     public synchronized final Map<K, V> snapshot() {
-        return new LFULinkedHashMap<>(map);
+        return new LfuLinkedHashMap<>(map);
     }
 
     @Override
