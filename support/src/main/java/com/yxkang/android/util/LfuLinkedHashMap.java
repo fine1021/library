@@ -1,6 +1,8 @@
 package com.yxkang.android.util;
 
 
+import java.util.AbstractCollection;
+import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
@@ -18,6 +20,11 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
      * If the map is empty, header.next == header && header.prev == header.
      */
     transient LfuLinkedEntry<K, V> header;
+
+    /**
+     * the entries access count
+     */
+    private transient Collection<Long> counts;
 
     /**
      * True if LFU ordered, false if insertion ordered.
@@ -39,6 +46,7 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
 
     public LfuLinkedHashMap(int capacity, float loadFactor, boolean accessLFU) {
         super(capacity, loadFactor);
+        init();
         this.accessLFU = accessLFU;
     }
 
@@ -84,6 +92,16 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
     }
 
 
+    /**
+     * add a new entry, there may be some old entries in the list, their access count are not the initial
+     * value, if {@code accessLFU = true}, we should adjust the list according to the access count, use
+     * {@link #insertNewEntry(LfuLinkedEntry)} to insert the new entry into a correct position.
+     *
+     * @param key   key
+     * @param value value
+     * @param hash  hash
+     * @param index index
+     */
     @Override
     void addNewEntry(K key, V value, int hash, int index) {
         LfuLinkedEntry<K, V> header = this.header;
@@ -94,11 +112,17 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
             remove(eldest.key);
         }
 
-        // Create new entry, link it on to list, and put it into table
-        LfuLinkedEntry<K, V> oldTail = header.prev1;
-        LfuLinkedEntry<K, V> newTail = new LfuLinkedEntry<>(
-                key, value, hash, table[index], header, oldTail);
-        table[index] = oldTail.next1 = header.prev1 = newTail;
+        if (accessLFU) {
+            LfuLinkedEntry<K, V> newEntry = new LfuLinkedEntry<>(key, value, hash, table[index], null, null);
+            table[index] = newEntry;
+            insertNewEntry(newEntry);
+        } else {
+            // Create new entry, link it on to list, and put it into table
+            LfuLinkedEntry<K, V> oldTail = header.prev1;
+            LfuLinkedEntry<K, V> newTail = new LfuLinkedEntry<>(
+                    key, value, hash, table[index], header, oldTail);
+            table[index] = oldTail.next1 = header.prev1 = newTail;
+        }
     }
 
     @Override
@@ -111,14 +135,23 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
             remove(eldest.key);
         }
 
-        // Create new entry, link it on to list, and put it into table
-        LfuLinkedEntry<K, V> oldTail = header.prev1;
-        LfuLinkedEntry<K, V> newTail = new LfuLinkedEntry<>(
-                null, value, 0, null, header, oldTail);
-        entryForNullKey = oldTail.next1 = header.prev1 = newTail;
+        if (accessLFU) {
+            LfuLinkedEntry<K, V> newEntry = new LfuLinkedEntry<>(null, value, 0, null, null, null);
+            entryForNullKey = newEntry;
+            insertNewEntry(newEntry);
+        } else {
+            // Create new entry, link it on to list, and put it into table
+            LfuLinkedEntry<K, V> oldTail = header.prev1;
+            LfuLinkedEntry<K, V> newTail = new LfuLinkedEntry<>(
+                    null, value, 0, null, header, oldTail);
+            entryForNullKey = oldTail.next1 = header.prev1 = newTail;
+        }
     }
 
-    // use for constructorPutAll
+    /**
+     * use for constructorPutAll, when use constructorNewEntry every entry's access count is the same.
+     * so no need to invoke {@link #insertNewEntry(LfuLinkedEntry)}
+     */
     @Override
     HashMapEntry<K, V> constructorNewEntry(K key, V value, int hash, HashMapEntry<K, V> first) {
         LfuLinkedEntry<K, V> header = this.header;
@@ -164,28 +197,24 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
         return null;
     }
 
-    /**
-     * Relinks the given entry to the  the list. According to access count,
-     * this method is invoked whenever the value of a  pre-existing entry is
-     * read by Map.get or modified by Map.put.
-     */
-    private void transform(LfuLinkedEntry<K, V> e) {
-
-        // Add access count
-        e.accessCount++;
-        // Modify count
-        modCount++;
-        // Get the next
-        LfuLinkedEntry<K, V> next = e.next1;
-        if (e.accessCount < next.accessCount) {
-            return;                   // no need to do anything
+    private void visit() {
+        LfuLinkedEntry<K, V> header = this.header;
+        LfuLinkedEntry<K, V> next = header.next1;
+        while (next != header) {
+            System.out.println(next.toString());
+            next = next.next1;
         }
-        // Unlink e
-        e.prev1.next1 = e.next1;
-        e.next1.prev1 = e.prev1;
+    }
 
+    /**
+     * insert the new entry to the list according to access count
+     *
+     * @param e LfuLinkedEntry
+     */
+    private void insertNewEntry(LfuLinkedEntry<K, V> e) {
         boolean done = false;
-        for (; next != this.header; next = next.next1) {
+        LfuLinkedEntry<K, V> header = this.header;
+        for (LfuLinkedEntry<K, V> next = header.next1; next != header; next = next.next1) {
             if (e.accessCount < next.accessCount) {
                 e.next1 = next;
                 e.prev1 = next.prev1;
@@ -197,7 +226,50 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
         }
         if (!done) {
             // Relink e as tail in the list
-            LfuLinkedEntry<K, V> header = this.header;
+            LfuLinkedEntry<K, V> oldTail = header.prev1;
+            e.next1 = header;
+            e.prev1 = oldTail;
+            oldTail.next1 = header.prev1 = e;
+        }
+    }
+
+    /**
+     * Relinks the given entry to the  the list. According to access count,
+     * this method is invoked whenever the value of a  pre-existing entry is
+     * read by Map.get or modified by Map.put.
+     * <br/>
+     * If two entries have the same access count, they will be sorted by the
+     * insertion ordered
+     */
+    private void transform(LfuLinkedEntry<K, V> e) {
+
+        // Add access count
+        e.accessCount++;
+        // Modify count
+        modCount++;
+        // Get the next
+        LfuLinkedEntry<K, V> next = e.next1;
+        if (e.accessCount < next.accessCount || next == this.header) {
+            return;                   // no need to do anything
+        }
+        // Unlink e
+        e.prev1.next1 = e.next1;
+        e.next1.prev1 = e.prev1;
+
+        boolean done = false;
+        LfuLinkedEntry<K, V> header = this.header;
+        for (; next != header; next = next.next1) {
+            if (e.accessCount < next.accessCount) {
+                e.next1 = next;
+                e.prev1 = next.prev1;
+                next.prev1.next1 = e;
+                next.prev1 = e;
+                done = true;
+                break;
+            }
+        }
+        if (!done) {
+            // Relink e as tail in the list
             LfuLinkedEntry<K, V> oldTail = header.prev1;
             e.next1 = header;
             e.prev1 = oldTail;
@@ -256,6 +328,17 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
         header.prev1 = header.next1 = header;
     }
 
+    /**
+     * get the collection of all the entries access count
+     *
+     * @return the entries access counts
+     */
+    public Collection<Long> counts() {
+        Collection<Long> vs = counts;
+        return (vs != null) ? vs : (counts = new Counts());
+    }
+
+
     private abstract class LfuLinkedHashIterator<T> implements Iterator<T> {
         LfuLinkedEntry<K, V> next = header.next1;
         LfuLinkedEntry<K, V> lastReturned = null;
@@ -300,10 +383,39 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
         }
     }
 
+    private final class CountIterator extends LfuLinkedHashIterator<Long> {
+        @Override
+        public Long next() {
+            return nextEntry().accessCount;
+        }
+    }
+
     private final class EntryIterator extends LfuLinkedHashIterator<Map.Entry<K, V>> {
         @Override
         public Entry<K, V> next() {
             return nextEntry();
+        }
+    }
+
+    private final class Counts extends AbstractCollection<Long> {
+        public Iterator<Long> iterator() {
+            return new CountIterator();
+        }
+
+        public int size() {
+            return size;
+        }
+
+        public boolean isEmpty() {
+            return size == 0;
+        }
+
+        public boolean contains(Object o) {
+            return containsValue(o);
+        }
+
+        public void clear() {
+            LfuLinkedHashMap.this.clear();
         }
     }
 
