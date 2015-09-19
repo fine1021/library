@@ -8,10 +8,10 @@ import java.io.InputStreamReader;
 
 /**
  * a root helper class, there are many useful usage.
- * <br/>
+ * <br>
  * for instance, you can use "rm /data/app/*.tmp" command delete the cache files,
  * or "ls /data/app" command to list the files in "data/app" directory
- * <p/>
+ * <p>
  * <p><strong>NOTE:</strong></p> this class need a rooted phone, otherwise the the command will be executed failed
  */
 @SuppressWarnings("unused")

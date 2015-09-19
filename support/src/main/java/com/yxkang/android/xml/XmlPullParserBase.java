@@ -51,7 +51,7 @@ public abstract class XmlPullParserBase {
      * Sets the input stream the parser is going to process.
      * This call resets the parser state and sets the event type
      * to the initial value START_DOCUMENT.
-     * <p/>
+     * <p>
      * <p><strong>NOTE:</strong> If an input encoding string is passed,
      * it MUST be used. Otherwise,
      * if inputEncoding is null, the parser SHOULD try to determine
@@ -116,11 +116,11 @@ public abstract class XmlPullParserBase {
     /**
      * If the current event is START_TAG and the tag is degenerated (e.g. &lt;foobar/&gt;).
      * {@link #safetyNextText()} will return empty string, and parser will also stay at where it was.
-     * <br/><br/>
+     * <br><br>
      * If current event is START_TAG then if next element is TEXT then element content is returned
      * or if next event is END_TAG then empty string is returned
      * or if next event is START_TAG then empty string is returned, otherwise exception is thrown.
-     * <br/><br/>
+     * <br><br>
      * After calling this function successfully parser will be positioned on the next position,
      * maybe START_TAG or TEXT or END_TAG.
      *

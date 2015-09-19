@@ -7,7 +7,7 @@ import java.lang.ref.WeakReference;
 
 /**
  * <p>WeakReferenceHandler class is designed to solve memory leak problem.</p>
- * <p/>
+ * <p>
  * <h2>Problem</h2>
  * <p>where exactly is the leak and how might it happen?
  * Let's determine the source of the problem by first documenting what we know:</p>
@@ -23,27 +23,27 @@ import java.lang.ref.WeakReference;
  * the framework can call {@link #handleMessage(Message)} when the <code>Handler</code> eventually processes the message.</li>
  * <li>In Java, non-static inner and anonymous classes hold an implicit reference to their outer class. Static inner classes, on the other hand, do not.</li>
  * </ol>
- * <p/>
+ * <p>
  * <h2>Usage</h2>
  * <p>WeakReferenceHandler must be subclassed to be used. The subclass will override at least
  * one method ({@link #handleMessage(Object, Message)}).</p>
- * <p/>
+ * <p>
  * <p>Here is an example of subclassing:</p>
  * <pre class="prettyprint">
  * private static class MyHandler extends WeakReferenceHandler&lt;MainActivity&gt; {
- * <p/>
+ * <br>
  * &nbsp;&nbsp;public MyHandler(MainActivity reference) {
  * &nbsp;&nbsp;&nbsp;&nbsp;super(reference);
  * &nbsp;&nbsp;}
- * <p/>
+ * <br>
  * &nbsp;&nbsp;<code>@Override</code>
  * &nbsp;&nbsp;protected void handleMessage(MainActivity reference, Message msg) {
  * &nbsp;&nbsp;&nbsp;&nbsp;// call the MainActivity methods to do some things
  * &nbsp;&nbsp;}
  * }
  * </pre>
- * <p/>
- * <p/>
+ * <p>
+ * <p>
  * <p>Once created, the usage is very simply, do the following things in your <code>Activity</code>: </p>
  * <pre class="prettyprint">
  * private final MyHandler mHandler = new MyHandler(this);
