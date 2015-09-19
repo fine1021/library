@@ -84,6 +84,7 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
             convertView = LayoutInflater.from(context).inflate(R.layout.gridview_item, parent, false);
             holder = new ViewHolder();
             holder.imageView = (ImageView) convertView.findViewById(R.id.item_thumbnail);
+            holder.imageView2 = (ImageView) convertView.findViewById(R.id.item_video);
             holder.textView = (TextView) convertView.findViewById(R.id.item_title);
             convertView.setTag(holder);
         } else {
@@ -102,8 +103,14 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
             } else {
                 holder.imageView.setImageDrawable(defaultIcon);
             }
+            if (MediaFile.isVideoFileType(info.getAbsolutePath())) {
+                holder.imageView2.setVisibility(View.VISIBLE);
+            } else {
+                holder.imageView2.setVisibility(View.GONE);
+            }
         } else {
             holder.imageView.setImageDrawable(info.getFileIcon());
+            holder.imageView2.setVisibility(View.GONE);
         }
         return convertView;
     }
@@ -184,6 +191,7 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
     static class ViewHolder {
         ImageView imageView;
         TextView textView;
+        ImageView imageView2;
     }
 
     public void loadFiles(List<FileInfoBean> fileInfos) {

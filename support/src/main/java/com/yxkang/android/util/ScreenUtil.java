@@ -3,7 +3,6 @@ package com.yxkang.android.util;
 import android.app.Activity;
 import android.content.Context;
 import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.WindowManager;
 
 /**
@@ -19,10 +18,9 @@ public class ScreenUtil {
      * @return screen width
      */
     public static int getScreenWidth(Context context) {
-        WindowManager manager = (WindowManager) context
-                .getSystemService(Context.WINDOW_SERVICE);
-        Display display = manager.getDefaultDisplay();
-        return display.getWidth();
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        displayMetrics = context.getResources().getDisplayMetrics();
+        return displayMetrics.widthPixels;
     }
 
     /**
@@ -32,10 +30,11 @@ public class ScreenUtil {
      * @return screen height
      */
     public static int getScreenHeight(Context context) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
         WindowManager manager = (WindowManager) context
                 .getSystemService(Context.WINDOW_SERVICE);
-        Display display = manager.getDefaultDisplay();
-        return display.getHeight();
+        manager.getDefaultDisplay().getRealMetrics(displayMetrics);
+        return displayMetrics.heightPixels;
     }
 
     /**
@@ -46,7 +45,7 @@ public class ScreenUtil {
      */
     public static int[] getScreenWH(Activity activity) {
         DisplayMetrics dm = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
+        activity.getWindowManager().getDefaultDisplay().getRealMetrics(dm);
         return new int[]{dm.widthPixels, dm.heightPixels};
     }
 

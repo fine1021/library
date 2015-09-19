@@ -24,7 +24,7 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
     /**
      * the entries access count
      */
-    private transient Collection<Long> counts;
+    private transient Collection<Long> accessCounts;
 
     /**
      * True if LFU ordered, false if insertion ordered.
@@ -333,9 +333,9 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
      *
      * @return the entries access counts
      */
-    public Collection<Long> counts() {
-        Collection<Long> vs = counts;
-        return (vs != null) ? vs : (counts = new Counts());
+    public Collection<Long> accessCounts() {
+        Collection<Long> vs = accessCounts;
+        return (vs != null) ? vs : (accessCounts = new Counts());
     }
 
 
@@ -399,7 +399,7 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
 
     private final class Counts extends AbstractCollection<Long> {
         public Iterator<Long> iterator() {
-            return new CountIterator();
+            return newCountIterator();
         }
 
         public int size() {
@@ -432,6 +432,10 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
     @Override
     Iterator<Entry<K, V>> newEntryIterator() {
         return new EntryIterator();
+    }
+
+    Iterator<Long> newCountIterator() {
+        return new CountIterator();
     }
 
     protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
