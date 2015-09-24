@@ -6,8 +6,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.yxkang.android.image.cache.CacheManager;
+import com.yxkang.android.image.core.ref.RefImageView;
 import com.yxkang.android.media.MediaFile;
 import com.yxkang.android.util.BitmapUtil;
 
@@ -133,6 +135,35 @@ public class ImageLoader {
         }
     }
 
+    public void displayImageAsync(String uri, ImageView imageView, OnImageLoaderListener listener) {
+
+        RefImageView refImageView = new RefImageView(imageView);
+
+        ImageLoaderTask task;
+
+        if (listener == null) {
+            task = new ImageLoaderTask(mEmptyListener, refImageView, null, uri);
+        } else {
+            task = new ImageLoaderTask(listener, refImageView, null, uri);
+        }
+
+        addTask(task);
+
+        sendMessage(MESSAGE_POST_TASK_START, task);
+
+        task.bitmap = getCacheBitmap(uri);
+        if (task.bitmap != null) {
+            Log.i(TAG, "displayCacheBitmap : " + uri);
+            sendMessage(MESSAGE_POST_TASK_SUCCESS, task);
+        } else {
+
+            if (ImageProtocol.FILE.belongsTo(uri)) {
+                loadImage(task);
+            } else if (ImageProtocol.HTTP.belongsTo(uri) || ImageProtocol.HTTPS.belongsTo(uri)) {
+                downloadImage(task);
+            }
+        }
+    }
 
     public void displayImageAsync(String uri, OnImageLoaderListener listener) {
 
@@ -207,7 +238,6 @@ public class ImageLoader {
         }
     }
 
-
     private void sendMessage(int what, ImageLoaderTask task) {
         if (!task.cancelTask.get()) {
             Message message = getHandler().obtainMessage(what, task);
@@ -238,7 +268,14 @@ public class ImageLoader {
                 case MESSAGE_POST_TASK_SUCCESS:
                     Log.i(TAG, "loadImageSuccess : " + task.uri);
                     task.listener.onImageLoaderSuccess(task.uri, task.bitmap);
+                    handleRefImageView(task, task.bitmap);
                     break;
+            }
+        }
+
+        private void handleRefImageView(ImageLoaderTask loaderTask, Bitmap bitmap) {
+            if (loaderTask.refImageView != null) {
+                loaderTask.refImageView.setImageBitmap(bitmap);
             }
         }
     }
@@ -308,6 +345,7 @@ public class ImageLoader {
     private static class ImageLoaderTask {
 
         final OnImageLoaderListener listener;
+        RefImageView refImageView;
         Bitmap bitmap;
         final String uri;
         final AtomicBoolean cancelTask = new AtomicBoolean(false);
@@ -316,9 +354,39 @@ public class ImageLoader {
             this.listener = listener;
             this.bitmap = bitmap;
             this.uri = uri;
+            this.refImageView = null;
+        }
+
+        public ImageLoaderTask(OnImageLoaderListener listener, RefImageView refImageView, Bitmap bitmap, String uri) {
+            this.listener = listener;
+            this.refImageView = refImageView;
+            this.bitmap = bitmap;
+            this.uri = uri;
         }
 
     }
+
+    private OnImageLoaderListener mEmptyListener = new OnImageLoaderListener() {
+        @Override
+        public void onImageLoaderStart(String uri) {
+
+        }
+
+        @Override
+        public void onImageLoaderSuccess(String uri, Bitmap bitmap) {
+
+        }
+
+        @Override
+        public void onImageLoaderFail(String uri) {
+
+        }
+
+        @Override
+        public void onImageLoaderCancel(String uri) {
+
+        }
+    };
 
     /**
      * a callback when loading the image

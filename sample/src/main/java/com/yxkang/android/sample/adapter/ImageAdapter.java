@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -125,6 +124,8 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
 
             if (!MediaFile.isAudioFileType(info.getAbsolutePath())) {
                 String uri = ImageProtocol.FILE.wrap(info.getAbsolutePath());
+                imageLoader.displayImageAsync(uri, imageView, null);
+                /*
                 imageLoader.displayImageAsync(uri, new ImageLoader.OnImageLoaderListener() {
 
                     @Override
@@ -156,7 +157,7 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
                     public void onImageLoaderCancel(String uri) {
 
                     }
-                });
+                });*/
             } else {
                 imageView.setImageDrawable(info.getFileIcon());
             }
