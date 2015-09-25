@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -40,7 +41,7 @@ public class ImageLoader {
 
     /**
      * Iterator and for-each are unsafe-Thread Operation, they don't allow to
-     * modify the content of List when accessing. use the ReentrantReadWriteLock
+     * modify the content of List when accessing. use the {@link ReentrantReadWriteLock}
      * to avoid the problem
      */
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
@@ -135,16 +136,43 @@ public class ImageLoader {
         }
     }
 
+    /**
+     * display the image created from the uri to the given imageView, without listening the progress
+     *
+     * @param uri       image uri
+     * @param imageView the imageView to display the bitmap
+     * @see #displayImageAsync(String, ImageView, OnImageLoaderListener)
+     * @see #displayImageAsync(String, OnImageLoaderListener)
+     */
+    public void displayImageAsync(String uri, ImageView imageView) {
+        displayImageAsync(uri, imageView, listenerEmpty);
+    }
+
+    /**
+     * display the image created from the uri to the given imageView
+     *
+     * @param uri       image uri
+     * @param imageView the imageView to display the bitmap
+     * @param listener  a callback of image load progress. see {@link com.yxkang.android.image.core.ImageLoader.OnImageLoaderListener}
+     * @see #displayImageAsync(String, ImageView)
+     * @see #displayImageAsync(String, OnImageLoaderListener)
+     */
     public void displayImageAsync(String uri, ImageView imageView, OnImageLoaderListener listener) {
 
-        RefImageView refImageView = new RefImageView(imageView);
+        if (TextUtils.isEmpty(uri)) {
+            throw new IllegalArgumentException("uri is null");
+        }
+
+        if (listener == null) {
+            throw new IllegalArgumentException("listener is null");
+        }
 
         ImageLoaderTask task;
 
-        if (listener == null) {
-            task = new ImageLoaderTask(mEmptyListener, refImageView, null, uri);
+        if (imageView == null) {
+            task = new ImageLoaderTask(uri, listener);
         } else {
-            task = new ImageLoaderTask(listener, refImageView, null, uri);
+            task = new ImageLoaderTask(uri, new RefImageView(imageView), listener);
         }
 
         addTask(task);
@@ -165,27 +193,16 @@ public class ImageLoader {
         }
     }
 
+    /**
+     * load the image asynchronous, when load success it will return a bitmap created from the given uri
+     *
+     * @param uri      image uri
+     * @param listener a callback of image load progress. see {@link com.yxkang.android.image.core.ImageLoader.OnImageLoaderListener}
+     * @see #displayImageAsync(String, ImageView)
+     * @see #displayImageAsync(String, ImageView, OnImageLoaderListener)
+     */
     public void displayImageAsync(String uri, OnImageLoaderListener listener) {
-
-        ImageLoaderTask task = new ImageLoaderTask(listener, null, uri);
-
-        addTask(task);
-
-        sendMessage(MESSAGE_POST_TASK_START, task);
-
-        task.bitmap = getCacheBitmap(uri);
-        if (task.bitmap != null) {
-            Log.i(TAG, "displayCacheBitmap : " + uri);
-            sendMessage(MESSAGE_POST_TASK_SUCCESS, task);
-        } else {
-
-            if (ImageProtocol.FILE.belongsTo(uri)) {
-                loadImage(task);
-            } else if (ImageProtocol.HTTP.belongsTo(uri) || ImageProtocol.HTTPS.belongsTo(uri)) {
-                downloadImage(task);
-            }
-        }
-
+        displayImageAsync(uri, null, listener);
     }
 
     public Bitmap getCacheBitmap(String key) {
@@ -282,12 +299,11 @@ public class ImageLoader {
 
 
     /**
-     * load the image in local file system
+     * load the image in sdcard
      *
      * @param task ImageLoaderTask
      */
     private void loadImage(final ImageLoaderTask task) {
-        final String filePath = ImageProtocol.FILE.crop(task.uri);
 
         Callable<Boolean> callable = new Callable<Boolean>() {
 
@@ -298,6 +314,8 @@ public class ImageLoader {
                  * use mutex to lock the operation, only one thread can handle
                  */
                 synchronized (mMutex) {
+
+                    String filePath = ImageProtocol.FILE.crop(task.uri);
 
                     if (task.cancelTask.get()) {
                         Log.w(TAG, "loadImageCancel-1 : " + task.uri);
@@ -344,29 +362,25 @@ public class ImageLoader {
      */
     private static class ImageLoaderTask {
 
-        final OnImageLoaderListener listener;
-        RefImageView refImageView;
         Bitmap bitmap;
         final String uri;
+        RefImageView refImageView;
+        final OnImageLoaderListener listener;
         final AtomicBoolean cancelTask = new AtomicBoolean(false);
 
-        public ImageLoaderTask(OnImageLoaderListener listener, Bitmap bitmap, String uri) {
-            this.listener = listener;
-            this.bitmap = bitmap;
-            this.uri = uri;
-            this.refImageView = null;
+        public ImageLoaderTask(String uri, OnImageLoaderListener listener) {
+            this(uri, null, listener);
         }
 
-        public ImageLoaderTask(OnImageLoaderListener listener, RefImageView refImageView, Bitmap bitmap, String uri) {
-            this.listener = listener;
+        public ImageLoaderTask(String uri, RefImageView refImageView, OnImageLoaderListener listener) {
+            this.uri = uri;
             this.refImageView = refImageView;
-            this.bitmap = bitmap;
-            this.uri = uri;
+            this.listener = listener;
+            this.bitmap = null;
         }
-
     }
 
-    private OnImageLoaderListener mEmptyListener = new OnImageLoaderListener() {
+    private OnImageLoaderListener listenerEmpty = new OnImageLoaderListener() {
         @Override
         public void onImageLoaderStart(String uri) {
 

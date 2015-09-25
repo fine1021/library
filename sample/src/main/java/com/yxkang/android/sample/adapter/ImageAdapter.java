@@ -124,7 +124,7 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
 
             if (!MediaFile.isAudioFileType(info.getAbsolutePath())) {
                 String uri = ImageProtocol.FILE.wrap(info.getAbsolutePath());
-                imageLoader.displayImageAsync(uri, imageView, null);
+                imageLoader.displayImageAsync(uri, imageView);
                 /*
                 imageLoader.displayImageAsync(uri, new ImageLoader.OnImageLoaderListener() {
 
