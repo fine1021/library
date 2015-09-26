@@ -12,7 +12,7 @@ import java.util.Map;
  * SoftMemoryCache, LRU algorithm
  */
 @SuppressWarnings("ALL")
-public class SoftMemoryCache implements MemoryCache {
+public final class SoftMemoryCache implements MemoryCache {
 
     private static final String TAG = SoftMemoryCache.class.getSimpleName();
 
@@ -26,7 +26,7 @@ public class SoftMemoryCache implements MemoryCache {
 
     private static SoftMemoryCache instance = null;
 
-    protected SoftMemoryCache() {
+    private SoftMemoryCache() {
     }
 
     public static SoftMemoryCache getInstance() {
@@ -39,7 +39,7 @@ public class SoftMemoryCache implements MemoryCache {
     @Override
     public void put(String key, Bitmap bitmap) {
         synchronized (mSoftCache) {
-            if (get(key) == null && bitmap != null) {
+            if (bitmap != null) {
                 mSoftCache.put(key, new SoftReference<>(bitmap));
             }
         }

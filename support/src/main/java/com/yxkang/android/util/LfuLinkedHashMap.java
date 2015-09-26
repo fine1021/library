@@ -78,10 +78,10 @@ public class LfuLinkedHashMap<K, V> extends HashMap<K, V> {
         /**
          * Create a normal entry
          */
-        public LfuLinkedEntry(K key, V value, int hash, HashMapEntry<K, V> next, LfuLinkedEntry<K, V> next1, LfuLinkedEntry<K, V> prev) {
+        public LfuLinkedEntry(K key, V value, int hash, HashMapEntry<K, V> next, LfuLinkedEntry<K, V> next1, LfuLinkedEntry<K, V> prev1) {
             super(key, value, hash, next);
             this.next1 = next1;
-            this.prev1 = prev;
+            this.prev1 = prev1;
             this.accessCount = 1;
         }
     }

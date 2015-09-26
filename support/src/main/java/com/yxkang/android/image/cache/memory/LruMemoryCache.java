@@ -10,7 +10,7 @@ import java.util.LinkedHashMap;
  * LruMemoryCache {@link LruCache}
  */
 @SuppressWarnings("ALL")
-public class LruMemoryCache implements MemoryCache {
+public final class LruMemoryCache implements MemoryCache {
 
     private static final String TAG = LruMemoryCache.class.getSimpleName();
 
@@ -44,7 +44,7 @@ public class LruMemoryCache implements MemoryCache {
 
     private static LruMemoryCache instance = null;
 
-    protected LruMemoryCache() {
+    private LruMemoryCache() {
     }
 
     public static LruMemoryCache getInstance() {
@@ -57,7 +57,7 @@ public class LruMemoryCache implements MemoryCache {
     @Override
     public void put(String key, Bitmap bitmap) {
         synchronized (mLruCache) {
-            if (get(key) == null && bitmap != null) {
+            if (bitmap != null) {
                 mLruCache.put(key, bitmap);
             }
         }

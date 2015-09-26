@@ -1,6 +1,5 @@
 package com.yxkang.android.image.core;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
@@ -9,7 +8,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ImageView;
 
-import com.yxkang.android.image.cache.CacheManager;
 import com.yxkang.android.image.core.ref.RefImageView;
 import com.yxkang.android.media.MediaFile;
 import com.yxkang.android.util.BitmapUtil;
@@ -46,19 +44,7 @@ public class ImageLoader {
      */
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
 
-    private Context context;
-
-    private CacheManager cacheManager;
-
-    /**
-     * Thumbnail image width
-     */
-    private int mThumbnailWidth;
-
-    /**
-     * Thumbnail image height
-     */
-    private int mThumbnailHeight;
+    private ImageLoaderConfiguration config = null;
 
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
     private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
@@ -97,35 +83,11 @@ public class ImageLoader {
     /**
      * Constructor
      *
-     * @param context The current context.
+     * @param config the configuration of imageLoader
      */
-    public ImageLoader(Context context) {
-        this.context = context;
-        int dpi = context.getResources().getDisplayMetrics().densityDpi;
-        if (dpi < 300) {
-            mThumbnailWidth = 200;
-            mThumbnailHeight = 150;
-        } else if (dpi < 400) {
-            mThumbnailWidth = 250;
-            mThumbnailHeight = 200;
-        } else {
-            mThumbnailWidth = 300;
-            mThumbnailHeight = 250;
-        }
-        this.cacheManager = new CacheManager();
+    public ImageLoader(ImageLoaderConfiguration config) {
+        this.config = config;
     }
-
-    /**
-     * set the thumbnail size
-     *
-     * @param width  thumbnail width
-     * @param height thumbnail height
-     */
-    public void setThumbnailSize(int width, int height) {
-        mThumbnailWidth = width;
-        mThumbnailHeight = height;
-    }
-
 
     private static Handler getHandler() {
         synchronized (ImageLoader.class) {
@@ -160,11 +122,11 @@ public class ImageLoader {
     public void displayImageAsync(String uri, ImageView imageView, OnImageLoaderListener listener) {
 
         if (TextUtils.isEmpty(uri)) {
-            throw new IllegalArgumentException("uri is null");
+            throw new IllegalArgumentException("uri is empty");
         }
 
         if (listener == null) {
-            throw new IllegalArgumentException("listener is null");
+            throw new IllegalArgumentException("listener == null");
         }
 
         ImageLoaderTask task;
@@ -206,7 +168,7 @@ public class ImageLoader {
     }
 
     public Bitmap getCacheBitmap(String key) {
-        return cacheManager.getBitmapFromMemory(key);
+        return this.config.getBitmapFromMemory(key);
     }
 
     /**
@@ -324,14 +286,14 @@ public class ImageLoader {
                     }
 
                     if (MediaFile.isImageFileType(filePath)) {
-                        task.bitmap = BitmapUtil.createImageThumbnail(filePath, mThumbnailWidth, mThumbnailHeight, true);
+                        task.bitmap = BitmapUtil.createImageThumbnail(filePath, config.imageSize.getWidth(), config.imageSize.getHeight(), true);
                     } else if (MediaFile.isVideoFileType(filePath)) {
-                        task.bitmap = BitmapUtil.createVideoThumbnail(filePath, mThumbnailWidth, mThumbnailHeight, true);
+                        task.bitmap = BitmapUtil.createVideoThumbnail(filePath, config.imageSize.getWidth(), config.imageSize.getHeight(), true);
                     }
 
                     if (task.cancelTask.get()) {
                         if (task.bitmap != null) {
-                            cacheManager.putBitmapToMemory(task.uri, task.bitmap);
+                            config.putBitmapToMemory(task.uri, task.bitmap);
                         }
                         Log.w(TAG, "loadImageCancel-2 : " + task.uri);
                         task.listener.onImageLoaderCancel(task.uri);
@@ -340,7 +302,7 @@ public class ImageLoader {
 
                     if (task.bitmap != null) {
                         sendMessage(MESSAGE_POST_TASK_SUCCESS, task);
-                        cacheManager.putBitmapToMemory(task.uri, task.bitmap);
+                        config.putBitmapToMemory(task.uri, task.bitmap);
                     } else {
                         sendMessage(MESSAGE_POST_TASK_FAIL, task);
                     }

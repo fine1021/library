@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yxkang.android.image.core.ImageLoader;
+import com.yxkang.android.image.core.ImageLoaderConfiguration;
 import com.yxkang.android.image.core.ImageProtocol;
 import com.yxkang.android.media.MediaFile;
 import com.yxkang.android.sample.R;
@@ -46,11 +47,14 @@ public class ImageAdapter extends BaseAdapter implements AbsListView.OnScrollLis
 
     private int mVisibleItemCount;
 
+    private ImageLoaderConfiguration configuration;
+
 
     public ImageAdapter(Context context, GridView mGridView) {
         this.context = context;
         this.mGridView = mGridView;
-        this.imageLoader = new ImageLoader(context);
+        this.configuration = ImageLoaderConfiguration.getDefault(context);
+        this.imageLoader = new ImageLoader(configuration);
         this.mGridView.setOnScrollListener(this);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
             this.defaultIcon = context.getResources().getDrawable(R.mipmap.ic_action_picture);

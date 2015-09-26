@@ -9,7 +9,7 @@ import com.yxkang.android.util.FifoCache;
  * FifoMemoryCache
  */
 @SuppressWarnings("ALL")
-public class FifoMemoryCache implements MemoryCache {
+public final class FifoMemoryCache implements MemoryCache {
 
     private static final String TAG = FifoMemoryCache.class.getSimpleName();
 
@@ -34,10 +34,22 @@ public class FifoMemoryCache implements MemoryCache {
         }
     };
 
+    private static FifoMemoryCache instance = null;
+
+    private FifoMemoryCache() {
+    }
+
+    public static FifoMemoryCache getInstance() {
+        if (instance == null) {
+            instance = new FifoMemoryCache();
+        }
+        return instance;
+    }
+
     @Override
     public void put(String key, Bitmap bitmap) {
         synchronized (mFifoCache) {
-            if (get(key) == null && bitmap != null) {
+            if (bitmap != null) {
                 mFifoCache.put(key, bitmap);
             }
         }
