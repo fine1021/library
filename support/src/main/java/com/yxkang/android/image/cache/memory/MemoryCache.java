@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 /**
  * MemoryCache interface
  */
-@SuppressWarnings("ALL")
 public interface MemoryCache {
 
     void put(String key, Bitmap bitmap);

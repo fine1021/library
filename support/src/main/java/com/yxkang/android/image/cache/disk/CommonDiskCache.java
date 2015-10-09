@@ -16,21 +16,11 @@ import java.io.InputStream;
 public class CommonDiskCache implements DiskCache {
 
     /**
-     * Options used internally
-     */
-    private static final int OPTIONS_NONE = 0x0;
-
-    /**
-     * Constant used to indicate we should recycle the input.
-     */
-    public static final int OPTIONS_RECYCLE_INPUT = 0x1;
-
-    /**
      * Default value of disk cache
      */
     private static final String DEFAULT_CACHE_DIR = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "cache" + File.separator + "image";
     private static final Bitmap.CompressFormat DEFAULT_COMPRESS_FORMAT = Bitmap.CompressFormat.JPEG;
-    public static final int DEFAULT_COMPRESS_QUALITY = 100;
+    private static final int DEFAULT_COMPRESS_QUALITY = 100;
 
     protected Bitmap.CompressFormat compressFormat = DEFAULT_COMPRESS_FORMAT;
     protected int compressQuality = DEFAULT_COMPRESS_QUALITY;

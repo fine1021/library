@@ -2,9 +2,12 @@ package com.yxkang.android.image.core;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 
 import com.yxkang.android.image.cache.disk.CommonDiskCache;
+import com.yxkang.android.image.cache.disk.DiskCache;
 import com.yxkang.android.image.cache.memory.FifoMemoryCache;
+import com.yxkang.android.image.cache.memory.LfuMemoryCache;
 import com.yxkang.android.image.cache.memory.LruMemoryCache;
 import com.yxkang.android.image.cache.memory.MemoryCacheStrategy;
 import com.yxkang.android.image.cache.memory.SoftMemoryCache;
@@ -29,14 +32,26 @@ public final class ImageLoaderConfiguration {
         this.isCache2Memory = builder.isCache2Memory;
         this.isCache2SDCard = builder.isCache2SDCard;
         this.memoryCacheStrategy = builder.memoryCacheStrategy;
+        initSdcardCache(builder);
     }
 
-    public void putBitmapToMemory(String key, Bitmap bitmap) {
+    private void initSdcardCache(Builder builder) {
+        if (isCache2SDCard) {
+            if (!TextUtils.isEmpty(builder.diskCacheDirectory)) {
+                this.diskCache.setCacheDirectory(builder.diskCacheDirectory);
+            }
+            this.diskCache.setCompressFormat(builder.diskCompressFormat);
+            this.diskCache.setCompressQuality(builder.diskCompressQuality);
+            this.diskCache.setOptions(builder.diskRecycleOption);
+        }
+    }
+
+    void putBitmapToMemory(String key, Bitmap bitmap) {
         if (isCache2Memory) {
             if (memoryCacheStrategy == MemoryCacheStrategy.LRU) {
                 LruMemoryCache.getInstance().put(key, bitmap);
             } else if (memoryCacheStrategy == MemoryCacheStrategy.LFU) {
-                throw new UnsupportedOperationException("not support !");
+                LfuMemoryCache.getInstance().put(key, bitmap);
             } else if (memoryCacheStrategy == MemoryCacheStrategy.FIFO) {
                 FifoMemoryCache.getInstance().put(key, bitmap);
             } else if (memoryCacheStrategy == MemoryCacheStrategy.SOFT) {
@@ -47,13 +62,13 @@ public final class ImageLoaderConfiguration {
         }
     }
 
-    public Bitmap getBitmapFromMemory(String key) {
+    Bitmap getBitmapFromMemory(String key) {
         if (isCache2Memory) {
             Bitmap bitmap = null;
             if (memoryCacheStrategy == MemoryCacheStrategy.LRU) {
                 bitmap = LruMemoryCache.getInstance().get(key);
             } else if (memoryCacheStrategy == MemoryCacheStrategy.LFU) {
-                throw new UnsupportedOperationException("not support !");
+                bitmap = LfuMemoryCache.getInstance().get(key);
             } else if (memoryCacheStrategy == MemoryCacheStrategy.FIFO) {
                 bitmap = FifoMemoryCache.getInstance().get(key);
             } else if (memoryCacheStrategy == MemoryCacheStrategy.SOFT) {
@@ -65,7 +80,7 @@ public final class ImageLoaderConfiguration {
         }
     }
 
-    public void putBitmapToSDCard(String key, InputStream inputStream) {
+    void putBitmapToSDCard(String key, InputStream inputStream) {
         if (isCache2SDCard) {
             try {
                 diskCache.put(key, inputStream);
@@ -77,7 +92,7 @@ public final class ImageLoaderConfiguration {
         }
     }
 
-    public void putBitmapToSDCard(String key, Bitmap bitmap) {
+    void putBitmapToSDCard(String key, Bitmap bitmap) {
         if (isCache2SDCard) {
             try {
                 diskCache.put(key, bitmap);
@@ -98,6 +113,10 @@ public final class ImageLoaderConfiguration {
         private ImageSize imageSize;
         private boolean isCache2Memory = true;
         private boolean isCache2SDCard = true;
+        private String diskCacheDirectory = "";
+        private Bitmap.CompressFormat diskCompressFormat = Bitmap.CompressFormat.JPEG;
+        private int diskCompressQuality = 100;
+        private int diskRecycleOption = DiskCache.OPTIONS_NONE;
         private MemoryCacheStrategy memoryCacheStrategy = MemoryCacheStrategy.LRU;
 
         public Builder(Context context) {
@@ -126,6 +145,26 @@ public final class ImageLoaderConfiguration {
 
         public Builder setMemoryCacheStrategy(MemoryCacheStrategy memoryCacheStrategy) {
             this.memoryCacheStrategy = memoryCacheStrategy;
+            return this;
+        }
+
+        public Builder setDiskCacheDirectory(String diskCacheDirectory) {
+            this.diskCacheDirectory = diskCacheDirectory;
+            return this;
+        }
+
+        public Builder setDiskCompressFormat(Bitmap.CompressFormat diskCompressFormat) {
+            this.diskCompressFormat = diskCompressFormat;
+            return this;
+        }
+
+        public Builder setDiskCompressQuality(int diskCompressQuality) {
+            this.diskCompressQuality = diskCompressQuality;
+            return this;
+        }
+
+        public Builder setDiskRecycleOption(int diskRecycleOption) {
+            this.diskRecycleOption = diskRecycleOption;
             return this;
         }
 

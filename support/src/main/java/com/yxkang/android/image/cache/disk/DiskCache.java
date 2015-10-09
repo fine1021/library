@@ -9,8 +9,17 @@ import java.io.InputStream;
 /**
  * DiskCache
  */
-@SuppressWarnings("ALL")
 public interface DiskCache {
+
+    /**
+     * Options used internally
+     */
+    int OPTIONS_NONE = 0x0;
+
+    /**
+     * Constant used to indicate we should recycle the input.
+     */
+    int OPTIONS_RECYCLE_INPUT = 0x1;
 
     /**
      * Returns root directory of disk cache

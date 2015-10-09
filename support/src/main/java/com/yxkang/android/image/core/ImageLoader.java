@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-@SuppressWarnings("ALL")
+
 public class ImageLoader {
 
     private static final String TAG = ImageLoader.class.getSimpleName();
@@ -44,7 +44,7 @@ public class ImageLoader {
      */
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
 
-    private ImageLoaderConfiguration config = null;
+    private ImageLoaderConfiguration configuration = null;
 
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
     private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
@@ -83,10 +83,10 @@ public class ImageLoader {
     /**
      * Constructor
      *
-     * @param config the configuration of imageLoader
+     * @param configuration the configuration of imageLoader
      */
-    public ImageLoader(ImageLoaderConfiguration config) {
-        this.config = config;
+    public ImageLoader(ImageLoaderConfiguration configuration) {
+        this.configuration = configuration;
     }
 
     private static Handler getHandler() {
@@ -126,7 +126,7 @@ public class ImageLoader {
         }
 
         if (listener == null) {
-            throw new IllegalArgumentException("listener == null");
+            throw new NullPointerException("listener == null");
         }
 
         ImageLoaderTask task;
@@ -168,7 +168,7 @@ public class ImageLoader {
     }
 
     public Bitmap getCacheBitmap(String key) {
-        return this.config.getBitmapFromMemory(key);
+        return configuration.getBitmapFromMemory(key);
     }
 
     /**
@@ -286,14 +286,14 @@ public class ImageLoader {
                     }
 
                     if (MediaFile.isImageFileType(filePath)) {
-                        task.bitmap = BitmapUtil.createImageThumbnail(filePath, config.imageSize.getWidth(), config.imageSize.getHeight(), true);
+                        task.bitmap = BitmapUtil.createImageThumbnail(filePath, configuration.imageSize.getWidth(), configuration.imageSize.getHeight(), true);
                     } else if (MediaFile.isVideoFileType(filePath)) {
-                        task.bitmap = BitmapUtil.createVideoThumbnail(filePath, config.imageSize.getWidth(), config.imageSize.getHeight(), true);
+                        task.bitmap = BitmapUtil.createVideoThumbnail(filePath, configuration.imageSize.getWidth(), configuration.imageSize.getHeight(), true);
                     }
 
                     if (task.cancelTask.get()) {
                         if (task.bitmap != null) {
-                            config.putBitmapToMemory(task.uri, task.bitmap);
+                            configuration.putBitmapToMemory(task.uri, task.bitmap);
                         }
                         Log.w(TAG, "loadImageCancel-2 : " + task.uri);
                         task.listener.onImageLoaderCancel(task.uri);
@@ -302,7 +302,7 @@ public class ImageLoader {
 
                     if (task.bitmap != null) {
                         sendMessage(MESSAGE_POST_TASK_SUCCESS, task);
-                        config.putBitmapToMemory(task.uri, task.bitmap);
+                        configuration.putBitmapToMemory(task.uri, task.bitmap);
                     } else {
                         sendMessage(MESSAGE_POST_TASK_FAIL, task);
                     }
@@ -342,7 +342,7 @@ public class ImageLoader {
         }
     }
 
-    private OnImageLoaderListener listenerEmpty = new OnImageLoaderListener() {
+    private final OnImageLoaderListener listenerEmpty = new OnImageLoaderListener() {
         @Override
         public void onImageLoaderStart(String uri) {
 

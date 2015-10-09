@@ -9,7 +9,6 @@ import java.util.LinkedHashMap;
 /**
  * LruMemoryCache {@link LruCache}
  */
-@SuppressWarnings("ALL")
 public final class LruMemoryCache implements MemoryCache {
 
     private static final String TAG = LruMemoryCache.class.getSimpleName();
