@@ -5,12 +5,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.yxkang.android.image.core.ref.RefImageView;
 import com.yxkang.android.media.MediaFile;
 import com.yxkang.android.util.BitmapUtil;
+import com.yxkang.android.util.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,7 +30,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class ImageLoader {
 
     private static final String TAG = ImageLoader.class.getSimpleName();
-    private static InternalHandler sHandler;
+    private static InternalHandler sHandler = null;
 
     /**
      * use mutex to lock the create bitmap operation
@@ -79,6 +79,11 @@ public class ImageLoader {
      * The task list, use save all the executed task
      */
     private static final List<ImageLoaderTask> sTaskQueue = Collections.synchronizedList(new ArrayList<ImageLoaderTask>());
+
+    /**
+     * Print the log information
+     */
+    private static Logger logger = new Logger(Logger.WARN);
 
     /**
      * Constructor
@@ -143,7 +148,7 @@ public class ImageLoader {
 
         task.bitmap = getCacheBitmap(uri);
         if (task.bitmap != null) {
-            Log.i(TAG, "displayCacheBitmap : " + uri);
+            logger.i(TAG, "displayCacheBitmap : " + uri);
             sendMessage(MESSAGE_POST_TASK_SUCCESS, task);
         } else {
 
@@ -222,7 +227,7 @@ public class ImageLoader {
             Message message = getHandler().obtainMessage(what, task);
             message.sendToTarget();
         } else {
-            Log.w(TAG, "task has been canceled ! uri : " + task.uri);
+            logger.w(TAG, "task has been canceled ! uri : " + task.uri);
         }
     }
 
@@ -241,11 +246,11 @@ public class ImageLoader {
                     task.listener.onImageLoaderStart(task.uri);
                     break;
                 case MESSAGE_POST_TASK_FAIL:
-                    Log.w(TAG, "loadImageFail : " + task.uri);
+                    logger.w(TAG, "loadImageFail : " + task.uri);
                     task.listener.onImageLoaderFail(task.uri);
                     break;
                 case MESSAGE_POST_TASK_SUCCESS:
-                    Log.i(TAG, "loadImageSuccess : " + task.uri);
+                    logger.i(TAG, "loadImageSuccess : " + task.uri);
                     task.listener.onImageLoaderSuccess(task.uri, task.bitmap);
                     handleRefImageView(task, task.bitmap);
                     break;
@@ -280,7 +285,7 @@ public class ImageLoader {
                     String filePath = ImageProtocol.FILE.crop(task.uri);
 
                     if (task.cancelTask.get()) {
-                        Log.w(TAG, "loadImageCancel-1 : " + task.uri);
+                        logger.w(TAG, "loadImageCancel-1 : " + task.uri);
                         task.listener.onImageLoaderCancel(task.uri);
                         return false;
                     }
@@ -295,7 +300,7 @@ public class ImageLoader {
                         if (task.bitmap != null) {
                             configuration.putBitmapToMemory(task.uri, task.bitmap);
                         }
-                        Log.w(TAG, "loadImageCancel-2 : " + task.uri);
+                        logger.w(TAG, "loadImageCancel-2 : " + task.uri);
                         task.listener.onImageLoaderCancel(task.uri);
                         return false;
                     }
