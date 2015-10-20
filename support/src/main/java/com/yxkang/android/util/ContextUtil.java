@@ -1,5 +1,6 @@
 package com.yxkang.android.util;
 
+import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -144,5 +145,22 @@ public class ContextUtil {
             }
         }
         return null;
+    }
+
+    public static boolean isServiceAlive(Context context, String className) {
+        boolean isAlive = false;
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> serviceInfos = manager.getRunningServices(100);
+        if (serviceInfos.isEmpty()) {
+            isAlive = false;
+        } else {
+            for (ActivityManager.RunningServiceInfo serviceInfo : serviceInfos) {
+                if (serviceInfo.service.getClassName().equals(className)) {
+                    isAlive = true;
+                    break;
+                }
+            }
+        }
+        return isAlive;
     }
 }
