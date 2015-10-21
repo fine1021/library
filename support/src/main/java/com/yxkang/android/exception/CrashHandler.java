@@ -29,7 +29,7 @@ import java.util.Locale;
 public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
     private static final String TAG = CrashHandler.class.getSimpleName();
-    private static final String LOG_DIR = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "crash";
+    private static final String BASE_DIR = Environment.getExternalStorageDirectory().getAbsolutePath();
     private static CrashHandler sHandler = null;
     private Thread.UncaughtExceptionHandler mDefaultHandler;
     private Context mContext;
@@ -135,13 +135,14 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     }
 
     private String getCurrentTime() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss", Locale.CHINA);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_hh_mm_ss", Locale.CHINA);
         Date date = new Date(System.currentTimeMillis());
         return sdf.format(date);
     }
 
     private void write(String msg) {
-        File dir = new File(LOG_DIR, mContext.getPackageName());
+        String dirPath = BASE_DIR + File.separator + mContext.getPackageName();
+        File dir = new File(dirPath, "Crash");
         if (!dir.exists()) {
             dir.mkdirs();
         }

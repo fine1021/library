@@ -147,6 +147,13 @@ public class ContextUtil {
         return null;
     }
 
+    /**
+     * check the service is alive
+     *
+     * @param context   context
+     * @param className the service class name
+     * @return {@code true} if the service is alive, otherwise {@code false}
+     */
     public static boolean isServiceAlive(Context context, String className) {
         boolean isAlive = false;
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
