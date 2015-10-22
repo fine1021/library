@@ -142,7 +142,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
     private void write(String msg) {
         String dirPath = BASE_DIR + File.separator + mContext.getPackageName();
-        File dir = new File(dirPath, "Crash");
+        File dir = new File(dirPath, "crash");
         if (!dir.exists()) {
             dir.mkdirs();
         }
