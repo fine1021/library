@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,11 +12,14 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.yxkang.android.provider.Settings;
 import com.yxkang.android.sample.bean.DisplayInfoBean;
 import com.yxkang.android.util.ContextUtil;
 
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
                 startApplication("com.google.android.gms");
             }
         });
+        String value = Settings.Global.getString(getContentResolver(), "table_name", "unknown");
+        Log.i(TAG, "table_name = " + value);
     }
 
     @SuppressWarnings("ConstantConditions")

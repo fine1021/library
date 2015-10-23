@@ -78,18 +78,17 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             Log.w(TAG, "exception is null");
             return false;
         }
-
+        Log.e(TAG, "", ex);
         final String msg = getCrashInfo(ex);
         if (TextUtils.isEmpty(msg)) {
             Log.w(TAG, "exception msg is empty");
             return false;
         }
-
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Looper.prepare();
                 write(getSystemInfo(msg));
+                Looper.prepare();
                 Toast.makeText(mContext, "sorry for crash!", Toast.LENGTH_LONG).show();
                 Looper.loop();
             }

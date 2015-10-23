@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.provider.settings">
+
+    <permission
+        android:name="android.permission.WRITE_EXAMPLE_SETTINGS"
+        android:protectionLevel="normal" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        tools:ignore="AllowBackup">
+        <provider
+            android:name=".SettingsProvider"
+            android:authorities="com.example.provider.settings"
+            android:exported="true"
+            android:multiprocess="true"
+            android:writePermission="android.permission.WRITE_EXAMPLE_SETTINGS" />
+    </application>
+
+</manifest>

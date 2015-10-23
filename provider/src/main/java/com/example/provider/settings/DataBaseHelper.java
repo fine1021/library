@@ -1,4 +1,4 @@
-package com.yxkang.android.provider;
+package com.example.provider.settings;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -16,7 +16,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     private static final String TABLE_GLOBAL = "global";
 
-    private static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS global (" +
+    private static final String CREATE_GLOBAL_TABLE_SQL = "CREATE TABLE IF NOT EXISTS global (" +
             "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
             "name TEXT UNIQUE ON CONFLICT REPLACE," +
             "value TEXT" +
@@ -31,7 +31,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CREATE_TABLE_SQL);
+        db.execSQL(CREATE_GLOBAL_TABLE_SQL);
         loadSettings(db);
     }
 
