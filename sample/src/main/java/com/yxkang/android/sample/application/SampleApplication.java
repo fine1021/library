@@ -26,4 +26,5 @@ public class SampleApplication extends Application {
         }
         return sApplication;
     }
+
 }

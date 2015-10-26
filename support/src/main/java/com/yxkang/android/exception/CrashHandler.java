@@ -25,13 +25,13 @@ import java.util.Locale;
  * use {@link #getInstance()} method to get the instance,
  * then use {@link #init(Context)} method to init
  */
-@SuppressWarnings({"unused", "ResultOfMethodCallIgnored"})
 public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
     private static final String TAG = CrashHandler.class.getSimpleName();
     private static final String BASE_DIR = Environment.getExternalStorageDirectory().getAbsolutePath();
     private static CrashHandler sHandler = null;
     private Thread.UncaughtExceptionHandler mDefaultHandler;
+    private CrashListener listener = null;
     private Context mContext;
     private long mTime = 1000;
 
@@ -68,6 +68,10 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             } catch (InterruptedException e) {
                 Log.e(TAG, "Error : ", e);
             }
+
+            if (listener != null) {
+                listener.afterCrash();
+            }
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(1);
         }
@@ -79,20 +83,29 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             return false;
         }
         Log.e(TAG, "", ex);
-        final String msg = getCrashInfo(ex);
+
+        String msg = getCrashInfo(ex);
         if (TextUtils.isEmpty(msg)) {
             Log.w(TAG, "exception msg is empty");
             return false;
         }
+
+        if (listener != null) {
+            listener.crashMessage(msg);
+            listener.crashException(ex);
+        }
+
         new Thread(new Runnable() {
             @Override
             public void run() {
-                write(getSystemInfo(msg));
                 Looper.prepare();
                 Toast.makeText(mContext, "sorry for crash!", Toast.LENGTH_LONG).show();
                 Looper.loop();
             }
         }).start();
+
+        String message = getSystemInfo(msg);
+        saveCrashInfo2File(message);
         return true;
     }
 
@@ -128,33 +141,41 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             cause.printStackTrace(printWriter);
             cause = cause.getCause();
         }
-        builder.append(ex.getLocalizedMessage()).append("\n");
         builder.append(info.toString()).append("\n");
         return builder.toString();
     }
 
     private String getCurrentTime() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_hh_mm_ss", Locale.CHINA);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_hhmmss", Locale.CHINA);
         Date date = new Date(System.currentTimeMillis());
         return sdf.format(date);
     }
 
-    private void write(String msg) {
-        String dirPath = BASE_DIR + File.separator + mContext.getPackageName();
-        File dir = new File(dirPath, "crash");
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-        String name = getCurrentTime() + ".log";
-        File log = new File(dir, name);
-        try {
-            FileWriter fr = new FileWriter(log);
-            BufferedWriter br = new BufferedWriter(fr);
-            br.write(msg);
-            br.flush();
-            br.close();
-        } catch (IOException e) {
-            Log.e(TAG, "Error : ", e);
+    private void saveCrashInfo2File(String msg) {
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            String dirPath = BASE_DIR + File.separator + mContext.getPackageName();
+            File dir = new File(dirPath, "crash");
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            String name = getCurrentTime() + ".log";
+            File log = new File(dir, name);
+            try {
+                FileWriter fr = new FileWriter(log);
+                BufferedWriter br = new BufferedWriter(fr);
+                br.write(msg);
+                br.flush();
+                br.close();
+            } catch (IOException e) {
+                Log.e(TAG, "Error : ", e);
+            }
+        } else {
+            Log.w(TAG, "ExternalStorageState = " + Environment.getExternalStorageState());
         }
     }
+
+    public void setCrashListener(CrashListener l) {
+        this.listener = l;
+    }
+
 }

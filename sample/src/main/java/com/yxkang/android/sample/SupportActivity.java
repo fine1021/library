@@ -3,6 +3,7 @@ package com.yxkang.android.sample;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -17,9 +18,12 @@ import com.yxkang.android.os.WeakReferenceHandler;
 import com.yxkang.android.sample.asynctask.MyAsyncTask;
 import com.yxkang.android.util.RootUtil;
 import com.yxkang.android.util.WifiPassword;
+import com.yxkang.android.util.ZipManager;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class SupportActivity extends AppCompatActivity {
@@ -86,6 +90,12 @@ public class SupportActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(SupportActivity.this, CrashActivity.class));
+            }
+        });
+        findViewById(R.id.bt_spt_zipManger).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                testZipManager();
             }
         });
     }
@@ -185,6 +195,23 @@ public class SupportActivity extends AppCompatActivity {
                 .contentGravity(GravityEnum.CENTER)
                 .positiveText("OK")
                 .show();
+    }
+
+    private void testZipManager() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String src = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "VideoCache";
+                File file = new File(src);
+                String dest = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "VideoCache.zip";
+                File file1 = new File(dest);
+                try {
+                    ZipManager.getInstance().zipFiles(Arrays.asList(file.listFiles()), file1);
+                } catch (IOException e) {
+                    android.util.Log.e("ZipManager", "", e);
+                }
+            }
+        }).start();
     }
 
     @Override
