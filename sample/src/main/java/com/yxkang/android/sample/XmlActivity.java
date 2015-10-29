@@ -1,6 +1,5 @@
 package com.yxkang.android.sample;
 
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -33,9 +32,6 @@ public class XmlActivity extends AppCompatActivity {
                 }
             }
         });
-
-        //noinspection ConstantConditions
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.blue)));
 
     }
 

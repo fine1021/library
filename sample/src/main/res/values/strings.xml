@@ -27,4 +27,5 @@
     <string name="title_activity_crash">CrashActivity</string>
     <string name="crashHandler">Crash Handler</string>
     <string name="zipManger">ZipManger</string>
+    <string name="favorite">QQ Favorite</string>
 </resources>

@@ -1,8 +1,9 @@
 package com.yxkang.android.sample;
 
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -14,7 +15,10 @@ import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.yxkang.android.provider.Settings;
 import com.yxkang.android.sample.bean.DisplayInfoBean;
+import com.yxkang.android.sample.media.MediaScannerService;
 import com.yxkang.android.util.ContextUtil;
+
+import java.io.File;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -25,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initActionbar();
         findViewById(R.id.bt_support_library).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,13 +47,14 @@ public class MainActivity extends AppCompatActivity {
                 startApplication("com.google.android.gms");
             }
         });
+        findViewById(R.id.bt_favorite).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showFavoritePictures();
+            }
+        });
         String value = Settings.Global.getString(getContentResolver(), "table_name", "unknown");
         Log.i(TAG, "table_name = " + value);
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    private void initActionbar() {
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.blue)));
     }
 
     /**
@@ -70,6 +74,20 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "The Application Has More Then One Main Entry Point!", Toast.LENGTH_SHORT).show();
                 break;
         }
+    }
+
+    private void showFavoritePictures() {
+        String root = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tencent/QQ_Favorite";
+        String noMediaFilePath = root + File.separator + MediaStore.MEDIA_IGNORE_FILENAME;
+        File file = new File(noMediaFilePath);
+        if (file.exists()) {
+            Log.i(TAG, "delete file = " + file.delete());
+        }
+        Intent service = new Intent(this, MediaScannerService.class);
+        service.putExtra(MediaScannerService.EXTRA_SCAN_TYPE, MediaScannerService.SCAN_DIR);
+        service.putExtra(MediaScannerService.EXTRA_SCAN_PATH, root);
+        startService(service);
+        Toast.makeText(MainActivity.this, "Start Scan Files", Toast.LENGTH_SHORT).show();
     }
 
     private void showDisplayInfo() {

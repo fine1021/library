@@ -75,7 +75,7 @@ public class ContextUtil {
      * @param packageContext Context
      * @param action         The Intent action of one <code>Service</code>
      * @return result type, such as {@link #TYPE_SUCCESS}, {@link #TYPE_FAILED} or {@link #TYPE_NOT_UNIQUE}
-     * @see #getExplicitServiceIntent(Context, String)
+     * @see #explicitServiceIntent(Context, String)
      */
     public static int startService(Context packageContext, String action) {
         Intent resolve = new Intent(action);
@@ -124,7 +124,7 @@ public class ContextUtil {
      * @param action         The Intent action of one <code>Service</code>
      * @return the unique and explicit intent if found, otherwise null
      */
-    public static Intent getExplicitServiceIntent(Context packageContext, String action) {
+    public static Intent explicitServiceIntent(Context packageContext, String action) {
         Intent resolve = new Intent(action);
 
         PackageManager manager = packageContext.getPackageManager();

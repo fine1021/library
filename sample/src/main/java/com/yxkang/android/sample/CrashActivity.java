@@ -1,25 +1,22 @@
 package com.yxkang.android.sample;
 
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-@SuppressWarnings("ConstantConditions")
 public class CrashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_crash);
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.blue)));
 
         crash();
     }
 
     private void crash() {
-        throw new RuntimeException("this is a test for crash");
+        // throw new RuntimeException("this is a test for crash");
     }
 
     @Override

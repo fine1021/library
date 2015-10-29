@@ -1,6 +1,5 @@
 package com.yxkang.android.sample;
 
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -22,7 +21,6 @@ public class SecurityActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_security);
-        initActionbar();
         mEditText1 = (EditText) findViewById(R.id.et_security_before);
         mEditText2 = (EditText) findViewById(R.id.et_security_after);
         findViewById(R.id.bt_security_base64_e).setOnClickListener(new View.OnClickListener() {
@@ -59,10 +57,6 @@ public class SecurityActivity extends AppCompatActivity {
         mEditText2.setText(des);
     }
 
-    @SuppressWarnings("ConstantConditions")
-    private void initActionbar() {
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.blue)));
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -35,6 +35,13 @@
             android:text="@string/gms"
             android:textAllCaps="false" />
 
+        <Button
+            android:id="@+id/bt_favorite"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:text="@string/favorite"
+            android:textAllCaps="false"/>
+
     </LinearLayout>
 
 

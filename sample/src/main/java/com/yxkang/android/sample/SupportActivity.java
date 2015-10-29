@@ -1,7 +1,6 @@
 package com.yxkang.android.sample;
 
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Message;
@@ -37,7 +36,6 @@ public class SupportActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_support);
-        initActionbar();
         findViewById(R.id.bt_spt_security).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,10 +98,6 @@ public class SupportActivity extends AppCompatActivity {
         });
     }
 
-    @SuppressWarnings("ConstantConditions")
-    private void initActionbar() {
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.blue)));
-    }
 
     private void testAsyncTask() {
         new MyAsyncTask().execute();

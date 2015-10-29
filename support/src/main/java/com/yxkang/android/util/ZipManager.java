@@ -78,6 +78,9 @@ public class ZipManager {
         if (files == null) {
             throw new NullPointerException("files == null");
         }
+        if (zipFile.exists()) {
+            zipFile.delete();
+        }
         ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile), BUFF_SIZE));
         for (File file : files) {
             zipSingleFile(file, zos, "");

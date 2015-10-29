@@ -17,7 +17,7 @@
             android:name=".SettingsProvider"
             android:authorities="com.example.provider.settings"
             android:exported="true"
-            android:multiprocess="true"
+            android:multiprocess="false"
             android:writePermission="android.permission.WRITE_EXAMPLE_SETTINGS" />
     </application>
 

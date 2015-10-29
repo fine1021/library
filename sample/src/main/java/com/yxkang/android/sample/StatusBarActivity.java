@@ -1,6 +1,5 @@
 package com.yxkang.android.sample;
 
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,7 +11,6 @@ import android.view.MenuItem;
 import com.yxkang.android.util.StatusBarManager;
 
 
-@SuppressWarnings("ConstantConditions")
 public class StatusBarActivity extends AppCompatActivity {
 
     public static final String TAG = "StatusBarActivity";
@@ -23,7 +21,6 @@ public class StatusBarActivity extends AppCompatActivity {
         setContentView(R.layout.activity_status_bar);
         StatusBarManager.test(this);
         StatusBarManager.setStatusBar(this, findViewById(R.id.container), getActionBarHeight());
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.blue)));
     }
 
     private int getActionBarHeight() {
