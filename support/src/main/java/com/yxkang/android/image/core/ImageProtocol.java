@@ -24,6 +24,9 @@ public enum ImageProtocol {
 
     /**
      * Appends scheme to incoming path
+     *
+     * @param path the path
+     * @return the path with the uri prefix
      */
     public String wrap(String path) {
         return uriPrefix + path;
@@ -32,6 +35,9 @@ public enum ImageProtocol {
 
     /**
      * Removed scheme part ("scheme://") from incoming URI
+     *
+     * @param uri the incoming URI
+     * @return the path without the uri prefix
      */
     public String crop(String uri) {
         if (!belongsTo(uri)) {

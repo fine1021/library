@@ -3,11 +3,11 @@ apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '23.0.1'
+    buildToolsVersion '23.0.2'
     defaultConfig {
         minSdkVersion 10
         versionCode 5
-        versionName '0.0.6-beta2'
+        versionName '0.0.6-beta3'
     }
     buildTypes {
         release {
@@ -41,7 +41,7 @@ def create(String target, String classDir) {
 }
 
 task buildJar(dependsOn: ['build']) << {
-    create("support-0.0.6-beta2.jar", "build/intermediates/classes/release")
+    create("support-0.0.6-beta3.jar", "build/intermediates/classes/release")
 }
 
 
@@ -53,7 +53,7 @@ publish {
     repoName = 'maven'
     groupId = 'com.yxkang.android'
     artifactId = 'support'
-    publishVersion = '0.0.6-beta2'
+    publishVersion = '0.0.6-beta3'
     description = 'a support library for android'
     website = 'https://github.com/fine1021/library'
     issueTracker = "${website}/issues"

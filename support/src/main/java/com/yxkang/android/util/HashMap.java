@@ -37,18 +37,18 @@ import java.util.Set;
 
 /**
  * HashMap is an implementation of {@link Map}. All optional operations are supported.
- * <p>
+ * <br>
  * <p>All elements are permitted as keys or values, including null.
- * <p>
+ * <br>
  * <p>Note that the iteration order for HashMap is non-deterministic. If you want
  * deterministic iteration, use {@link LinkedHashMap}.
- * <p>
+ * <br>
  * <p>Note: the implementation of {@code HashMap} is not synchronized.
  * If one thread of several threads accessing an instance modifies the map
  * structurally, access to the map needs to be synchronized. A structural
  * modification is an operation that adds or removes an entry. Changes in
  * the value of an entry are not structural changes.
- * <p>
+ * <br>
  * <p>The {@code Iterator} created by calling the {@code iterator} method
  * may throw a {@code ConcurrentModificationException} if the map is structurally
  * changed while an iterator is used to iterate over the elements. Only the

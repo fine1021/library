@@ -1,4 +1,4 @@
-package com.yxkang.android.widget;
+package com.yxkang.android.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;

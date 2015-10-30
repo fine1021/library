@@ -114,7 +114,7 @@ public class ContextUtil {
      * Beginning with {@link android.os.Build.VERSION_CODES#LOLLIPOP},
      * the system throws an exception if you call
      * {@link Context#bindService(Intent, ServiceConnection, int)} with an implicit intent.</p>
-     * <p>
+     * <br>
      * <p><strong>NOTE: </strong>When starting a Service,
      * you should always specify the component name. Otherwise,
      * you cannot be certain what service will respond to the intent,

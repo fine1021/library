@@ -42,6 +42,7 @@ public interface DiskCache {
      * @param imageUri Original image URI
      * @param bitmap   Image bitmap
      * @return <b>true</b> - if bitmap was saved successfully; <b>false</b> - if bitmap wasn't saved in disk cache.
+     * @throws IOException if can't be saved to local file
      */
     boolean put(String imageUri, Bitmap bitmap) throws IOException;
 
@@ -51,6 +52,7 @@ public interface DiskCache {
      * @param imageUri    Original image URI
      * @param imageStream Image inputStream
      * @return <b>true</b> - if bitmap was saved successfully; <b>false</b> - if bitmap wasn't saved in disk cache.
+     * @throws IOException if can't be saved to local file
      */
     boolean put(String imageUri, InputStream imageStream) throws IOException;
 

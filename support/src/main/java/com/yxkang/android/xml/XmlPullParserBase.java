@@ -40,7 +40,7 @@ public abstract class XmlPullParserBase {
      *
      * @param inputStream contains a raw byte input stream of possibly
      *                    unknown encoding (when inputEncoding is null).
-     * @throws XmlPullParserException
+     * @throws XmlPullParserException XmlPullParserException
      * @see #parse(InputStream, String)
      */
     public final void parse(InputStream inputStream) throws XmlPullParserException {
@@ -51,7 +51,7 @@ public abstract class XmlPullParserBase {
      * Sets the input stream the parser is going to process.
      * This call resets the parser state and sets the event type
      * to the initial value START_DOCUMENT.
-     * <p>
+     * <br>
      * <p><strong>NOTE:</strong> If an input encoding string is passed,
      * it MUST be used. Otherwise,
      * if inputEncoding is null, the parser SHOULD try to determine
@@ -63,6 +63,7 @@ public abstract class XmlPullParserBase {
      * @param inputStream   contains a raw byte input stream of possibly
      *                      unknown encoding (when inputEncoding is null).
      * @param inputEncoding if not null it MUST be used as encoding for inputStream
+     * @throws XmlPullParserException XmlPullParserException
      */
     public final void parse(InputStream inputStream, String inputEncoding) throws XmlPullParserException {
         if (TextUtils.isEmpty(inputEncoding)) {
@@ -80,7 +81,7 @@ public abstract class XmlPullParserBase {
      * This Method will transform string to stringReader,then call {@link #parse(Reader)} to handle
      *
      * @param xml a xml string
-     * @throws XmlPullParserException
+     * @throws XmlPullParserException XmlPullParserException
      * @see #parse(Reader)
      */
     public final void parse(String xml) throws XmlPullParserException {
@@ -97,7 +98,7 @@ public abstract class XmlPullParserBase {
      * such as parsing buffers.
      *
      * @param reader reader
-     * @throws XmlPullParserException
+     * @throws XmlPullParserException XmlPullParserException
      */
     public final void parse(Reader reader) throws XmlPullParserException {
         parser.setInput(reader);
@@ -125,8 +126,8 @@ public abstract class XmlPullParserBase {
      * maybe START_TAG or TEXT or END_TAG.
      *
      * @return element content or empty string
-     * @throws XmlPullParserException
-     * @throws IOException
+     * @throws XmlPullParserException XmlPullParserException
+     * @throws IOException IOException
      */
     protected String safetyNextText() throws XmlPullParserException, IOException {
         int type = parser.getEventType();

@@ -1,4 +1,4 @@
-package com.yxkang.android.widget;
+package com.yxkang.android.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -306,10 +306,9 @@ public class GestureView extends View {
     }
 
     /**
-     *
-     * @param pointS  the id of one point
-     * @param pointE  the id of another point
-     * @return  the id of the point, which is between the two points
+     * @param pointS the id of one point
+     * @param pointE the id of another point
+     * @return the id of the point, which is between the two points
      */
     private int getPointBetween2(int pointS, int pointE) {
         int id = -1;
@@ -449,13 +448,11 @@ public class GestureView extends View {
     public interface GestureTouchListener {
 
         /**
-         *
          * @param pwd password
          */
         void onDrawGesture(String pwd);
 
         /**
-         *
          * @param result the result of verify
          */
         void onVerifyGesture(boolean result);

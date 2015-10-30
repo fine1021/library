@@ -6,13 +6,15 @@ package com.yxkang.android.util;
  */
 public class Collections {
 
-
     /**
      * Computes a hash code and applies a supplemental hash function to defend
      * against poor quality hash functions. This is critical because HashMap
      * uses power-of-two length hash tables, that otherwise encounter collisions
      * for hash codes that do not differ in lower or upper bits.
      * Routine taken from java.util.concurrent.ConcurrentHashMap.hash(int).
+     *
+     * @param key the given key
+     * @return hash code
      */
     public static int secondaryHash(Object key) {
         return secondaryHash(key.hashCode());
@@ -35,6 +37,9 @@ public class Collections {
      * zero. If the argument is &gt; 2^30 or equal to Integer.MIN_VALUE, the method
      * returns Integer.MIN_VALUE. If the argument is zero, the method returns
      * zero.
+     *
+     * @param i the input value
+     * @return the smallest power of two
      */
     public static int roundUpToPowerOfTwo(int i) {
         i--; // If input is a power of two, shift its high-order bit right.

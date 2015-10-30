@@ -52,11 +52,15 @@ public class FifoCache<K, V> {
         trimToSize(maxSize);
     }
 
+
     /**
      * Returns the value for {@code key} if it exists in the cache or can be
      * created by {@code #create}. If a value was returned, it is moved to the
      * head of the queue. This returns null if a value is not cached and cannot
      * be created.
+     *
+     * @param key the key to lookup
+     * @return the value for {@code key}
      */
     public final V get(K key) {
         if (key == null) {
@@ -110,6 +114,8 @@ public class FifoCache<K, V> {
      * Caches {@code value} for {@code key}. The value is moved to the head of
      * the queue.
      *
+     * @param key   the {@code key}
+     * @param value the {@code value} for {@code key}
      * @return the previous value mapped by {@code key}.
      */
     public final V put(K key, V value) {
@@ -171,6 +177,7 @@ public class FifoCache<K, V> {
     /**
      * Removes the entry for {@code key} if it exists.
      *
+     * @param key the {@code key} of entry
      * @return the previous value mapped by {@code key}.
      */
     public final V remove(K key) {
@@ -198,12 +205,14 @@ public class FifoCache<K, V> {
      * invoked when a value is evicted to make space, removed by a call to
      * {@link #remove}, or replaced by a call to {@link #put}. The default
      * implementation does nothing.
-     * <p>
+     * <br>
      * <p>The method is called without synchronization: other threads may
      * access the cache while this method is executing.
      *
      * @param evicted  true if the entry is being removed to make space, false
      *                 if the removal was caused by a {@link #put} or {@link #remove}.
+     * @param key      the {@code key} of entry
+     * @param oldValue the old value for {@code key}
      * @param newValue the new value for {@code key}, if it exists. If non-null,
      *                 this removal was caused by a {@link #put}. Otherwise it was caused by
      *                 an eviction or a {@link #remove}.
@@ -215,16 +224,19 @@ public class FifoCache<K, V> {
      * Called after a cache miss to compute a value for the corresponding key.
      * Returns the computed value or null if no value can be computed. The
      * default implementation returns null.
-     * <p>
+     * <br>
      * <p>The method is called without synchronization: other threads may
      * access the cache while this method is executing.
-     * <p>
+     * <br>
      * <p>If a value for {@code key} exists in the cache when this method
      * returns, the created value will be released with {@link #entryRemoved}
      * and discarded. This can occur when multiple threads request the same key
      * at the same time (causing multiple values to be created), or when one
      * thread calls {@link #put} while another is creating a value for the same
      * key.
+     *
+     * @param key the {@code key} of entry
+     * @return the value for {@code key}, maybe {@code null}
      */
     protected V create(K key) {
         return null;
@@ -242,8 +254,12 @@ public class FifoCache<K, V> {
      * Returns the size of the entry for {@code key} and {@code value} in
      * user-defined units.  The default implementation returns 1 so that size
      * is the number of entries and max size is the maximum number of entries.
-     * <p>
-     * <p>An entry's size must not change while it is in the cache.
+     * <br>
+     * <p>An entry's size must not change while it is in the cache.</p>
+     *
+     * @param key   the {@code key} of entry
+     * @param value the {@code value} for {@code key}
+     * @return the size of the entry for {@code key} and {@code value} in user-defined units
      */
     protected int sizeOf(K key, V value) {
         return 1;
@@ -260,6 +276,8 @@ public class FifoCache<K, V> {
      * For caches that do not override {@link #sizeOf}, this returns the number
      * of entries in the cache. For all other caches, this returns the sum of
      * the sizes of the entries in this cache.
+     *
+     * @return the sum of the sizes of the entries in this cache.
      */
     public synchronized final int size() {
         return size;
@@ -269,13 +287,15 @@ public class FifoCache<K, V> {
      * For caches that do not override {@link #sizeOf}, this returns the maximum
      * number of entries in the cache. For all other caches, this returns the
      * maximum sum of the sizes of the entries in this cache.
+     *
+     * @return the maximum sum of the sizes of the entries in this cache.
      */
     public synchronized final int maxSize() {
         return maxSize;
     }
 
     /**
-     * Returns the number of times {@link #get} returned a value that was
+     * @return the number of times {@link #get} returned a value that was
      * already present in the cache.
      */
     public synchronized final int hitCount() {
@@ -283,7 +303,7 @@ public class FifoCache<K, V> {
     }
 
     /**
-     * Returns the number of times {@link #get} returned null or required a new
+     * @return the number of times {@link #get} returned null or required a new
      * value to be created.
      */
     public synchronized final int missCount() {
@@ -291,28 +311,28 @@ public class FifoCache<K, V> {
     }
 
     /**
-     * Returns the number of times {@link #create(Object)} returned a value.
+     * @return the number of times {@link #create(Object)} returned a value.
      */
     public synchronized final int createCount() {
         return createCount;
     }
 
     /**
-     * Returns the number of times {@link #put} was called.
+     * @return the number of times {@link #put} was called.
      */
     public synchronized final int putCount() {
         return putCount;
     }
 
     /**
-     * Returns the number of values that have been evicted.
+     * @return the number of values that have been evicted.
      */
     public synchronized final int evictionCount() {
         return evictionCount;
     }
 
     /**
-     * Returns a copy of the current contents of the cache, ordered from least
+     * @return a copy of the current contents of the cache, ordered from least
      * recently accessed to most recently accessed.
      */
     public synchronized final Map<K, V> snapshot() {

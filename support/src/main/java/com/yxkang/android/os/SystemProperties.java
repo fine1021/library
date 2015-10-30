@@ -16,6 +16,7 @@ public class SystemProperties {
     /**
      * Get the value for the given key.
      *
+     * @param key the key to lookup
      * @return an empty string if the key isn't found
      */
     public static String get(String key) {
@@ -40,6 +41,8 @@ public class SystemProperties {
     /**
      * Get the value for the given key.
      *
+     * @param key the key to lookup
+     * @param def a default value to return
      * @return if the key isn't found, return def if it isn't null, or an empty string otherwise
      */
     public static String get(String key, String def) {

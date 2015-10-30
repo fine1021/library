@@ -1,15 +1,15 @@
-package com.yxkang.android.widget;
+package com.yxkang.android.view;
 
 /**
  * Created by fine on 2015/4/8.
  */
 public class GesturePoint {
 
-    private float centerX;     
-    private float centerY;     
-    private float radius;      
-    private int id = -1;       
-    private boolean onTouch;   
+    private float centerX;
+    private float centerY;
+    private float radius;
+    private int id = -1;
+    private boolean onTouch;
 
     public float getCenterX() {
         return centerX;

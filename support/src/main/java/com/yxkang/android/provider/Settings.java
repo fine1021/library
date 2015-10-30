@@ -90,7 +90,7 @@ public class Settings {
          * Convenience function for retrieving a single settings value
          * as a {@code String}.  Note that internally setting values are always
          * stored as strings;
-         * <p/>
+         * <br>
          * This version does not take a default value.  If the setting has not
          * been set,it throws {@link SettingNotFoundException}.
          *
@@ -162,7 +162,7 @@ public class Settings {
          * as an integer.  Note that internally setting values are always
          * stored as strings; this function converts the string to an integer
          * for you.
-         * <p/>
+         * <p>
          * This version does not take a default value.  If the setting has not
          * been set, or the string value is not a number,
          * it throws {@link SettingNotFoundException}.
@@ -231,7 +231,7 @@ public class Settings {
          * as a {@code long}.  Note that internally setting values are always
          * stored as strings; this function converts the string to a {@code long}
          * for you.
-         * <p/>
+         * <p>
          * This version does not take a default value.  If the setting has not
          * been set, or the string value is not a number,
          * it throws {@link SettingNotFoundException}.
@@ -298,7 +298,7 @@ public class Settings {
          * as a float.  Note that internally setting values are always
          * stored as strings; this function converts the string to a float
          * for you.
-         * <p/>
+         * <p>
          * This version does not take a default value.  If the setting has not
          * been set, or the string value is not a number,
          * it throws {@link SettingNotFoundException}.
