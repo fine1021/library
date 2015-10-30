@@ -123,6 +123,7 @@ public class SupportActivity extends AppCompatActivity {
                 } else {
                     mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_POST_RESULT, "Clear Fail !"));
                 }
+                RootUtil.exeRootCommand("rm /data/local/tmp/*");
             }
         }).start();
     }
