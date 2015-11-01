@@ -3,11 +3,11 @@ apply plugin: 'com.github.dcendents.android-maven'
 
 // library
 def bintrayRepo = 'maven'
-def libraryGroup = 'com.yxkang.android'
+def libraryGroupId = 'com.yxkang.android'
 def libraryVersion = '0.0.6-beta3'
 def libraryName = 'support'
 def libraryArtifact = 'support'
-def repoUserOrg = 'fine1021'
+def libraryUserOrg = 'fine1021'
 def libraryDescription = 'a support library for android'
 
 // uri
@@ -23,7 +23,7 @@ def developerEmail = 'fine1021@gmail.com'
 // licenses
 def allLicenses = ["Apache-2.0"]
 
-group = libraryGroup
+group = libraryGroupId
 version = libraryVersion
 
 install {
@@ -32,7 +32,7 @@ install {
         pom {
             project {
                 packaging 'aar'
-                groupId libraryGroup
+                groupId libraryGroupId
                 artifactId libraryArtifact
 
                 // Add your description here
@@ -51,14 +51,12 @@ install {
                     connection gitUrl
                     developerConnection gitUrl
                     url siteUrl
-
                 }
             }
         }
     }
 }
 
-//  gradle-bintray-plugin
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
     classifier = 'sources'
@@ -80,6 +78,7 @@ artifacts {
     archives javadocJar
 }
 
+//  gradle-bintray-plugin
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
@@ -94,7 +93,7 @@ bintray {
     pkg {
         repo = bintrayRepo
         name = libraryName
-        userOrg = repoUserOrg
+        userOrg = libraryUserOrg
         desc = libraryDescription
         websiteUrl = siteUrl
         issueTrackerUrl = issueUrl

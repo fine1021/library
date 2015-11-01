@@ -63,4 +63,4 @@ publish {
     dryRun = false
 }
 
-//apply from: './maven_push.gradle'
+//apply from: './bintray.gradle'
