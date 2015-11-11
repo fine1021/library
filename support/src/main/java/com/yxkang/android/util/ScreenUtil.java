@@ -3,7 +3,9 @@ package com.yxkang.android.util;
 import android.app.Activity;
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 
 /**
  * Created by fine on 2015/6/17.
@@ -92,11 +94,43 @@ public class ScreenUtil {
      * transform the sp to px, according to the phone scaledDensity
      *
      * @param context context
-     * @param spValue ap value
+     * @param spValue sp value
      * @return px value
      */
     public static int sp2px(Context context, float spValue) {
         final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
         return (int) (spValue * fontScale + 0.5f);
+    }
+
+    /**
+     * hide the soft input from window
+     *
+     * @param context context
+     * @param t       t
+     * @param <T>     object extends {@link View}
+     * @return {@code true} if success, otherwise {@code false}
+     */
+    public static <T extends View> boolean hideSoftInput(Context context, T t) {
+        InputMethodManager manager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (manager != null && manager.isActive()) {
+            return manager.hideSoftInputFromWindow(t.getWindowToken(), 0);
+        }
+        return false;
+    }
+
+    /**
+     * show the soft input from window
+     *
+     * @param context context
+     * @param t       t
+     * @param <T>     object extends {@link View}
+     * @return {@code true} if success, otherwise {@code false}
+     */
+    public static <T extends View> boolean showSoftInput(Context context, T t) {
+        InputMethodManager manager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (manager != null) {
+            return manager.showSoftInput(t, InputMethodManager.SHOW_FORCED);
+        }
+        return false;
     }
 }
