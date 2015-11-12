@@ -96,6 +96,18 @@ public class SupportActivity extends AppCompatActivity {
                 testZipManager();
             }
         });
+        findViewById(R.id.bt_spt_lock).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SupportActivity.this, LockActivity.class));
+            }
+        });
+        findViewById(R.id.bt_spt_drag).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SupportActivity.this, DragActivity.class));
+            }
+        });
     }
 
 

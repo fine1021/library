@@ -11,7 +11,7 @@ import android.view.inputmethod.InputMethodManager;
  * Created by fine on 2015/6/17.
  */
 @SuppressWarnings("ALL")
-public class ScreenUtil {
+public class Display {
 
     /**
      * get the screen width

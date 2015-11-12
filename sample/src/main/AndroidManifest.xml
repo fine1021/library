@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    package="com.yxkang.android.sample"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.yxkang.android.sample">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
@@ -41,12 +39,22 @@
             android:name=".CrashActivity"
             android:label="@string/title_activity_crash"/>
 
-        <service
-            android:name="com.yxkang.android.sample.media.MediaScannerService">
+        <service android:name=".media.MediaScannerService">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_SCANNER_SERVICE"/>
             </intent-filter>
         </service>
+
+        <activity
+            android:name=".LockActivity"
+            android:label="@string/title_activity_lock"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".DragActivity"
+            android:label="@string/title_activity_drag"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>
