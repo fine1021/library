@@ -60,7 +60,7 @@ import java.util.Set;
  * @param <K> the type of keys maintained by this map
  * @param <V> the type of mapped values
  */
-public class HashMap<K, V> extends AbstractMap<K, V> implements Cloneable, Serializable {
+class HashMap<K, V> extends AbstractMap<K, V> implements Cloneable, Serializable {
     /**
      * Min capacity (other than zero) for a HashMap. Must be a power of two
      * greater than 1 (and less than 1 << 30).

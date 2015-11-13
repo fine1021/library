@@ -2,15 +2,11 @@ package com.yxkang.android.sample.media;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
-import java.io.File;
-import java.util.ArrayList;
+import com.yxkang.android.media.MediaScannerListener;
+import com.yxkang.android.media.MediaScannerManager;
 
 /**
  * MediaScannerService
@@ -25,7 +21,9 @@ public class MediaScannerService extends IntentService {
 
     private static final String TAG = "MediaScannerService";
 
-    private MediaScannerConnection connection = null;
+    private MediaScannerManager scannerManager;
+    private ScannerListener scannerListener;
+
 
     public MediaScannerService() {
         this("MediaScannerService");
@@ -33,6 +31,20 @@ public class MediaScannerService extends IntentService {
 
     public MediaScannerService(String name) {
         super(name);
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        scannerManager = new MediaScannerManager(this);
+        scannerListener = new ScannerListener();
+        scannerManager.registerMediaScannerListener(scannerListener);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        scannerManager.unregisterMediaScannerListener(scannerListener);
     }
 
     @Override
@@ -57,62 +69,28 @@ public class MediaScannerService extends IntentService {
     }
 
     private void scanFile(String path, int way) {
-        File file = new File(path);
-        switch (way) {
-            case 1:
-                Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                intent.setData(Uri.fromFile(file));
-                sendBroadcast(intent);
-                break;
-            case 2:
-                connection = new MediaScannerConnection(getApplicationContext(),
-                        new MediaScannerConnection.MediaScannerConnectionClient() {
-                            @Override
-                            public void onMediaScannerConnected() {
-
-                            }
-
-                            @Override
-                            public void onScanCompleted(String path, Uri uri) {
-                                Log.i(TAG, path);
-                                disconnect();
-                            }
-                        });
-                connection.connect();
-                connection.scanFile(file.getAbsolutePath(), null);
-                break;
-        }
-    }
-
-    private void disconnect() {
-        if (connection != null && connection.isConnected()) {
-            connection.disconnect();
-        }
+        scannerManager.scanFile(path, way);
     }
 
     private void scanDirectory(String path) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            Intent intent = new Intent(Intent.ACTION_MEDIA_MOUNTED);
-            intent.setData(Uri.fromFile(Environment.getExternalStorageDirectory()));
-            sendBroadcast(intent);
-        } else {
-            File dir = new File(path);
-            File[] files = dir.listFiles();
-            if (files != null) {
-                ArrayList<String> list = new ArrayList<>();
-                for (File f : files) {
-                    list.add(f.getAbsolutePath());
-                }
-                String[] paths = new String[list.size()];
-                list.toArray(paths);
-                MediaScannerConnection.scanFile(getApplicationContext(), paths, null,
-                        new MediaScannerConnection.OnScanCompletedListener() {
-                            @Override
-                            public void onScanCompleted(String path, Uri uri) {
-                                Log.i(TAG, path);
-                            }
-                        });
-            }
+        scannerManager.scanDirectory(path);
+    }
+
+    private class ScannerListener implements MediaScannerListener {
+
+        @Override
+        public void onMediaScannerConnected() {
+            Log.i(TAG, "onMediaScannerConnected");
+        }
+
+        @Override
+        public void onScanCompleted(String path) {
+            Log.i(TAG, path);
+        }
+
+        @Override
+        public void onMediaScannerDisConnected() {
+            Log.i(TAG, "onMediaScannerDisConnected");
         }
     }
 }

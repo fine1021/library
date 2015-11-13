@@ -154,7 +154,9 @@ public class SupportActivity extends AppCompatActivity {
                 if (list.size() > 0) {
                     StringBuilder builder = new StringBuilder();
                     for (WifiPassword.Password password : list) {
-                        builder.append(password.toString());
+                        builder.append(WifiPassword.Password.SSID).append(" : ").append(password.ssid).append("\n");
+                        builder.append(WifiPassword.Password.PSK).append(" : ").append(password.psk).append("\n");
+                        builder.append(WifiPassword.Password.PRIORITY).append(" : ").append(password.priority).append("\n");
                     }
                     mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_POST_RESULT2, builder.toString()));
                 } else {
@@ -197,9 +199,9 @@ public class SupportActivity extends AppCompatActivity {
     private void showDialog(String content, String title) {
         new MaterialDialog.Builder(SupportActivity.this)
                 .title(title)
-                .titleGravity(GravityEnum.CENTER)
+                .titleGravity(GravityEnum.START)
                 .content(content)
-                .contentGravity(GravityEnum.CENTER)
+                .contentGravity(GravityEnum.START)
                 .positiveText("OK")
                 .show();
     }
