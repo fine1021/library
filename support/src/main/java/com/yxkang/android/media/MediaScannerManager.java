@@ -1,6 +1,8 @@
 package com.yxkang.android.media;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -41,28 +43,55 @@ public class MediaScannerManager {
         }
     }
 
-    class ListenerTransport extends IMediaScannerListener.Stub {
+    private class ListenerTransport extends IMediaScannerListener.Stub {
 
         private MediaScannerListener listener;
 
+        private static final int CONNECTED = 0x1;
+        private static final int COMPLETED = 0x2;
+        private static final int DISCONNECTED = 0x3;
+
+        private final Handler mScannerHandler;
+
         public ListenerTransport(MediaScannerListener listener) {
             this.listener = listener;
+
+            mScannerHandler = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    _handleMessage(msg);
+                }
+            };
         }
 
         @Override
         public void onMediaScannerConnected() throws RemoteException {
-            listener.onMediaScannerConnected();
+            mScannerHandler.sendEmptyMessage(CONNECTED);
         }
 
         @Override
         public void onScanCompleted(String path) throws RemoteException {
             Log.d(TAG, path);
-            listener.onScanCompleted(path);
+            mScannerHandler.sendMessage(mScannerHandler.obtainMessage(COMPLETED, path));
         }
 
         @Override
         public void onMediaScannerDisConnected() throws RemoteException {
-            listener.onMediaScannerDisConnected();
+            mScannerHandler.sendEmptyMessage(DISCONNECTED);
+        }
+
+        private void _handleMessage(Message msg) {
+            switch (msg.what) {
+                case CONNECTED:
+                    listener.onMediaScannerConnected();
+                    break;
+                case COMPLETED:
+                    listener.onScanCompleted(msg.obj.toString());
+                    break;
+                case DISCONNECTED:
+                    listener.onMediaScannerDisConnected();
+                    break;
+            }
         }
     }
 
@@ -95,7 +124,7 @@ public class MediaScannerManager {
         if (transport != null) {
             try {
                 scannerService.unregisterMediaScannerListener(transport);
-                mListeners.remove(transport);
+                mListeners.remove(listener);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
