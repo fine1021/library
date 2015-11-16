@@ -94,9 +94,9 @@ public class MainActivity extends AppCompatActivity {
         DisplayInfoBean bean = new DisplayInfoBean(this);
         new MaterialDialog.Builder(this)
                 .title("Display Information")
-                .titleGravity(GravityEnum.CENTER)
+                .titleGravity(GravityEnum.START)
                 .content(bean.toString())
-                .contentGravity(GravityEnum.CENTER)
+                .contentGravity(GravityEnum.START)
                 .positiveText(android.R.string.ok)
                 .show();
     }

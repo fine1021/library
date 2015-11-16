@@ -6,12 +6,9 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.os.Message;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.util.Log;
-
-import com.yxkang.android.os.WeakReferenceHandler;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,31 +18,19 @@ import java.util.ArrayList;
  */
 class MediaScannerService extends IMediaScannerService.Stub {
 
-    private static final int MESSAGE_CONNECTED = 0x1;
-
-    private static final int MESSAGE_SCAN_COMPLETED = 0x2;
-
-    private static final int MESSAGE_DISCONNECTED = 0x3;
-
     private static final String TAG = "IMediaScannerService";
 
     private Context context;
+
+    private int mTotal = 0;
+
+    private int mCurrent = 0;
 
     private MediaScannerConnection connection = null;
 
     private final Object mMutex = new Object();
 
-    private final InternalHandler mHandler = new InternalHandler(this);
-
-    private final ArrayList<IMediaScannerListener> scannerListeners = new ArrayList<>();
-
-    private final RemoteCallbackList<IMediaScannerListener> callbackList = new RemoteCallbackList<IMediaScannerListener>() {
-        @Override
-        public void onCallbackDied(IMediaScannerListener callback) {
-            super.onCallbackDied(callback);
-            Log.i(TAG, "onCallbackDied");
-        }
-    };
+    private final RemoteCallbackList<IMediaScannerListener> callbackList = new RemoteCallbackList<>();
 
     public MediaScannerService(Context context) {
         this.context = context.getApplicationContext();
@@ -64,13 +49,13 @@ class MediaScannerService extends IMediaScannerService.Stub {
                 connection = new MediaScannerConnection(context, new MediaScannerConnection.MediaScannerConnectionClient() {
                     @Override
                     public void onMediaScannerConnected() {
-                        mHandler.sendEmptyMessage(MESSAGE_CONNECTED);
+                        notifyMediaScannerConnected();
                     }
 
                     @Override
                     public void onScanCompleted(String path, Uri uri) {
                         Log.i(TAG, path);
-                        mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_SCAN_COMPLETED, path));
+                        notifyScanCompleted(path, uri);
                         try {
                             disconnect();
                         } catch (RemoteException e) {
@@ -100,13 +85,19 @@ class MediaScannerService extends IMediaScannerService.Stub {
                 }
                 String[] paths = new String[list.size()];
                 list.toArray(paths);
+                mTotal = list.size();
+                mCurrent = 1;
                 MediaScannerConnection.scanFile(context, paths, null,
                         new MediaScannerConnection.OnScanCompletedListener() {
                             @Override
                             public void onScanCompleted(String path, Uri uri) {
                                 Log.i(TAG, path);
-                                //mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_SCAN_COMPLETED, path));
-                                notifyScanCompleted(path);
+                                notifyScanCompleted(path, uri);
+                                if (mCurrent < mTotal) {
+                                    mCurrent++;
+                                } else {
+                                    notifyScanOperationFinished();
+                                }
                             }
                         });
             }
@@ -118,119 +109,79 @@ class MediaScannerService extends IMediaScannerService.Stub {
         if (connection != null && connection.isConnected()) {
             connection.disconnect();
             connection = null;
-            mHandler.sendEmptyMessage(MESSAGE_DISCONNECTED);
+            notifyMediaScannerDisConnected();
+            notifyScanOperationFinished();
         }
     }
 
     @Override
     public void registerMediaScannerListener(IMediaScannerListener listener) throws RemoteException {
-        if (listener != null) {
-            synchronized (mMutex) {
-                callbackList.register(listener);
-                scannerListeners.add(listener);
-                Log.i(TAG, "111111111111111111--->" + scannerListeners.size());
-            }
+        synchronized (mMutex) {
+            callbackList.register(listener);
         }
     }
 
     @Override
     public void unregisterMediaScannerListener(IMediaScannerListener listener) throws RemoteException {
-        if (listener != null) {
-            synchronized (mMutex) {
-                callbackList.unregister(listener);
-                scannerListeners.remove(listener);
-            }
+        synchronized (mMutex) {
+            callbackList.unregister(listener);
         }
     }
 
 
     private void notifyMediaScannerConnected() {
         synchronized (mMutex) {
-//            int count = callbackList.beginBroadcast();
-//            for (int i = 0; i < count; i++) {
-//                try {
-//                    callbackList.getBroadcastItem(i).onMediaScannerConnected();
-//                } catch (RemoteException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            callbackList.finishBroadcast();
-
-            for (IMediaScannerListener listener : scannerListeners) {
-                try {
-                    listener.onMediaScannerConnected();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }
-
-        }
-    }
-
-    private void notifyScanCompleted(String path) {
-        synchronized (mMutex) {
             int count = callbackList.beginBroadcast();
             for (int i = 0; i < count; i++) {
                 try {
-                    callbackList.getBroadcastItem(i).onScanCompleted(path);
+                    callbackList.getBroadcastItem(i).onMediaScannerConnected();
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
             }
             callbackList.finishBroadcast();
-            Log.i(TAG, "222222222222222222--->" + count);
-            Log.i(TAG, "333333333333333333--->" + scannerListeners.size());
-            for (IMediaScannerListener listener : scannerListeners) {
+        }
+    }
+
+    private void notifyScanCompleted(String path, Uri uri) {
+        synchronized (mMutex) {
+            int count = callbackList.beginBroadcast();
+            for (int i = 0; i < count; i++) {
                 try {
-                    listener.onScanCompleted(path);
+                    callbackList.getBroadcastItem(i).onScanCompleted(path, uri);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
             }
+            callbackList.finishBroadcast();
         }
     }
 
     private void notifyMediaScannerDisConnected() {
         synchronized (mMutex) {
-//            int count = callbackList.beginBroadcast();
-//            for (int i = 0; i < count; i++) {
-//                try {
-//                    callbackList.getBroadcastItem(i).onMediaScannerDisConnected();
-//                } catch (RemoteException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            callbackList.finishBroadcast();
-            for (IMediaScannerListener listener : scannerListeners) {
+            int count = callbackList.beginBroadcast();
+            for (int i = 0; i < count; i++) {
                 try {
-                    listener.onMediaScannerDisConnected();
+                    callbackList.getBroadcastItem(i).onMediaScannerDisConnected();
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
             }
+            callbackList.finishBroadcast();
         }
     }
 
-    private static class InternalHandler extends WeakReferenceHandler<MediaScannerService> {
-
-        public InternalHandler(MediaScannerService reference) {
-            super(reference);
-        }
-
-        @Override
-        protected void handleMessage(MediaScannerService reference, Message msg) {
-            switch (msg.what) {
-                case MESSAGE_CONNECTED:
-                    reference.notifyMediaScannerConnected();
-                    break;
-                case MESSAGE_SCAN_COMPLETED:
-                    reference.notifyScanCompleted((String) msg.obj);
-                    break;
-                case MESSAGE_DISCONNECTED:
-                    reference.notifyMediaScannerDisConnected();
-                    break;
+    private void notifyScanOperationFinished() {
+        synchronized (mMutex) {
+            int count = callbackList.beginBroadcast();
+            for (int i = 0; i < count; i++) {
+                try {
+                    callbackList.getBroadcastItem(i).onScanOperationFinished();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
+            callbackList.finishBroadcast();
         }
-
     }
 }

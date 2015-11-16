@@ -2,6 +2,7 @@ package com.yxkang.android.sample.media;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -42,12 +43,6 @@ public class MediaScannerService extends IntentService {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        scannerManager.unregisterMediaScannerListener(scannerListener);
-    }
-
-    @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
             int type = intent.getIntExtra(EXTRA_SCAN_TYPE, -1);
@@ -84,13 +79,20 @@ public class MediaScannerService extends IntentService {
         }
 
         @Override
-        public void onScanCompleted(String path) {
-            Log.i(TAG, path);
+        public void onMediaScannerDisConnected() {
+            Log.i(TAG, "onMediaScannerDisConnected");
         }
 
         @Override
-        public void onMediaScannerDisConnected() {
-            Log.i(TAG, "onMediaScannerDisConnected");
+        public void onScanCompleted(String path, Uri uri) {
+            if (!TextUtils.isEmpty(path)) {
+                Log.i(TAG, path);
+            }
+        }
+
+        @Override
+        public void onScanOperationFinished() {
+            scannerManager.unregisterMediaScannerListener(scannerListener);
         }
     }
 }
