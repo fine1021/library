@@ -4,7 +4,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 // library
 def bintrayRepo = 'maven'
 def libraryGroupId = 'com.yxkang.android'
-def libraryVersion = '0.0.6'
+def libraryVersion = '0.0.7'
 def libraryName = 'support'
 def libraryArtifact = 'support'
 def libraryUserOrg = 'fine1021'
