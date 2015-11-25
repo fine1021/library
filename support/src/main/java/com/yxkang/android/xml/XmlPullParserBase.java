@@ -13,17 +13,15 @@ import java.io.Reader;
 import java.io.StringReader;
 
 
-@SuppressWarnings("ALL")
 public abstract class XmlPullParserBase {
 
     private static final String charset = "utf-8";
     private static final String TAG = "XmlPullParserBase";
-    private XmlPullParser parser = null;
-    private XmlPullParserFactory factory = null;
+    protected XmlPullParser parser = null;
 
     public XmlPullParserBase() {
         try {
-            factory = XmlPullParserFactory.newInstance();
+            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             parser = factory.newPullParser();
             Log.i(TAG, "XmlPullParser Init Success !");
         } catch (XmlPullParserException e) {
@@ -106,7 +104,10 @@ public abstract class XmlPullParserBase {
     }
 
     /**
-     * get the current parser
+     * get the current {@code parser}
+     * <br>
+     * <p><strong>Note:</strong>{@code parser} is a protected filed, you can use it directly.
+     * of course you can also use this method the {@code parser}.
      *
      * @return parser
      */
@@ -119,12 +120,11 @@ public abstract class XmlPullParserBase {
      * did not always advance to the END_TAG event when {@link XmlPullParser#nextText()}
      * method was called.
      * <br>
-     * This is a safty method to get the nextText.
+     * This is a safety method to get the nextText.
      *
      * @return element content or empty string
      * @throws XmlPullParserException XmlPullParserException
      * @throws IOException            IOException
-     * @see {@link XmlPullParser#nextText()}
      */
     protected String safetyNextText() throws XmlPullParserException, IOException {
         String result = parser.nextText();
