@@ -115,49 +115,27 @@ public abstract class XmlPullParserBase {
     }
 
     /**
-     * If the current event is START_TAG and the tag is degenerated (e.g. &lt;foobar/&gt;).
-     * {@link #safetyNextText()} will return empty string, and parser will also stay at where it was.
-     * <br><br>
-     * If current event is START_TAG then if next element is TEXT then element content is returned
-     * or if next event is END_TAG then empty string is returned
-     * or if next event is START_TAG then empty string is returned, otherwise exception is thrown.
-     * <br><br>
-     * After calling this function successfully parser will be positioned on the next position,
-     * maybe START_TAG or TEXT or END_TAG.
+     * Prior to API level 14, the pull parser returned by {@code android.util.Xml}
+     * did not always advance to the END_TAG event when {@link XmlPullParser#nextText()}
+     * method was called.
+     * <br>
+     * This is a safty method to get the nextText.
      *
      * @return element content or empty string
      * @throws XmlPullParserException XmlPullParserException
-     * @throws IOException IOException
+     * @throws IOException            IOException
+     * @see {@link XmlPullParser#nextText()}
      */
     protected String safetyNextText() throws XmlPullParserException, IOException {
-        int type = parser.getEventType();
-        if (type != XmlPullParser.START_TAG) {
-            throw new XmlPullParserException("precondition: START_TAG", parser, null);
+        String result = parser.nextText();
+        if (parser.getEventType() != XmlPullParser.END_TAG) {
+            parser.nextTag();
         }
-
-        if (parser.isEmptyElementTag()) {
-            return "";
-        }
-
-        parser.next();
-        type = parser.getEventType();
-
-        String result;
-        if (type == XmlPullParser.TEXT) {
-            result = parser.getText();
-        } else {
-            result = "";
-        }
-
-        if (type != XmlPullParser.START_TAG && type != XmlPullParser.TEXT && type != XmlPullParser.END_TAG) {
-            throw new XmlPullParserException("START_TAG/TEXT/END_TAG expected", parser, null);
-        }
-
         return result;
     }
 
     /**
-     * Implement custom analysis
+     * Implement custom parse
      */
     protected abstract void getContent();
 }

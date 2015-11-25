@@ -20,16 +20,16 @@ public class XmlParserMessage extends XmlPullParserBase {
     @Override
     protected void getContent() {
         int eventType;
+        String title;
+        String content;
 
         try {
             eventType = getParser().getEventType();
             while (eventType != XmlPullParser.END_DOCUMENT) {
 
-                String title;
-                String content;
-
                 switch (eventType) {
                     case XmlPullParser.START_DOCUMENT:
+                        Log.d(TAG, "START_DOCUMENT");
                         break;
                     case XmlPullParser.START_TAG:
                         title = getParser().getName();
@@ -41,9 +41,7 @@ public class XmlParserMessage extends XmlPullParserBase {
 
                         if (title.equals("ns:return")) {
                             content = safetyNextText();
-                            if (!TextUtils.isEmpty(content.trim())) {
-                                Log.d(TAG, title + " : " + content);
-                            }
+                            Log.d(TAG, title + " : " + content);
                         }
                         break;
                     case XmlPullParser.END_TAG:
@@ -51,6 +49,10 @@ public class XmlParserMessage extends XmlPullParserBase {
                         Log.d(TAG, title + " END_TAG");
                         break;
                     case XmlPullParser.TEXT:
+                        content = getParser().getText().trim();
+                        if (!TextUtils.isEmpty(content)) {
+                            Log.d(TAG, "TEXT : " + content);
+                        }
                         break;
                     case XmlPullParser.COMMENT:
                         break;
