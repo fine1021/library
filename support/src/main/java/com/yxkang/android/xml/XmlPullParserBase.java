@@ -17,7 +17,7 @@ public abstract class XmlPullParserBase {
 
     private static final String charset = "utf-8";
     private static final String TAG = "XmlPullParserBase";
-    protected XmlPullParser parser = null;
+    private XmlPullParser parser = null;
 
     public XmlPullParserBase() {
         try {
@@ -105,9 +105,6 @@ public abstract class XmlPullParserBase {
 
     /**
      * get the current {@code parser}
-     * <br>
-     * <p><strong>Note:</strong>{@code parser} is a protected filed, you can use it directly.
-     * of course you can also use this method the {@code parser}.
      *
      * @return parser
      */
