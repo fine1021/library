@@ -50,7 +50,7 @@ public abstract class XmlMessageParser extends XmlPullParserBase {
             return;
         }
         String tagValue = getParser().nextText();
-        onParseTag(tagName, tagValue);
+        onContentTag(tagName, tagValue);
     }
 
     protected void onDocumentStart() {
@@ -62,7 +62,7 @@ public abstract class XmlMessageParser extends XmlPullParserBase {
     protected void onHeadTagEnd(String tagName) {
     }
 
-    protected void onParseTag(String tagName, String tagValue) {
+    protected void onContentTag(String tagName, String tagValue) {
     }
 
     protected void onTextStart() {
@@ -74,7 +74,7 @@ public abstract class XmlMessageParser extends XmlPullParserBase {
     /**
      * if the tag is a head, it means that it doesn't have a direct {@code TEXT}.
      * <p><strong>Note:</strong> a empty tag (e.g. &lt;foobar/&gt;) is not the xml head tag, it will call
-     * {@link #onParseTag(String, String)} method to return the {@code tagName} and a empty string.
+     * {@link #onContentTag(String, String)} method to return the {@code tagName} and a empty string.
      *
      * @param tagName tagName
      * @return {@code true} if the tag is a head, otherwise {@code false}
