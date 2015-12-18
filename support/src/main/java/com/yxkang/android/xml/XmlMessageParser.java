@@ -80,4 +80,20 @@ public abstract class XmlMessageParser extends XmlPullParserBase {
      * @return {@code true} if the tag is a head, otherwise {@code false}
      */
     protected abstract boolean isXmlHead(String tagName);
+
+    protected int parseInt(String value, int defValue) {
+        try {
+            return Integer.parseInt(value);
+        } catch (Exception e) {
+            return defValue;
+        }
+    }
+
+    protected long parseLong(String value, long defValue) {
+        try {
+            return Long.parseLong(value);
+        } catch (Exception e) {
+            return defValue;
+        }
+    }
 }
