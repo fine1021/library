@@ -8,17 +8,12 @@ package com.yxkang.android.exception;
 public abstract class CrashListenerAdapter implements CrashListener {
 
     @Override
-    public void crashMessage(String message) {
+    public void handleException(Throwable throwable) {
 
     }
 
     @Override
-    public void crashException(Throwable throwable) {
-
-    }
-
-    @Override
-    public void afterCrash() {
+    public void beforeKillProcess() {
 
     }
 }

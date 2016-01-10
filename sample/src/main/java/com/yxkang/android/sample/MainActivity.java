@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.yxkang.android.provider.Settings;
+import com.yxkang.android.sample.application.SampleApplication;
 import com.yxkang.android.sample.bean.DisplayInfoBean;
 import com.yxkang.android.sample.media.MediaScannerService;
 import com.yxkang.android.util.ContextUtil;
@@ -121,5 +122,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SampleApplication.getInstance().stopTimeTask();
     }
 }

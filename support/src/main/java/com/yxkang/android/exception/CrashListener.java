@@ -5,9 +5,7 @@ package com.yxkang.android.exception;
  */
 public interface CrashListener {
 
-    void crashMessage(String message);
+    void handleException(Throwable throwable);
 
-    void crashException(Throwable throwable);
-
-    void afterCrash();
+    void beforeKillProcess();
 }

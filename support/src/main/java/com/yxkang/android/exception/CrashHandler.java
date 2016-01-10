@@ -2,10 +2,7 @@ package com.yxkang.android.exception;
 
 import android.content.Context;
 import android.os.Environment;
-import android.os.Looper;
-import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.yxkang.android.os.SystemProperties;
 
@@ -25,6 +22,7 @@ import java.util.Locale;
  * use {@link #getInstance()} method to get the instance,
  * then use {@link #init(Context)} method to init
  */
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
     private static final String TAG = CrashHandler.class.getSimpleName();
@@ -32,8 +30,8 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     private static CrashHandler sHandler = null;
     private Thread.UncaughtExceptionHandler mDefaultHandler;
     private CrashListener listener = null;
+    private boolean storeFile = true;
     private Context mContext;
-    private long mTime = 1000;
 
     private CrashHandler() {
     }
@@ -52,25 +50,22 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * @param time sleep time
+     * save the error log to file
+     *
+     * @param storeFile <tt>true</tt> if save the log, otherwise will not save
      */
-    public void setTime(long time) {
-        mTime = time;
+    public void setStoreFile(boolean storeFile) {
+        this.storeFile = storeFile;
     }
+
 
     @Override
     public void uncaughtException(Thread thread, Throwable ex) {
         if (!handleException(ex) && mDefaultHandler != null) {
             mDefaultHandler.uncaughtException(thread, ex);
         } else {
-            try {
-                Thread.sleep(mTime);
-            } catch (InterruptedException e) {
-                Log.e(TAG, "Error : ", e);
-            }
-
             if (listener != null) {
-                listener.afterCrash();
+                listener.beforeKillProcess();
             }
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(1);
@@ -82,30 +77,14 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             Log.w(TAG, "exception is null");
             return false;
         }
-        Log.e(TAG, "", ex);
-
-        String msg = getCrashInfo(ex);
-        if (TextUtils.isEmpty(msg)) {
-            Log.w(TAG, "exception msg is empty");
-            return false;
-        }
 
         if (listener != null) {
-            listener.crashMessage(msg);
-            listener.crashException(ex);
+            listener.handleException(ex);
         }
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Looper.prepare();
-                Toast.makeText(mContext, "sorry for crash!", Toast.LENGTH_LONG).show();
-                Looper.loop();
-            }
-        }).start();
-
-        String message = getSystemInfo(msg);
-        saveCrashInfo2File(message);
+        if (storeFile) {
+            String message = getSystemInfo(getCrashInfo(ex));
+            saveCrashInfo2File(message);
+        }
         return true;
     }
 

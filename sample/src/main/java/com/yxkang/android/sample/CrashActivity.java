@@ -16,7 +16,7 @@ public class CrashActivity extends AppCompatActivity {
     }
 
     private void crash() {
-        // throw new RuntimeException("this is a test for crash");
+        throw new NullPointerException("NullPointerException");
     }
 
     @Override
