@@ -69,7 +69,7 @@ public class SampleApplication extends Application {
     }
 
     public void startTimeTask() {
-        timer.schedule(task, 1000, 3000);
+        timer.schedule(task, 1000, 60 * 1000);
         Log.i(LOG_TAG, "startTimeTask");
     }
 
