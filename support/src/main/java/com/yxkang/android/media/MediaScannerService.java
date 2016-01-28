@@ -8,25 +8,15 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
-import android.util.Log;
 
 import java.io.File;
-import java.util.ArrayList;
 
 /**
  * Created by yexiaokang on 2015/11/13.
  */
 class MediaScannerService extends IMediaScannerService.Stub {
 
-    private static final String TAG = "IMediaScannerService";
-
     private Context context;
-
-    private int mTotal = 0;
-
-    private int mCurrent = 0;
-
-    private MediaScannerConnection connection = null;
 
     private final Object mMutex = new Object();
 
@@ -38,33 +28,16 @@ class MediaScannerService extends IMediaScannerService.Stub {
 
     @Override
     public void scanFile(String path, int way) throws RemoteException {
-        File file = new File(path);
         switch (way) {
             case 1:
                 Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                File file = new File(path);
                 intent.setData(Uri.fromFile(file));
                 context.sendBroadcast(intent);
+                notifyScanOperationFinished();
                 break;
             case 2:
-                connection = new MediaScannerConnection(context, new MediaScannerConnection.MediaScannerConnectionClient() {
-                    @Override
-                    public void onMediaScannerConnected() {
-                        notifyMediaScannerConnected();
-                    }
-
-                    @Override
-                    public void onScanCompleted(String path, Uri uri) {
-                        Log.i(TAG, path);
-                        notifyScanCompleted(path, uri);
-                        try {
-                            disconnect();
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                connection.connect();
-                connection.scanFile(file.getAbsolutePath(), null);
+                scan(new String[]{path}, null);
                 break;
         }
     }
@@ -75,43 +48,28 @@ class MediaScannerService extends IMediaScannerService.Stub {
             Intent intent = new Intent(Intent.ACTION_MEDIA_MOUNTED);
             intent.setData(Uri.fromFile(Environment.getExternalStorageDirectory()));
             context.sendBroadcast(intent);
+            notifyScanOperationFinished();
         } else {
             File dir = new File(path);
             File[] files = dir.listFiles();
-            if (files != null) {
-                ArrayList<String> list = new ArrayList<>();
-                for (File f : files) {
-                    list.add(f.getAbsolutePath());
+            if (files != null && files.length > 0) {
+                int length = files.length;
+                String[] paths = new String[length];
+                for (int i = 0; i < length; i++) {
+                    paths[i] = files[i].getAbsolutePath();
                 }
-                String[] paths = new String[list.size()];
-                list.toArray(paths);
-                mTotal = list.size();
-                mCurrent = 1;
-                MediaScannerConnection.scanFile(context, paths, null,
-                        new MediaScannerConnection.OnScanCompletedListener() {
-                            @Override
-                            public void onScanCompleted(String path, Uri uri) {
-                                Log.i(TAG, path);
-                                notifyScanCompleted(path, uri);
-                                if (mCurrent < mTotal) {
-                                    mCurrent++;
-                                } else {
-                                    notifyScanOperationFinished();
-                                }
-                            }
-                        });
+                scan(paths, null);
+            } else {
+                notifyScanOperationFinished();
             }
         }
     }
 
-    @Override
-    public void disconnect() throws RemoteException {
-        if (connection != null && connection.isConnected()) {
-            connection.disconnect();
-            connection = null;
-            notifyMediaScannerDisConnected();
-            notifyScanOperationFinished();
-        }
+    private void scan(String[] paths, String[] mimeTypes) {
+        ClientProxy clientProxy = new ClientProxy(paths, mimeTypes);
+        MediaScannerConnection connection = new MediaScannerConnection(context, clientProxy);
+        clientProxy.mConnection = connection;
+        connection.connect();
     }
 
     @Override
@@ -182,6 +140,40 @@ class MediaScannerService extends IMediaScannerService.Stub {
                 }
             }
             callbackList.finishBroadcast();
+        }
+    }
+
+    private class ClientProxy implements MediaScannerConnection.MediaScannerConnectionClient {
+        final String[] mPaths;
+        final String[] mMimeTypes;
+        MediaScannerConnection mConnection;
+        int mNextPath;
+
+        ClientProxy(String[] paths, String[] mimeTypes) {
+            mPaths = paths;
+            mMimeTypes = mimeTypes;
+        }
+
+        public void onMediaScannerConnected() {
+            notifyMediaScannerConnected();
+            scanNextPath();
+        }
+
+        public void onScanCompleted(String path, Uri uri) {
+            notifyScanCompleted(path, uri);
+            scanNextPath();
+        }
+
+        void scanNextPath() {
+            if (mNextPath >= mPaths.length) {
+                mConnection.disconnect();
+                notifyMediaScannerDisConnected();
+                notifyScanOperationFinished();
+                return;
+            }
+            String mimeType = mMimeTypes != null ? mMimeTypes[mNextPath] : null;
+            mConnection.scanFile(mPaths[mNextPath], mimeType);
+            mNextPath++;
         }
     }
 }

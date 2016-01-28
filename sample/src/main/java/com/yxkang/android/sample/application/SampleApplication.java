@@ -41,7 +41,7 @@ public class SampleApplication extends Application {
         registerActivityLifecycleCallbacks(lifecycle);
         CrashHandler mCrashHandler = CrashHandler.getInstance();
         mCrashHandler.init(getApplicationContext());
-        mCrashHandler.setStoreFile(false);
+        mCrashHandler.setStoreFile(true);
         mCrashHandler.setCrashListener(new CrashListenerAdapter() {
             @Override
             public void beforeKillProcess() {

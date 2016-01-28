@@ -78,7 +78,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showFavoritePictures() {
-        String root = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tencent/QQ_Favorite";
+//        String root = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tencent/QQ_Favorite";
+        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/Camera";
         String noMediaFilePath = root + File.separator + MediaStore.MEDIA_IGNORE_FILENAME;
         File file = new File(noMediaFilePath);
         if (file.exists()) {

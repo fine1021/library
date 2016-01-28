@@ -11,8 +11,6 @@ interface IMediaScannerService {
 
    void scanDirectory(String path);
 
-   void disconnect();
-
    void registerMediaScannerListener(in IMediaScannerListener listener);
 
    void unregisterMediaScannerListener(in IMediaScannerListener listener);

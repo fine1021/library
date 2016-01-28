@@ -50,9 +50,10 @@ public class MediaScannerService extends IntentService {
             if (TextUtils.isEmpty(path)) {
                 return;
             }
+            Log.i(TAG, "path = " + path);
             switch (type) {
                 case SCAN_FILE:
-                    scanFile(path, 1);
+                    scanFile(path, 2);
                     break;
                 case SCAN_DIR:
                     scanDirectory(path);
@@ -92,6 +93,7 @@ public class MediaScannerService extends IntentService {
 
         @Override
         public void onScanOperationFinished() {
+            Log.i(TAG, "onScanOperationFinished");
             scannerManager.unregisterMediaScannerListener(scannerListener);
         }
     }

@@ -33,9 +33,8 @@ public class Display {
      */
     public static int getScreenHeight(Context context) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
-        WindowManager manager = (WindowManager) context
-                .getSystemService(Context.WINDOW_SERVICE);
-        manager.getDefaultDisplay().getRealMetrics(displayMetrics);
+        WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        manager.getDefaultDisplay().getMetrics(displayMetrics);
         return displayMetrics.heightPixels;
     }
 
@@ -47,7 +46,7 @@ public class Display {
      */
     public static int[] getScreenWH(Activity activity) {
         DisplayMetrics dm = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getRealMetrics(dm);
+        activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
         return new int[]{dm.widthPixels, dm.heightPixels};
     }
 
