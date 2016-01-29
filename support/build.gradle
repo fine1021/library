@@ -6,8 +6,8 @@ android {
     buildToolsVersion '23.0.2'
     defaultConfig {
         minSdkVersion 10
-        versionCode 10
-        versionName '1.0.0'
+        versionCode 11
+        versionName '1.0.1'
     }
     buildTypes {
         release {
@@ -41,7 +41,7 @@ def create(String target, String classDir) {
 }
 
 task buildJar(dependsOn: ['build']) << {
-    create("support-1.0.0.jar", "build/intermediates/classes/release")
+    create("support-1.0.1.jar", "build/intermediates/classes/release")
 }
 
 
@@ -53,7 +53,7 @@ publish {
     repoName = 'maven'
     groupId = 'com.yxkang.android'
     artifactId = 'support'
-    publishVersion = '1.0.0'
+    publishVersion = '1.0.1'
     description = 'a support library for android'
     website = 'https://github.com/fine1021/library'
     issueTracker = "${website}/issues"

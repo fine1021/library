@@ -1,5 +1,7 @@
 package com.yxkang.android.util;
 
+import android.util.Log;
+
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -15,17 +17,21 @@ public class ThreadManager {
 
     private static final int KEEP_ALIVE = 5;
 
-    private volatile ExecutorService mThreadPool = Executors.newFixedThreadPool(KEEP_ALIVE);
+    private static final String TAG = "ThreadManager";
 
-    private static ThreadManager manager = null;
+    private ExecutorService mThreadPool;
+
+    private static volatile ThreadManager manager = null;
 
     private ThreadManager() {
+        mThreadPool = Executors.newFixedThreadPool(KEEP_ALIVE);
     }
 
     public static ThreadManager getInstance() {
         if (manager == null) {
             manager = new ThreadManager();
         }
+        manager.initialize();
         return manager;
     }
 
@@ -107,7 +113,7 @@ public class ThreadManager {
      * @return {@code true} if this executor has been shut down
      */
     public boolean isShutdown() {
-        return mThreadPool.isShutdown();
+        return mThreadPool == null || mThreadPool.isShutdown();
     }
 
     /**
@@ -118,15 +124,16 @@ public class ThreadManager {
      * @return {@code true} if all tasks have completed following shut down
      */
     public boolean isTerminated() {
-        return mThreadPool.isTerminated();
+        return mThreadPool == null || mThreadPool.isTerminated();
     }
 
     /**
-     * Reset the thread pool, if {@code isShutdown} or {@code isTerminated}, it will
+     * Initialize the thread pool, if {@code isShutdown} or {@code isTerminated}, it will
      * create a new thread pool. otherwise do nothing
      */
-    public void reset() {
+    private void initialize() {
         if (isShutdown() || isTerminated()) {
+            Log.d(TAG, "initialize");
             mThreadPool = Executors.newFixedThreadPool(KEEP_ALIVE);
         }
     }

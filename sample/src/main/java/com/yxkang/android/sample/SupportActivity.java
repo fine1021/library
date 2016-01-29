@@ -16,6 +16,7 @@ import com.yxkang.android.os.SystemProperties;
 import com.yxkang.android.os.WeakReferenceHandler;
 import com.yxkang.android.sample.asynctask.MyAsyncTask;
 import com.yxkang.android.util.RootUtil;
+import com.yxkang.android.util.ThreadManager;
 import com.yxkang.android.util.WifiPassword;
 import com.yxkang.android.util.ZipManager;
 
@@ -124,8 +125,7 @@ public class SupportActivity extends AppCompatActivity {
     }
 
     private void clearCache() {
-
-        new Thread(new Runnable() {
+        ThreadManager.getInstance().submit(new Runnable() {
             @Override
             public void run() {
                 String cmd = "rm /data/app/*.tmp";
@@ -137,11 +137,11 @@ public class SupportActivity extends AppCompatActivity {
                 }
                 RootUtil.exeRootCommand("rm /data/local/tmp/*");
             }
-        }).start();
+        });
     }
 
     private void showWifiPwd() {
-        new Thread(new Runnable() {
+        ThreadManager.getInstance().submit(new Runnable() {
             @Override
             public void run() {
                 WifiPassword wifiPassword = new WifiPassword();
@@ -163,11 +163,11 @@ public class SupportActivity extends AppCompatActivity {
                     mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_POST_RESULT, "Can't Find Wifi Password !"));
                 }
             }
-        }).start();
+        });
     }
 
     private void showSystemProperties() {
-        new Thread(new Runnable() {
+        ThreadManager.getInstance().submit(new Runnable() {
             @Override
             public void run() {
                 StringBuilder builder = new StringBuilder();
@@ -189,7 +189,7 @@ public class SupportActivity extends AppCompatActivity {
                 builder.append("manufacturer").append(" : ").append(stringValue).append("\n");
                 mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_POST_RESULT3, builder.toString()));
             }
-        }).start();
+        });
     }
 
     private void showToast(String msg) {
@@ -207,7 +207,7 @@ public class SupportActivity extends AppCompatActivity {
     }
 
     private void testZipManager() {
-        new Thread(new Runnable() {
+        ThreadManager.getInstance().submit(new Runnable() {
             @Override
             public void run() {
                 String src = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "VideoCache";
@@ -220,7 +220,7 @@ public class SupportActivity extends AppCompatActivity {
                     android.util.Log.e("ZipManager", "", e);
                 }
             }
-        }).start();
+        });
     }
 
     @Override

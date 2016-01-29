@@ -28,8 +28,10 @@
     <string name="crashHandler">Crash Handler</string>
     <string name="zipManger">ZipManger</string>
     <string name="favorite">QQ Favorite</string>
+    <string name="reboot">Reboot(4A)</string>
     <string name="lock">Lock</string>
     <string name="drag">Drag</string>
+    <string name="waiting_please">请稍后&#8230;</string>
     <string name="title_activity_lock">LockActivity</string>
     <string name="title_activity_drag">DragActivity</string>
 </resources>

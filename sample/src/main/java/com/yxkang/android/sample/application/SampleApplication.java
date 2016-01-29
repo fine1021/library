@@ -37,7 +37,6 @@ public class SampleApplication extends Application {
         Log.i(LOG_TAG, "Application onCreate");
         sApplication = this;
         map.clear();
-        startTimeTask();
         registerActivityLifecycleCallbacks(lifecycle);
         CrashHandler mCrashHandler = CrashHandler.getInstance();
         mCrashHandler.init(getApplicationContext());
@@ -47,7 +46,6 @@ public class SampleApplication extends Application {
             public void beforeKillProcess() {
                 super.beforeKillProcess();
                 Log.i(LOG_TAG, Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + "/" + Runtime.getRuntime().freeMemory());
-                stopTimeTask();
                 unregisterActivityLifecycleCallbacks(lifecycle);
                 finishAllActivities();
                 startMainActivity();

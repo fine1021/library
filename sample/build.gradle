@@ -30,16 +30,12 @@ android {
     }
 }
 
-repositories {
-    maven { url "https://jitpack.io" }
-}
-
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':support')
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
-    compile('com.github.afollestad.material-dialogs:core:0.8.5.1@aar') {
+    compile('com.github.afollestad.material-dialogs:core:0.8.5.3@aar') {
         transitive = true
     }
 }
