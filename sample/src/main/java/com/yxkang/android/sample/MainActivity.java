@@ -167,7 +167,9 @@ public class MainActivity extends AppCompatActivity {
         }
         progressDialog = new ProgressDialog(this);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.setIndeterminate(false);
+        progressDialog.setCancelable(false);
         progressDialog.setMessage(getString(R.string.waiting_please));
         progressDialog.show();
     }
