@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="reboot_options">
+        <item>Reboot</item>
+        <item>Shutdown</item>
+        <item>Recovery</item>
+        <item>Bootloader</item>
+    </string-array>
+</resources>
