@@ -18,6 +18,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.yxkang.android.os.WeakReferenceHandler;
 import com.yxkang.android.provider.Settings;
 import com.yxkang.android.sample.bean.DisplayInfoBean;
+import com.yxkang.android.sample.db.DatabaseHelper;
 import com.yxkang.android.sample.media.MediaScannerService;
 import com.yxkang.android.util.ContextUtil;
 import com.yxkang.android.util.RootUtil;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private static final int MESSAGE_SHOW_DIALOG = 0x100;
     private static final int MESSAGE_DISMISS_DIALOG = 0x101;
+    private DatabaseHelper databaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +76,8 @@ public class MainActivity extends AppCompatActivity {
         });
         String value = Settings.Global.getString(getContentResolver(), "table_name", "unknown");
         Log.i(TAG, "table_name = " + value);
+        databaseHelper = new DatabaseHelper(this);
+        databaseHelper.getReadableDatabase();
     }
 
     /**

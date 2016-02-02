@@ -6,8 +6,8 @@ android {
     buildToolsVersion '23.0.2'
     defaultConfig {
         minSdkVersion 10
-        versionCode 11
-        versionName '1.0.1'
+        versionCode 12
+        versionName '1.0.2'
     }
     buildTypes {
         release {
@@ -31,7 +31,7 @@ dependencies {
 }
 
 
-def create(String target, String classDir) {
+def execute(String target, String classDir) {
     exec {
         executable "jar"
         args "cvf", target
@@ -40,8 +40,14 @@ def create(String target, String classDir) {
     }
 }
 
-task buildJar(dependsOn: ['build']) << {
-    create("support-1.0.1.jar", "build/intermediates/classes/release")
+task buildSupportJar(dependsOn: ['build']) << {
+    delete 'build/intermediates/classes/release/com/yxkang/android/view'
+    delete 'build/intermediates/classes/release/com/yxkang/android/BuildConfig.class'
+    delete "build/intermediates/classes/release/com/yxkang/android/R.class"
+    delete 'build/intermediates/classes/release/com/yxkang/android/R$attr.class'
+    delete 'build/intermediates/classes/release/com/yxkang/android/R$string.class'
+    delete 'build/intermediates/classes/release/com/yxkang/android/R$styleable.class'
+    execute("support-1.0.2.jar", "build/intermediates/classes/release")
 }
 
 
@@ -53,7 +59,7 @@ publish {
     repoName = 'maven'
     groupId = 'com.yxkang.android'
     artifactId = 'support'
-    publishVersion = '1.0.1'
+    publishVersion = '1.0.2'
     description = 'a support library for android'
     website = 'https://github.com/fine1021/library'
     issueTracker = "${website}/issues"
