@@ -47,6 +47,17 @@ public class ContextUtil {
         resolve.setPackage(packageName);
 
         PackageManager manager = packageContext.getPackageManager();
+        Intent intent = manager.getLaunchIntentForPackage(packageName);
+        if (intent != null) {
+            ComponentName componentName = intent.getComponent();
+            if (componentName != null) {
+                String pkg = componentName.getPackageName();
+                String cls = componentName.getClassName();
+                Log.i(TAG, "LaunchIntent: " + pkg + "/" + cls);
+            }
+            packageContext.startActivity(intent);
+            return TYPE_SUCCESS;
+        }
         List<ResolveInfo> list = manager.queryIntentActivities(resolve, 0);
         if (list.size() > 1) {
             Log.e(TAG, "the queryIntent result is more than one");
