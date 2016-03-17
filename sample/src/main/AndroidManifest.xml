@@ -6,6 +6,14 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
     <uses-permission android:name="android.permission.WRITE_EXAMPLE_SETTINGS"/>
+    <uses-permission android:name="com.huawei.android.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="com.huawei.android.launcher.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="com.android.launcher2.permission.READ_SETTINGS" />
+    <uses-permission android:name="com.android.launcher2.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="com.android.launcher3.permission.READ_SETTINGS" />
+    <uses-permission android:name="com.android.launcher3.permission.WRITE_SETTINGS" />
 
     <application
         android:name=".application.SampleApplication"
@@ -55,7 +63,8 @@
         <activity
             android:name=".DragActivity"
             android:label="@string/title_activity_drag"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".MediaActivity">
         </activity>
     </application>
 

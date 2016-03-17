@@ -21,6 +21,7 @@ import com.yxkang.android.sample.bean.DisplayInfoBean;
 import com.yxkang.android.sample.db.DatabaseHelper;
 import com.yxkang.android.sample.media.MediaScannerService;
 import com.yxkang.android.util.ContextUtil;
+import com.yxkang.android.util.LauncherUtil;
 import com.yxkang.android.util.RootUtil;
 import com.yxkang.android.util.ThreadManager;
 
@@ -30,7 +31,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 
-@SuppressWarnings("TryWithIdenticalCatches")
+@SuppressWarnings({"TryWithIdenticalCatches", "ConstantConditions"})
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
@@ -74,10 +75,18 @@ public class MainActivity extends AppCompatActivity {
                 showRebootOptions();
             }
         });
+        findViewById(R.id.bt_media).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, MediaActivity.class));
+            }
+        });
         String value = Settings.Global.getString(getContentResolver(), "table_name", "unknown");
         Log.i(TAG, "table_name = " + value);
         databaseHelper = new DatabaseHelper(this);
         databaseHelper.getReadableDatabase();
+        Log.i(TAG, "launcher authority = " + LauncherUtil.getAuthorityFromPermission(this));
+        LauncherUtil.dumpShortcut(this);
     }
 
     /**

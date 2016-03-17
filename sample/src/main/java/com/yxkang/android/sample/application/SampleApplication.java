@@ -142,7 +142,6 @@ public class SampleApplication extends Application {
 
         @Override
         public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-            Log.i(LOG_TAG, "onActivitySaveInstanceState = " + activity.getLocalClassName());
         }
 
         @Override
