@@ -1,8 +1,10 @@
 package com.yxkang.android.sample;
 
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -89,10 +91,21 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "table_name = " + value);
         databaseHelper = new DatabaseHelper(this);
         databaseHelper.getReadableDatabase();
-        if (isMarshmallow()) {
-            checkLauncherPermissions();
-        } else {
+        if (!isMarshmallow()) {
             LauncherUtil.dumpShortcut(this);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == LAUNCHER_PERMISSIONS_REQUEST_CODE) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (android.provider.Settings.System.canWrite(this)) {
+                    String permission = LauncherUtil.getLauncherWritePermission(this);
+                    ActivityCompat.requestPermissions(this, new String[]{permission}, LAUNCHER_PERMISSIONS_REQUEST_CODE);
+                }
+            }
         }
     }
 
@@ -113,12 +126,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
     private void checkLauncherPermissions() {
         String permission = LauncherUtil.getLauncherWritePermission(this);
         Log.i(TAG, "launcher permissions = " + permission);
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), permission) != PackageManager.PERMISSION_GRANTED) {
             Log.w(TAG, "checkSelfPermission launcher failed");
-            ActivityCompat.requestPermissions(this, new String[]{permission}, LAUNCHER_PERMISSIONS_REQUEST_CODE);
+            if (!android.provider.Settings.System.canWrite(this)) {
+                Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                        Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, LAUNCHER_PERMISSIONS_REQUEST_CODE);
+            }
         } else {
             Log.i(TAG, "checkSelfPermission launcher ok");
             LauncherUtil.dumpShortcut(this);

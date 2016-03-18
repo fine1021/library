@@ -2,18 +2,14 @@ package com.yxkang.android.sample.application;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.yxkang.android.exception.CrashHandler;
 import com.yxkang.android.exception.CrashListenerAdapter;
-import com.yxkang.android.sample.MainActivity;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -27,8 +23,6 @@ public class SampleApplication extends Application {
     private final ConcurrentHashMap<String, WeakReference<? extends Activity>> map = new ConcurrentHashMap<>();
     private final ReentrantLock lock = new ReentrantLock();
     private ActivityLifecycle lifecycle = new ActivityLifecycle();
-    private MemoryTimeTask task = new MemoryTimeTask();
-    private Timer timer = new Timer(true);
 
     @Override
 
@@ -48,7 +42,6 @@ public class SampleApplication extends Application {
                 Log.i(LOG_TAG, Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + "/" + Runtime.getRuntime().freeMemory());
                 unregisterActivityLifecycleCallbacks(lifecycle);
                 finishAllActivities();
-                startMainActivity();
             }
         });
     }
@@ -58,22 +51,6 @@ public class SampleApplication extends Application {
             sApplication = new SampleApplication();
         }
         return sApplication;
-    }
-
-    private void startMainActivity() {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-    }
-
-    public void startTimeTask() {
-        timer.schedule(task, 1000, 60 * 1000);
-        Log.i(LOG_TAG, "startTimeTask");
-    }
-
-    public void stopTimeTask() {
-        timer.cancel();
-        Log.i(LOG_TAG, "stopTimeTask");
     }
 
     public void put(String key, WeakReference<? extends Activity> weakReference) {
@@ -150,14 +127,6 @@ public class SampleApplication extends Application {
             if (map.containsKey(activity.getLocalClassName())) {
                 remove(activity.getLocalClassName());
             }
-        }
-    }
-
-    private class MemoryTimeTask extends TimerTask {
-
-        @Override
-        public void run() {
-            Log.i(LOG_TAG, Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + "/" + Runtime.getRuntime().freeMemory());
         }
     }
 }
