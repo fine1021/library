@@ -2,10 +2,13 @@ package com.yxkang.android.sample;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int MESSAGE_SHOW_DIALOG = 0x100;
     private static final int MESSAGE_DISMISS_DIALOG = 0x101;
     private DatabaseHelper databaseHelper;
+    public static final int LAUNCHER_PERMISSIONS_REQUEST_CODE = 0x01;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,8 +89,44 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "table_name = " + value);
         databaseHelper = new DatabaseHelper(this);
         databaseHelper.getReadableDatabase();
-        Log.i(TAG, "launcher authority = " + LauncherUtil.getAuthorityFromPermission(this));
-        LauncherUtil.dumpShortcut(this);
+        if (isMarshmallow()) {
+            checkLauncherPermissions();
+        } else {
+            LauncherUtil.dumpShortcut(this);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LAUNCHER_PERMISSIONS_REQUEST_CODE) {
+            if (grantResults.length > 0) {
+                Log.i(TAG, "onRequestPermissionsResult launcher = " + grantResults[0]);
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    LauncherUtil.dumpShortcut(this);
+                } else {
+                    Toast.makeText(this, "launcher permission denied", Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Log.e(TAG, "onRequestPermissionsResult grantResults.length = 0");
+            }
+        }
+    }
+
+    private void checkLauncherPermissions() {
+        String permission = LauncherUtil.getLauncherWritePermission(this);
+        Log.i(TAG, "launcher permissions = " + permission);
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+            Log.w(TAG, "checkSelfPermission launcher failed");
+            ActivityCompat.requestPermissions(this, new String[]{permission}, LAUNCHER_PERMISSIONS_REQUEST_CODE);
+        } else {
+            Log.i(TAG, "checkSelfPermission launcher ok");
+            LauncherUtil.dumpShortcut(this);
+        }
+    }
+
+    private boolean isMarshmallow() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
     }
 
     /**

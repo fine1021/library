@@ -59,6 +59,30 @@ public class LauncherUtil {
         return null;
     }
 
+    public static String getLauncherWritePermission(Context context) {
+        PackageManager manager = context.getPackageManager();
+
+        Intent launcher = new Intent(Intent.ACTION_MAIN);
+        launcher.addCategory(Intent.CATEGORY_HOME);
+        ResolveInfo resolveInfo = manager.resolveActivity(launcher, 0);
+        if (resolveInfo == null) {
+            return null;
+        }
+        List<ProviderInfo> list = manager.queryContentProviders(resolveInfo.activityInfo.processName,
+                resolveInfo.activityInfo.applicationInfo.uid, PackageManager.GET_PROVIDERS);
+        if (list != null && list.size() > 0) {
+            for (ProviderInfo info : list) {
+                if (TextUtils.isEmpty(info.writePermission)) {
+                    continue;
+                }
+                if (info.writePermission.contains("launcher") && info.writePermission.contains("WRITE_SETTINGS")) {
+                    return info.writePermission;
+                }
+            }
+        }
+        return null;
+    }
+
     public static boolean shortcutExists(Context context, String title, Intent intent) {
         final ContentResolver resolver = context.getContentResolver();
         String authority = getAuthorityFromPermission(context);
