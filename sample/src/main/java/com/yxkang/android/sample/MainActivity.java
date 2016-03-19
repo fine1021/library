@@ -1,5 +1,6 @@
 package com.yxkang.android.sample;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -22,6 +24,7 @@ import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.yxkang.android.os.WeakReferenceHandler;
 import com.yxkang.android.provider.Settings;
+import com.yxkang.android.sample.application.SampleApplication;
 import com.yxkang.android.sample.bean.DisplayInfoBean;
 import com.yxkang.android.sample.db.DatabaseHelper;
 import com.yxkang.android.sample.media.MediaScannerService;
@@ -46,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
     private static final int MESSAGE_DISMISS_DIALOG = 0x101;
     private DatabaseHelper databaseHelper;
     public static final int LAUNCHER_PERMISSIONS_REQUEST_CODE = 0x01;
+    public static final int STORAGE_PERMISSIONS_REQUEST_CODE = 0x02;
+    public static final int MOUNT_PERMISSIONS_REQUEST_CODE = 0x03;
+    public static final int WRITE_PERMISSIONS_REQUEST_CODE = 0x04;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +97,9 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "table_name = " + value);
         databaseHelper = new DatabaseHelper(this);
         databaseHelper.getReadableDatabase();
-        if (!isMarshmallow()) {
+        if (isMarshmallow()) {
+            checkWritePermissions();
+        } else {
             LauncherUtil.dumpShortcut(this);
         }
     }
@@ -99,47 +107,94 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == LAUNCHER_PERMISSIONS_REQUEST_CODE) {
+        if (requestCode == WRITE_PERMISSIONS_REQUEST_CODE) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (android.provider.Settings.System.canWrite(this)) {
-                    String permission = LauncherUtil.getLauncherWritePermission(this);
-                    ActivityCompat.requestPermissions(this, new String[]{permission}, LAUNCHER_PERMISSIONS_REQUEST_CODE);
+                    Toast.makeText(this, "WRITE_SETTINGS permission granted", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "WRITE_SETTINGS permission denied", Toast.LENGTH_SHORT).show();
                 }
             }
+            checkStoragePermissions();
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == LAUNCHER_PERMISSIONS_REQUEST_CODE) {
-            if (grantResults.length > 0) {
-                Log.i(TAG, "onRequestPermissionsResult launcher = " + grantResults[0]);
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    LauncherUtil.dumpShortcut(this);
+        switch (requestCode) {
+            case LAUNCHER_PERMISSIONS_REQUEST_CODE:
+                if (grantResults.length == 1) {
+                    Log.i(TAG, "onRequestPermissionsResult launcher = " + grantResults[0]);
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        LauncherUtil.dumpShortcut(this);
+                    } else {
+                        Toast.makeText(this, "launcher permission denied", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Toast.makeText(this, "launcher permission denied", Toast.LENGTH_LONG).show();
+                    Log.e(TAG, "onRequestPermissionsResult grantResults.length != 1");
                 }
-            } else {
-                Log.e(TAG, "onRequestPermissionsResult grantResults.length = 0");
-            }
+                break;
+            case STORAGE_PERMISSIONS_REQUEST_CODE:
+                if (grantResults.length == 1) {
+                    Log.i(TAG, "onRequestPermissionsResult storage write = " + grantResults[0]);
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        SampleApplication.instance().log4jConfigure(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED));
+                        Toast.makeText(this, "WRITE_EXTERNAL_STORAGE permission granted", Toast.LENGTH_SHORT).show();
+//                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS}, MOUNT_PERMISSIONS_REQUEST_CODE);
+                    } else {
+                        Toast.makeText(this, "WRITE_EXTERNAL_STORAGE permission denied", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Log.e(TAG, "onRequestPermissionsResult grantResults.length != 1");
+                }
+                break;
+            case MOUNT_PERMISSIONS_REQUEST_CODE:
+                if (grantResults.length == 1) {
+                    Log.i(TAG, "onRequestPermissionsResult media mounted = " + grantResults[0]);
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(this, "MOUNT_UNMOUNT_FILESYSTEMS permission granted", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "MOUNT_UNMOUNT_FILESYSTEMS permission denied", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Log.e(TAG, "onRequestPermissionsResult grantResults.length != 1");
+                }
+                break;
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    private void checkStoragePermissions() {
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            Log.w(TAG, "checkSelfPermission storage failed");
+            String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            ActivityCompat.requestPermissions(this, permissions, STORAGE_PERMISSIONS_REQUEST_CODE);
+        } else {
+            Log.i(TAG, "checkSelfPermission storage ok");
+        }
+    }
+
     private void checkLauncherPermissions() {
         String permission = LauncherUtil.getLauncherWritePermission(this);
         Log.i(TAG, "launcher permissions = " + permission);
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), permission) != PackageManager.PERMISSION_GRANTED) {
             Log.w(TAG, "checkSelfPermission launcher failed");
-            if (!android.provider.Settings.System.canWrite(this)) {
-                Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS,
-                        Uri.parse("package:" + getPackageName()));
-                startActivityForResult(intent, LAUNCHER_PERMISSIONS_REQUEST_CODE);
-            }
+            ActivityCompat.requestPermissions(this, new String[]{permission}, LAUNCHER_PERMISSIONS_REQUEST_CODE);
         } else {
             Log.i(TAG, "checkSelfPermission launcher ok");
             LauncherUtil.dumpShortcut(this);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private void checkWritePermissions() {
+        if (!android.provider.Settings.System.canWrite(this)) {
+            Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                    Uri.parse("package:" + getPackageName()));
+            startActivityForResult(intent, WRITE_PERMISSIONS_REQUEST_CODE);
+        } else {
+            checkStoragePermissions();
         }
     }
 
