@@ -159,26 +159,27 @@ public class ContextUtil {
     }
 
     /**
-     * check the service is alive
+     * check the service is running
      *
      * @param context   context
      * @param className the service class name
-     * @return {@code true} if the service is alive, otherwise {@code false}
+     * @return {@code true} if the service is running, otherwise {@code false}
      */
-    public static boolean isServiceAlive(Context context, String className) {
-        boolean isAlive = false;
+    public static boolean isServiceRunning(Context context, String className) {
+        boolean result = false;
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningServiceInfo> serviceInfos = manager.getRunningServices(100);
+        List<ActivityManager.RunningServiceInfo> serviceInfos = manager.getRunningServices(Integer.MAX_VALUE);
         if (serviceInfos.isEmpty()) {
-            isAlive = false;
+            result = false;
         } else {
+            Log.i(TAG, "serviceInfos size = " + serviceInfos.size());
             for (ActivityManager.RunningServiceInfo serviceInfo : serviceInfos) {
                 if (serviceInfo.service.getClassName().equals(className)) {
-                    isAlive = true;
+                    result = true;
                     break;
                 }
             }
         }
-        return isAlive;
+        return result;
     }
 }

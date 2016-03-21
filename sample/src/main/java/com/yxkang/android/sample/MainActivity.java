@@ -28,6 +28,7 @@ import com.yxkang.android.sample.application.SampleApplication;
 import com.yxkang.android.sample.bean.DisplayInfoBean;
 import com.yxkang.android.sample.db.DatabaseHelper;
 import com.yxkang.android.sample.media.MediaScannerService;
+import com.yxkang.android.sample.service.MediaModifyService;
 import com.yxkang.android.util.ContextUtil;
 import com.yxkang.android.util.LauncherUtil;
 import com.yxkang.android.util.RootUtil;
@@ -102,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             LauncherUtil.dumpShortcut(this);
         }
+        ContextUtil.isServiceRunning(this, MediaModifyService.class.getName());
     }
 
     @Override
