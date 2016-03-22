@@ -46,7 +46,7 @@ Reference the library in your Android projects using this dependency in your mod
 
 ```Gradle
 dependencies {
-    compile 'com.yxkang.android:support:1.0.1'
+    compile 'com.yxkang.android:support:1.0.2'
 }
 ```
 
