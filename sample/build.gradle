@@ -33,13 +33,13 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':support')
-    compile 'com.android.support:appcompat-v7:23.2.1'
-    compile 'com.android.support:design:23.2.1'
+    compile 'com.android.support:appcompat-v7:23.3.0'
+    compile 'com.android.support:design:23.3.0'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'de.mindpipe.android:android-logging-log4j:1.0.3'
     compile 'log4j:log4j:1.2.17'
-    compile 'org.slf4j:slf4j-api:1.7.20'
-    compile 'org.slf4j:slf4j-log4j12:1.7.20'
+    compile 'org.slf4j:slf4j-api:1.7.21'
+    compile 'org.slf4j:slf4j-log4j12:1.7.21'
     compile('com.github.afollestad.material-dialogs:core:0.8.5.7@aar') {
         transitive = true
     }
