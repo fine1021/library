@@ -173,6 +173,7 @@ public class SupportActivity extends AppCompatActivity {
                 StringBuilder builder = new StringBuilder();
                 String stringValue;
                 int intValue;
+                SystemProperties.setDebug(SupportActivity.this);
                 stringValue = SystemProperties.get("ro.build.display.id");
                 builder.append("id").append(" : ").append(stringValue).append("\n");
                 stringValue = SystemProperties.get("ro.build.version.incremental");
