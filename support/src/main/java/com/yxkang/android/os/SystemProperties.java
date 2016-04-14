@@ -1,17 +1,13 @@
 package com.yxkang.android.os;
 
-import android.util.Log;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
  * use reflection to get the methods in {@code android.os.SystemProperties}
  */
-@SuppressWarnings({"unused", "TryWithIdenticalCatches"})
+@SuppressWarnings({"TryWithIdenticalCatches", "unused"})
 public class SystemProperties {
-
-    private static final String TAG = SystemProperties.class.getSimpleName();
 
     /**
      * Get the value for the given key.
@@ -34,7 +30,6 @@ public class SystemProperties {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        Log.d(TAG, key + " : " + value);
         return value;
     }
 
@@ -60,7 +55,6 @@ public class SystemProperties {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        Log.d(TAG, key + " : " + value);
         return value;
     }
 
@@ -86,7 +80,6 @@ public class SystemProperties {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        Log.d(TAG, key + " : " + value);
         return value;
     }
 
@@ -112,7 +105,6 @@ public class SystemProperties {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        Log.d(TAG, key + " : " + value);
         return value;
     }
 
@@ -144,7 +136,6 @@ public class SystemProperties {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        Log.d(TAG, key + " : " + value);
         return value;
     }
 
@@ -159,7 +150,6 @@ public class SystemProperties {
             Class<?> sysClass = Class.forName("android.os.SystemProperties");
             Method setMethod = sysClass.getDeclaredMethod("set", String.class, String.class);
             setMethod.invoke(sysClass, key, val);
-            Log.d(TAG, key + " : " + val);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (NoSuchMethodException e) {
