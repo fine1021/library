@@ -1,5 +1,9 @@
 package com.yxkang.android.os;
 
+import android.content.Context;
+import android.util.Log;
+
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -8,6 +12,34 @@ import java.lang.reflect.Method;
  */
 @SuppressWarnings({"TryWithIdenticalCatches", "unused"})
 public class SystemProperties {
+
+    private static final String TAG = SystemProperties.class.getSimpleName();
+    private static boolean DEBUG = false;
+
+    /**
+     * set the debug, according to application's <code>BuildConfig.DEBUG</code>
+     *
+     * @param context the activity or application
+     */
+    public static void setDebug(Context context) {
+        try {
+            Class<?> clazz = Class.forName(context.getPackageName() + ".BuildConfig");
+            Field field = clazz.getField("DEBUG");
+            field.setAccessible(true);
+            DEBUG = field.getBoolean(null);
+        } catch (Throwable throwable) {
+            DEBUG = false;
+        }
+    }
+
+    /**
+     * set the debug
+     *
+     * @param debug <code>true</code> for debug, otherwise <code>false</code>
+     */
+    public static void setDebug(boolean debug) {
+        DEBUG = debug;
+    }
 
     /**
      * Get the value for the given key.
@@ -29,6 +61,9 @@ public class SystemProperties {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
+        }
+        if (DEBUG) {
+            Log.d(TAG, key + " : " + value);
         }
         return value;
     }
@@ -55,6 +90,9 @@ public class SystemProperties {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+        if (DEBUG) {
+            Log.d(TAG, key + " : " + value);
+        }
         return value;
     }
 
@@ -80,6 +118,9 @@ public class SystemProperties {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+        if (DEBUG) {
+            Log.d(TAG, key + " : " + value);
+        }
         return value;
     }
 
@@ -104,6 +145,9 @@ public class SystemProperties {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
+        }
+        if (DEBUG) {
+            Log.d(TAG, key + " : " + value);
         }
         return value;
     }
@@ -136,6 +180,9 @@ public class SystemProperties {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+        if (DEBUG) {
+            Log.d(TAG, key + " : " + value);
+        }
         return value;
     }
 
@@ -150,6 +197,9 @@ public class SystemProperties {
             Class<?> sysClass = Class.forName("android.os.SystemProperties");
             Method setMethod = sysClass.getDeclaredMethod("set", String.class, String.class);
             setMethod.invoke(sysClass, key, val);
+            if (DEBUG) {
+                Log.d(TAG, key + " : " + val);
+            }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (NoSuchMethodException e) {
