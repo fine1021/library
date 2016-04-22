@@ -57,8 +57,8 @@ import java.lang.ref.WeakReference;
  * <pre>
  * <code>@Override</code>
  * protected void onDestroy() {
- * &nbsp;&nbsp;super.onDestroy();
  * &nbsp;&nbsp;mHandler.removeCallbacksAndMessages(null);
+ * &nbsp;&nbsp;super.onDestroy();
  * }
  * </pre>
  */

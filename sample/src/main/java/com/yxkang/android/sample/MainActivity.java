@@ -104,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
             LauncherUtil.dumpShortcut(this);
         }
         ContextUtil.isServiceRunning(this, MediaModifyService.class.getName());
+        Log.i(TAG, "ProcessName = " + ContextUtil.getProcessName());
+        Log.i(TAG, "ProcessName = " + ContextUtil.getProcessName(this, android.os.Process.myPid()));
     }
 
     @Override
