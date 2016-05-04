@@ -32,7 +32,7 @@ import com.yxkang.android.sample.service.MediaModifyService;
 import com.yxkang.android.util.ContextUtil;
 import com.yxkang.android.util.LauncherUtil;
 import com.yxkang.android.util.RootUtil;
-import com.yxkang.android.util.ThreadManager;
+import com.yxkang.android.util.ThreadPoolFactory;
 
 import java.io.File;
 import java.util.concurrent.Callable;
@@ -146,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
                         SampleApplication.instance().log4jConfigure(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED));
                         Toast.makeText(this, "WRITE_EXTERNAL_STORAGE permission granted", Toast.LENGTH_SHORT).show();
 //                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS}, MOUNT_PERMISSIONS_REQUEST_CODE);
+                        checkLauncherPermissions();
                     } else {
                         Toast.makeText(this, "WRITE_EXTERNAL_STORAGE permission denied", Toast.LENGTH_SHORT).show();
                     }
@@ -176,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, permissions, STORAGE_PERMISSIONS_REQUEST_CODE);
         } else {
             Log.i(TAG, "checkSelfPermission storage ok");
+            checkLauncherPermissions();
         }
     }
 
@@ -286,8 +288,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         Log.i(TAG, "command = " + command);
-        Future<Boolean> future = ThreadManager.getInstance().submit(new RootTask(command));
-        ThreadManager.getInstance().submit(new WaitingTask(future));
+        Future<Boolean> future = ThreadPoolFactory.getCachedThreadPool().submit(new RootTask(command));
+        ThreadPoolFactory.getCachedThreadPool().submit(new WaitingTask(future));
     }
 
     private synchronized void showProgressDialog() {
@@ -373,7 +375,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ThreadManager.getInstance().shutdownNow();
+        ThreadPoolFactory.getCachedThreadPool().shutdownNow();
         mHandler.removeCallbacksAndMessages(null);
     }
 

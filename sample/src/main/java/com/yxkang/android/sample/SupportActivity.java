@@ -16,7 +16,7 @@ import com.yxkang.android.os.SystemProperties;
 import com.yxkang.android.os.WeakReferenceHandler;
 import com.yxkang.android.sample.asynctask.MyAsyncTask;
 import com.yxkang.android.util.RootUtil;
-import com.yxkang.android.util.ThreadManager;
+import com.yxkang.android.util.ThreadPoolFactory;
 import com.yxkang.android.util.WifiPassword;
 import com.yxkang.android.util.ZipManager;
 
@@ -125,7 +125,7 @@ public class SupportActivity extends AppCompatActivity {
     }
 
     private void clearCache() {
-        ThreadManager.getInstance().submit(new Runnable() {
+        ThreadPoolFactory.getCachedThreadPool().submit(new Runnable() {
             @Override
             public void run() {
                 String cmd = "rm /data/app/*.tmp";
@@ -141,7 +141,7 @@ public class SupportActivity extends AppCompatActivity {
     }
 
     private void showWifiPwd() {
-        ThreadManager.getInstance().submit(new Runnable() {
+        ThreadPoolFactory.getCachedThreadPool().submit(new Runnable() {
             @Override
             public void run() {
                 WifiPassword wifiPassword = new WifiPassword();
@@ -167,7 +167,7 @@ public class SupportActivity extends AppCompatActivity {
     }
 
     private void showSystemProperties() {
-        ThreadManager.getInstance().submit(new Runnable() {
+        ThreadPoolFactory.getCachedThreadPool().submit(new Runnable() {
             @Override
             public void run() {
                 StringBuilder builder = new StringBuilder();
@@ -208,7 +208,7 @@ public class SupportActivity extends AppCompatActivity {
     }
 
     private void testZipManager() {
-        ThreadManager.getInstance().submit(new Runnable() {
+        ThreadPoolFactory.getCachedThreadPool().submit(new Runnable() {
             @Override
             public void run() {
                 String src = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "VideoCache";
