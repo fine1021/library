@@ -1,3 +1,5 @@
+import proguard.gradle.ProGuardTask
+
 apply plugin: 'com.android.library'
 apply plugin: 'com.novoda.bintray-release'
 
@@ -49,6 +51,56 @@ task buildSupportJar(dependsOn: ['build']) << {
     delete 'build/intermediates/classes/release/com/yxkang/android/R$styleable.class'
     execute("support-1.0.3-beta1.jar", "build/intermediates/classes/release")
 }
+
+
+task buildReleaseJar(dependsOn: ['compileReleaseJavaWithJavac'], type: Jar) {
+
+    // appendix = "demo"
+    baseName = "support"
+    version = "1.0.3-beta1"
+    classifier = "release"
+
+    // 后缀名
+    extension = "jar"
+    // 最终的 Jar 包名，如果没设置，默认为 [baseName]-[appendix]-[version]-[classifier].[extension]
+    // archiveName = "support.jar"
+
+    // 需打包的资源所在的路径集
+    def srcClassDir = [project.buildDir.absolutePath + "/intermediates/classes/release"];
+    // 初始化资源路径集
+    from srcClassDir
+
+    // 去除路径集下部分的资源
+    exclude "com/yxkang/android/view"
+    exclude "com/yxkang/android/BuildConfig.class"
+    exclude "**/R.class"
+    exclude "**/R\$*.class"
+
+    // 只导入资源路径集下的部分资源
+    include "com/yxkang/android/**/*.class"
+
+    // 注: exclude include 支持可变长参数
+}
+
+task buildProguardJar(dependsOn: ['buildReleaseJar'], type: ProGuardTask) {
+    // Android 默认的 proguard 文件
+    // configuration android.getDefaultProguardFile('proguard-android.txt')
+    // 指定某个混淆文件，根据该文件对 Jar 进行混淆
+    configuration 'proguard-rules.pro'
+
+    String inJar = buildReleaseJar.archivePath.getAbsolutePath()
+    // 输入 jar
+    injars inJar
+    // 打印输入jar的路径
+    println inJar
+
+    String outJar = inJar.substring(0, inJar.lastIndexOf('\\')) + "\\proguard-${buildReleaseJar.archiveName}"
+    // 输出 jar
+    outjars outJar
+    // 打印输出jar的路径
+    println outJar
+}
+
 
 
 Properties properties = new Properties()
