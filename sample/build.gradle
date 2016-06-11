@@ -20,12 +20,22 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
         debug {
             signingConfig signingConfigs.release
+        }
+    }
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            if (variant.buildType.name.equals('release')) {
+                def releaseName = "Sample_V".concat(defaultConfig.versionName).concat(".apk")
+                output.outputFile = new File(output.outputFile.parent, releaseName)
+            } else if (variant.buildType.name.equals('debug')) {
+                println(variant.buildType.name)
+            }
         }
     }
 }
