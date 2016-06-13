@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -187,6 +188,65 @@ public class ContextUtil {
     }
 
     /**
+     * check the service is running, which process name is the same as current process
+     *
+     * @param context   context
+     * @param className the service class name
+     * @return {@code true} if the service is running, otherwise {@code false}
+     */
+    public static boolean isServiceRunningWithProcess(Context context, String className) {
+        boolean result = false;
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> serviceInfos = manager.getRunningServices(Integer.MAX_VALUE);
+        if (serviceInfos.isEmpty()) {
+            result = false;
+        } else {
+            Log.i(TAG, "isServiceRunningWithProcess: size = " + serviceInfos.size());
+            for (ActivityManager.RunningServiceInfo serviceInfo : serviceInfos) {
+                if (serviceInfo.service.getClassName().equals(className)) {
+                    String servicePN = getProcessName(serviceInfo.pid);
+                    Log.i(TAG, "isServiceRunningWithProcess: servicePN = " + servicePN);
+                    if (!TextUtils.isEmpty(servicePN) && servicePN.equals(getProcessName())) {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * check the service is running, which process name is the same as the given name
+     *
+     * @param context     context
+     * @param className   the service class name
+     * @param processName the process name
+     * @return {@code true} if the service is running, otherwise {@code false}
+     */
+    public static boolean isServiceRunningWithProcess(Context context, String className, String processName) {
+        boolean result = false;
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> serviceInfos = manager.getRunningServices(Integer.MAX_VALUE);
+        if (serviceInfos.isEmpty()) {
+            result = false;
+        } else {
+            Log.i(TAG, "isServiceRunningWithProcess: size = " + serviceInfos.size());
+            for (ActivityManager.RunningServiceInfo serviceInfo : serviceInfos) {
+                if (serviceInfo.service.getClassName().equals(className)) {
+                    String servicePN = getProcessName(serviceInfo.pid);
+                    Log.i(TAG, "isServiceRunningWithProcess: servicePN = " + servicePN);
+                    if (!TextUtils.isEmpty(servicePN) && servicePN.equals(processName)) {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
      * get current process name
      *
      * @return the current process name
@@ -194,6 +254,25 @@ public class ContextUtil {
     public static String getProcessName() {
         try {
             File file = new File("/proc/" + android.os.Process.myPid() + "/" + "cmdline");
+            BufferedReader mBufferedReader = new BufferedReader(new FileReader(file));
+            String processName = mBufferedReader.readLine().trim();
+            mBufferedReader.close();
+            return processName;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * get the process name with the given process pid
+     *
+     * @param pid the process pid
+     * @return the process name
+     */
+    public static String getProcessName(int pid) {
+        try {
+            File file = new File("/proc/" + pid + "/" + "cmdline");
             BufferedReader mBufferedReader = new BufferedReader(new FileReader(file));
             String processName = mBufferedReader.readLine().trim();
             mBufferedReader.close();

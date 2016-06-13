@@ -9,7 +9,7 @@ android {
     defaultConfig {
         minSdkVersion 10
         versionCode 13
-        versionName '1.0.3-beta1'
+        versionName '1.0.3-beta2'
     }
     buildTypes {
         release {
@@ -33,7 +33,7 @@ dependencies {
 }
 
 ext {
-    releaseVersion = '1.0.3-beta1'
+    releaseVersion = '1.0.3-beta2'
 }
 
 
