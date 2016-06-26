@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.yxkang.android.os.SystemProperties;
 import com.yxkang.android.os.WeakReferenceHandler;
 import com.yxkang.android.sample.asynctask.MyAsyncTask;
+import com.yxkang.android.sample.asynctask.MyTimeoutAsyncTask;
 import com.yxkang.android.util.RootUtil;
 import com.yxkang.android.util.ThreadPoolFactory;
 import com.yxkang.android.util.WifiPassword;
@@ -24,14 +26,18 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class SupportActivity extends AppCompatActivity {
+
+    private static final String TAG = "SupportActivity";
 
     private static final int MESSAGE_POST_RESULT = 0x1;
     private static final int MESSAGE_POST_RESULT2 = 0x2;
     private static final int MESSAGE_POST_RESULT3 = 0x3;
     private final InternalHandler mHandler = new InternalHandler(this);
+    private static final AtomicInteger mAsyncTaskID = new AtomicInteger(1);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,15 +119,100 @@ public class SupportActivity extends AppCompatActivity {
 
 
     private void testAsyncTask() {
-        new MyAsyncTask().execute();
-        new MyAsyncTask().execute();
-        new MyAsyncTask().execute();
-        new MyAsyncTask().execute();
-        new MyAsyncTask().execute();
-        new MyAsyncTask().execute();
-        new MyAsyncTask().execute();
-        new MyAsyncTask().execute();
-        new MyAsyncTask().execute();
+        for (int i = 0; i < 8; i++) {
+            timeoutAsyncTask2();
+        }
+        new MyAsyncTask() {
+            @Override
+            protected void onPostExecute(Boolean aBoolean) {
+                super.onPostExecute(aBoolean);
+                for (int i = 0; i < 20; i++) {
+                    timeoutAsyncTask();
+                }
+            }
+
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                return super.doInBackground(params);
+            }
+        }.execute();
+
+    }
+
+    @SuppressWarnings("unchecked")
+    private void timeoutAsyncTask() {
+        new MyTimeoutAsyncTask() {
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+            }
+
+            @Override
+            protected void onCancelled() {
+                super.onCancelled();
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                Log.i(TAG, "onPostExecute: " + s);
+            }
+
+            @Override
+            protected String doInBackground(Void... params) {
+                int value = mAsyncTaskID.getAndIncrement();
+                Log.i(TAG, "doInBackground: " + value);
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return String.valueOf(value);
+            }
+
+            @Override
+            protected long getTimeout() {
+                return 5000;
+            }
+        }.execute();
+    }
+
+    private void timeoutAsyncTask2() {
+        new MyTimeoutAsyncTask() {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+            }
+
+            @Override
+            protected void onCancelled() {
+                super.onCancelled();
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                Log.i(TAG, "onPostExecute: " + s);
+            }
+
+            @Override
+            protected String doInBackground(Void... params) {
+                int value = mAsyncTaskID.getAndIncrement();
+                Log.i(TAG, "doInBackground: " + value);
+                try {
+                    Thread.sleep(50000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return String.valueOf(value);
+            }
+
+            @Override
+            protected long getTimeout() {
+                return 10000;
+            }
+        }.execute();
     }
 
     private void clearCache() {
