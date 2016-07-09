@@ -16,13 +16,12 @@ public class MediaScanReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent != null) {
-            final String action = intent.getAction();
-            logger.info(action);
-            if (Intent.ACTION_MEDIA_SCANNER_FINISHED.equals(action)) {
-                Intent service = new Intent(context, MediaModifyService.class);
-                context.startService(service);
-            }
+        final String action = intent.getAction();
+        logger.info(action);
+        if (Intent.ACTION_MEDIA_SCANNER_FINISHED.equals(action)) {
+            Intent service = new Intent(context, MediaModifyService.class);
+            service.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startService(service);
         }
     }
 }

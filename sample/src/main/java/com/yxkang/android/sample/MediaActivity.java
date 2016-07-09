@@ -117,7 +117,7 @@ public class MediaActivity extends AppCompatActivity {
 
     private void initMediaTitle() {
         mMediaTitle.clear();
-        // 金孝琳 - 안녕.mp3
+        // 효린 (孝琳) - 안녕 (再见).flac
         mMediaTitle.add("안녕");
         // 戸松遥 - ユメセカイ.mp3
         mMediaTitle.add("ユメセカイ");
@@ -149,6 +149,58 @@ public class MediaActivity extends AppCompatActivity {
         mMediaTitle.add("我爱他");
         // 张靓颖 - 我们说好的.flac
         mMediaTitle.add("我们说好的");
+        // 정수정 (郑秀晶) - 울컥 (呜咽).mp3
+        mMediaTitle.add("울컥");
+        // 藍井エイル (蓝井艾露) - MEMORIA (记忆).flac
+        mMediaTitle.add("MEMORIA");
+        // 거미 (Gummy) - You Are My Everything (Korean Ver.).flac
+        mMediaTitle.add("You Are My Everything");
+        // SISTAR (씨스타) - 나혼자 (我一个人).mp3
+        mMediaTitle.add("나혼자");
+        // 전효성 (全孝盛)디액션 (D.Action) - 나를 찾아줘 (来找我吧).flac
+        mMediaTitle.add("나를 찾아줘");
+        // AOA (에이오에이) - 심쿵해 (怦然心动) (Korean Ver.).flac
+        mMediaTitle.add("심쿵해");
+        // 타이거 JK (Tiger JK)진실 (Jinsil) - Reset.mp3
+        mMediaTitle.add("Reset");
+        // 윤하 (Younha) - 기도 (祈祷).flac
+        mMediaTitle.add("기도");
+        // 스텔라 (Stellar) - 마리오네트 (提线木偶).flac
+        mMediaTitle.add("마리오네트");
+        // 阿悄 - 海海海.mp3
+        mMediaTitle.add("海海海");
+        // 윤하 (Younha) - 별에서 온 그대 (来自星星的你).flac
+        mMediaTitle.add("별에서 온 그대");
+        // Girl's Day (걸스데이) - Something.flac
+        mMediaTitle.add("Something");
+        // 현아 (泫雅)용준형 (龙俊亨) - Change.flac
+        mMediaTitle.add("Change");
+        // 백지영 (白智英)치타 (CHEETAH) - 사랑이 온다 (爱情来了).flac
+        mMediaTitle.add("사랑이 온다");
+        // Girl's Day (걸스데이) - 기대해 (期待).mp3
+        mMediaTitle.add("기대해");
+        // T-ara (티아라) - Roly-Poly (不倒翁).flac
+        mMediaTitle.add("Roly-Poly");
+        // 宮崎歩 - brave heart (勇敢的心).mp3
+        mMediaTitle.add("brave heart");
+        // 나비 (NAVI) - 거짓말이길 바랬어 (希望这是谎言).flac
+        mMediaTitle.add("거짓말이길 바랬어");
+        // T-ara (티아라) - 떠나지마 (不要离开).flac
+        mMediaTitle.add("떠나지마");
+        // T-ara (티아라) - HOLIDAY (假期).flac
+        mMediaTitle.add("HOLIDAY");
+        // 린 (LYn) - My Destiny.flac
+        mMediaTitle.add("My Destiny");
+        // 网络歌手 - La La Love on My Mind.mp3
+        mMediaTitle.add("La La Love on My Mind");
+        // 胡彦斌 - 月光.mp3
+        mMediaTitle.add("月光");
+        // 아이유 (IU) - 마음 (心情).flac
+        mMediaTitle.add("마음");
+        // BY2 - 不够成熟.flac
+        mMediaTitle.add("不够成熟");
+        // T-ara (티아라) - 넘버나인 (No.9) (Number 9).mp3
+        mMediaTitle.add("넘버나인");
         audioInfos.clear();
     }
 
@@ -162,8 +214,14 @@ public class MediaActivity extends AppCompatActivity {
     }
 
     private String parseTitle(String displayName) {
-        int start = displayName.indexOf("-") + 1;
-        int end = displayName.lastIndexOf(".");
+        int start = displayName.indexOf(" - ") + 3;
+        if (start == -1) {
+            start = displayName.indexOf("-") + 1;
+        }
+        int end = displayName.lastIndexOf("[");
+        if (end == -1) {
+            end = displayName.lastIndexOf(".");
+        }
         return displayName.substring(start, end).trim();
     }
 
