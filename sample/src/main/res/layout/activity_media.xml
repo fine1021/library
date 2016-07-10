@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.yxkang.android.sample.MediaActivity">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:paddingBottom="@dimen/activity_vertical_margin"
+              android:paddingLeft="@dimen/activity_horizontal_margin"
+              android:paddingRight="@dimen/activity_horizontal_margin"
+              android:paddingTop="@dimen/activity_vertical_margin"
+              tools:context="com.yxkang.android.sample.MediaActivity">
 
     <Button
         android:id="@+id/bt_am_modify"
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:text="@string/media"
-        android:textAllCaps="false" />
+        android:text="@string/modify_media"
+        android:textAllCaps="false"/>
 
-</RelativeLayout>
+    <Button
+        android:id="@+id/bt_am_scan_qq_music"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:text="@string/scan_qq_music"
+        android:textAllCaps="false"/>
+
+</LinearLayout>

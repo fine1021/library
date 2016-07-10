@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.yxkang.android.media.MediaScannerListener;
 import com.yxkang.android.media.MediaScannerManager;
+import com.yxkang.android.sample.service.MediaModifyService;
 
 /**
  * MediaScannerService
@@ -95,6 +96,9 @@ public class MediaScannerService extends IntentService {
         public void onScanOperationFinished() {
             Log.i(TAG, "onScanOperationFinished");
             scannerManager.unregisterMediaScannerListener(scannerListener);
+            Intent service = new Intent(getApplicationContext(), MediaModifyService.class);
+            service.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplicationContext().startService(service);
         }
     }
 }
