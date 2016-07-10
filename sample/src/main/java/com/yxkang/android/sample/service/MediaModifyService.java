@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.util.Log;
 
@@ -44,11 +45,15 @@ public class MediaModifyService extends IntentService {
                 String data = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
                 String display_name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
                 String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
-                Log.i(TAG, display_name + "/" + title);
+                Log.i(TAG, "loadMediaInfo: " + display_name + "/" + title);
                 if ((!display_name.contains(title) || (title.contains(";") | title.contains("[") | title.contains("]")))) {
                     String _title = parseTitle(display_name);
                     if (!_title.equals(title)) {
-                        logger.warn("{}/{}", display_name, title);
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                            logger.debug("{}/{}", display_name, title);
+                        } else {
+                            Log.d(TAG, "loadMediaInfo: " + display_name + "/" + title);
+                        }
                         title = _title;
                         AudioInfo info = new AudioInfo();
                         info.data = data;
@@ -63,7 +68,11 @@ public class MediaModifyService extends IntentService {
         if (audioInfos.size() > 0) {
             modifyMediaInfo();
         } else {
-            logger.info("no need to modify media information");
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                logger.info("no need to modify media information");
+            } else {
+                Log.v(TAG, "no need to modify media information");
+            }
         }
     }
 
@@ -78,13 +87,21 @@ public class MediaModifyService extends IntentService {
     private void modifyMediaInfo() {
         ContentResolver resolver = getContentResolver();
         for (AudioInfo info : audioInfos) {
-            logger.info("{}/{}", info.display_name, info.title);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                logger.info("{}/{}", info.display_name, info.title);
+            } else {
+                Log.i(TAG, "modifyMediaInfo: " + info.display_name + "/" + info.title);
+            }
             String where = MediaStore.Audio.Media.DATA + "=? and " + MediaStore.Audio.Media.DISPLAY_NAME + "=?";
             String[] selectionArgs = new String[]{info.data, info.display_name};
             ContentValues values = new ContentValues();
             values.put(MediaStore.Audio.Media.TITLE, info.title);
             int updated = resolver.update(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values, where, selectionArgs);
-            logger.debug("updated = {}", updated);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                logger.debug("updated = {}", updated);
+            } else {
+                Log.d(TAG, "modifyMediaInfo: updated = " + updated);
+            }
         }
         audioInfos.clear();
     }
