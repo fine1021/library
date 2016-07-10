@@ -21,13 +21,11 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
-@SuppressWarnings({"unused", "ConstantConditions"})
+@SuppressWarnings("ConstantConditions")
 public class MediaActivity extends AppCompatActivity {
 
     private static final String TAG = MediaActivity.class.getSimpleName();
-    private final HashSet<String> mMediaTitle = new HashSet<>();
     private final ArrayList<AudioInfo> audioInfos = new ArrayList<>();
     private ProgressDialog progressDialog;
 
@@ -72,6 +70,7 @@ public class MediaActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void onThreadMessageEvent(MessageEvent event) {
         switch (event.eventType) {
@@ -81,6 +80,7 @@ public class MediaActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvent event) {
         switch (event.eventType) {

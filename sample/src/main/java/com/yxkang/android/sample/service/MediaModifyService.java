@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -21,7 +20,6 @@ import java.util.HashSet;
  */
 public class MediaModifyService extends IntentService {
 
-    private final HashSet<String> mMediaTitle = new HashSet<>();
     private final ArrayList<AudioInfo> audioInfos = new ArrayList<>();
     private static final String TAG = MediaModifyService.class.getSimpleName();
 
