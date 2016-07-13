@@ -95,6 +95,9 @@ public class MediaActivity extends AppCompatActivity {
 
     private void scanQQMusicFiles() {
         String root = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/com.tencent.qqmusic/files/qqmusic/song";
+        if (root.startsWith("/storage/emulated/0")) {
+            root = Environment.getExternalStorageDirectory().getAbsolutePath() + "/qqmusic/song";
+        }
         Intent service = new Intent(this, MediaScannerService.class);
         service.putExtra(MediaScannerService.EXTRA_SCAN_TYPE, MediaScannerService.SCAN_DIR);
         service.putExtra(MediaScannerService.EXTRA_SCAN_PATH, root);

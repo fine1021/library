@@ -184,6 +184,14 @@ public class TableUtil {
         }
     }
 
+    /**
+     * check is the column is exist
+     *
+     * @param db         db
+     * @param tableName  the table name
+     * @param columnName the column name
+     * @return <code>true</code> if exist, otherwise <code>false</code>
+     */
     public static boolean isColumnExist(SQLiteDatabase db, String tableName, String columnName) {
         boolean result = false;
         Cursor cursor = null;
@@ -198,5 +206,45 @@ public class TableUtil {
             }
         }
         return result;
+    }
+
+    /**
+     * add a new column to the table if this column is not existed, the default column type is <tt>TEXT</tt>.
+     *
+     * @param db         db
+     * @param tableName  the table name
+     * @param columnName variable column name array
+     * @see #addIntegerColumn(SQLiteDatabase, String, String...)
+     */
+    public static void addTextColumn(SQLiteDatabase db, String tableName, String... columnName) {
+        for (String column : columnName) {
+            if (isColumnExist(db, tableName, column)) {
+                Log.w(TAG, "addTextColumn: " + column + " is already existed");
+            } else {
+                String sql = "ALTER TABLE " + tableName + " ADD COLUMN " + column + " TEXT default ''";
+                Log.i(TAG, "addTextColumn: " + sql);
+                db.execSQL(sql);
+            }
+        }
+    }
+
+    /**
+     * add a new column to the table if this column is not existed, the default column type is <tt>INTEGER</tt>.
+     *
+     * @param db         db
+     * @param tableName  the table name
+     * @param columnName variable column name array
+     * @see #addTextColumn(SQLiteDatabase, String, String...)
+     */
+    public static void addIntegerColumn(SQLiteDatabase db, String tableName, String... columnName) {
+        for (String column : columnName) {
+            if (isColumnExist(db, tableName, column)) {
+                Log.w(TAG, "addTextColumn: " + column + " is already existed");
+            } else {
+                String sql = "ALTER TABLE " + tableName + " ADD COLUMN " + column + " INTEGER default 0";
+                Log.i(TAG, "addTextColumn: " + sql);
+                db.execSQL(sql);
+            }
+        }
     }
 }
