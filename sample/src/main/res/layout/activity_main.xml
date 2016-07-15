@@ -56,6 +56,13 @@
             android:text="@string/media"
             android:textAllCaps="false" />
 
+        <Button
+            android:id="@+id/bt_battery"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:text="@string/battery"
+            android:textAllCaps="false"/>
+
     </LinearLayout>
 
 

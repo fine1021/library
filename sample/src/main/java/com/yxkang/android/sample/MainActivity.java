@@ -25,6 +25,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.yxkang.android.os.WeakReferenceHandler;
 import com.yxkang.android.provider.Settings;
 import com.yxkang.android.sample.application.SampleApplication;
+import com.yxkang.android.sample.bean.BatteryInfo;
 import com.yxkang.android.sample.bean.DisplayInfoBean;
 import com.yxkang.android.sample.db.DatabaseHelper;
 import com.yxkang.android.sample.media.MediaScannerService;
@@ -92,6 +93,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, MediaActivity.class));
+            }
+        });
+        findViewById(R.id.bt_battery).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showBatteryInfo();
             }
         });
         String value = Settings.Global.getString(getContentResolver(), "table_name", "unknown");
@@ -248,6 +255,17 @@ public class MainActivity extends AppCompatActivity {
                 .title("Display Information")
                 .titleGravity(GravityEnum.START)
                 .content(bean.toString())
+                .contentGravity(GravityEnum.START)
+                .positiveText(android.R.string.ok)
+                .show();
+    }
+
+    private void showBatteryInfo() {
+        BatteryInfo batteryInfo = new BatteryInfo();
+        new MaterialDialog.Builder(this)
+                .title("Battery Information")
+                .titleGravity(GravityEnum.START)
+                .content(batteryInfo.toString())
                 .contentGravity(GravityEnum.START)
                 .positiveText(android.R.string.ok)
                 .show();
