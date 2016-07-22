@@ -1,12 +1,15 @@
 package com.yxkang.android.sample.service;
 
+import android.Manifest;
 import android.app.IntentService;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import org.slf4j.Logger;
@@ -26,8 +29,16 @@ public class MediaModifyService extends IntentService {
 
     private static final Logger logger = LoggerFactory.getLogger(MediaModifyService.class);
 
+    boolean hasWritePermission = false;
+
     public MediaModifyService() {
         super("MediaModifyService");
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        hasWritePermission = (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
     }
 
     @Override
@@ -49,7 +60,7 @@ public class MediaModifyService extends IntentService {
                 if ((!display_name.contains(title) || (title.contains(";") | title.contains("[") | title.contains("]")))) {
                     String _title = parseTitle(display_name);
                     if (!_title.equals(title)) {
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || hasWritePermission) {
                             logger.debug("{}/{}", display_name, title);
                         } else {
                             Log.d(TAG, "loadMediaInfo: " + display_name + "/" + title);
@@ -68,7 +79,7 @@ public class MediaModifyService extends IntentService {
         if (audioInfos.size() > 0) {
             modifyMediaInfo();
         } else {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || hasWritePermission) {
                 logger.info("no need to modify media information");
             } else {
                 Log.v(TAG, "no need to modify media information");
@@ -87,7 +98,7 @@ public class MediaModifyService extends IntentService {
     private void modifyMediaInfo() {
         ContentResolver resolver = getContentResolver();
         for (AudioInfo info : audioInfos) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || hasWritePermission) {
                 logger.info("{}/{}", info.display_name, info.title);
             } else {
                 Log.i(TAG, "modifyMediaInfo: " + info.display_name + "/" + info.title);
@@ -97,7 +108,7 @@ public class MediaModifyService extends IntentService {
             ContentValues values = new ContentValues();
             values.put(MediaStore.Audio.Media.TITLE, info.title);
             int updated = resolver.update(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values, where, selectionArgs);
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || hasWritePermission) {
                 logger.debug("updated = {}", updated);
             } else {
                 Log.d(TAG, "modifyMediaInfo: updated = " + updated);

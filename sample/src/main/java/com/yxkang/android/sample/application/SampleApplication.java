@@ -1,10 +1,13 @@
 package com.yxkang.android.sample.application;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.yxkang.android.exception.CrashHandler;
@@ -53,6 +56,13 @@ public class SampleApplication extends Application {
         });
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             log4jConfigure(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED));
+        } else {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                log4jConfigure(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED));
+            } else {
+                Log.w(LOG_TAG, "don't have WRITE_EXTERNAL_STORAGE permission");
+            }
         }
     }
 

@@ -153,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
                         SampleApplication.instance().log4jConfigure(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED));
                         Toast.makeText(this, "WRITE_EXTERNAL_STORAGE permission granted", Toast.LENGTH_SHORT).show();
 //                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS}, MOUNT_PERMISSIONS_REQUEST_CODE);
+                        SampleApplication.instance().log4jConfigure(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED));
                         checkLauncherPermissions();
                     } else {
                         Toast.makeText(this, "WRITE_EXTERNAL_STORAGE permission denied", Toast.LENGTH_SHORT).show();
