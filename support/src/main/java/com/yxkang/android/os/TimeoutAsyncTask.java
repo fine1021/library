@@ -76,7 +76,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * protected Long doInBackground(URL... urls) {
  * int count = urls.length;
  * long totalSize = 0;
- * for (int i = 0; i < count; i++) {
+ * for (int i = 0; i &lt; count; i++) {
  * totalSize += Downloader.downloadFile(urls[i]);
  * publishProgress((int) ((i / (float) count) * 100));
  * // Escape early if cancel() is called
@@ -619,6 +619,7 @@ public abstract class TimeoutAsyncTask<Params, Progress, Result> {
      * a simple Runnable object. See {@link #execute(Object[])} for more
      * information on the order of execution.
      *
+     * @param runnable the runnable to be executed
      * @see #execute(Object[])
      * @see #executeOnExecutor(Executor, Object[])
      */
