@@ -1,11 +1,14 @@
 package com.yxkang.android.sample.db;
 
+import android.support.annotation.Keep;
+
 import com.yxkang.android.annotation.Column;
 import com.yxkang.android.annotation.Table;
 
 /**
  * Created by yexiaokang on 2016/2/1.
  */
+@Keep
 @Table(name = "SettingsInfo")
 public class SettingsInfo {
 

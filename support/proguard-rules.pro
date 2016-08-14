@@ -9,26 +9,21 @@
 
 # Add any project specific keep options here:
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
-
+#-optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*
 #-optimizationpasses 5
+#-allowaccessmodification
+#-dontpreverify
+
 #-dontusemixedcaseclassnames
 #-dontskipnonpubliclibraryclasses
-#-dontpreverify
 #-verbose
 
 # Keep a fixed source file attribute and all line number tables to get line
 # numbers in the stack traces.
 # You can comment this out if you're not interested in stack traces.
 
--keepparameternames
 -renamesourcefileattribute SourceFile
--keepattributes Exceptions,InnerClasses,Deprecated,SourceFile,LineNumberTable,EnclosingMethod
+-keepattributes SourceFile,LineNumberTable
 
 # Preserve all Pan types.
 
@@ -64,6 +59,12 @@
     public <init>(android.content.Context, android.util.AttributeSet);
     public <init>(android.content.Context, android.util.AttributeSet, int);
     public void set*(...);
+	public *** get*();
+}
+
+# We want to keep methods in Activity that could be used in the XML attribute onClick
+-keepclassmembers class * extends android.app.Activity {
+   public void *(android.view.View);
 }
 
 # Preserve all classes that have special context constructors, and the
@@ -120,6 +121,23 @@
     private void readObject(java.io.ObjectInputStream);
     java.lang.Object writeReplace();
     java.lang.Object readResolve();
+}
+
+# Understand the @Keep support annotation.
+-keep class android.support.annotation.Keep
+
+-keep @android.support.annotation.Keep class * {*;}
+
+-keepclasseswithmembers class * {
+    @android.support.annotation.Keep <methods>;
+}
+
+-keepclasseswithmembers class * {
+    @android.support.annotation.Keep <fields>;
+}
+
+-keepclasseswithmembers class * {
+    @android.support.annotation.Keep <init>(...);
 }
 
 # Your application may contain more items that need to be preserved;
