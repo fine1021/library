@@ -128,6 +128,9 @@
 
 -keep @android.support.annotation.Keep class * {*;}
 
+-keep @android.support.annotation.Keep interface * {*;}
+
+# Keep the class and its members name(keep the content if this member is a method)
 -keepclasseswithmembers class * {
     @android.support.annotation.Keep <methods>;
 }
