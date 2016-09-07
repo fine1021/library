@@ -24,8 +24,8 @@ import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.yxkang.android.os.WeakReferenceHandler;
 import com.yxkang.android.provider.Settings;
-import com.yxkang.android.sample.application.ApplicationManager;
 import com.yxkang.android.sample.application.SampleApplication;
+import com.yxkang.android.sample.application.ServiceManager;
 import com.yxkang.android.sample.bean.BatteryInfo;
 import com.yxkang.android.sample.bean.DisplayInfoBean;
 import com.yxkang.android.sample.db.DatabaseManager;
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int MESSAGE_SHOW_DIALOG = 0x100;
     private static final int MESSAGE_DISMISS_DIALOG = 0x101;
     private DatabaseManager databaseManager;
-    private ApplicationManager applicationManager;
+    private ServiceManager serviceManager;
     public static final int LAUNCHER_PERMISSIONS_REQUEST_CODE = 0x01;
     public static final int STORAGE_PERMISSIONS_REQUEST_CODE = 0x02;
     public static final int MOUNT_PERMISSIONS_REQUEST_CODE = 0x03;
@@ -105,8 +105,8 @@ public class MainActivity extends AppCompatActivity {
         });
         String value = Settings.Global.getString(getContentResolver(), "table_name", "unknown");
         Log.i(TAG, "table_name = " + value);
-        applicationManager = new ApplicationManager();
-        databaseManager = (DatabaseManager) applicationManager.getService(this, ApplicationManager.DATABASE_SERVICE);
+        serviceManager = new ServiceManager();
+        databaseManager = (DatabaseManager) serviceManager.getService(this, ServiceManager.DATABASE_SERVICE);
         if (isMarshmallow()) {
             checkWritePermissions();
         } else {

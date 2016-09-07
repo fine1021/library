@@ -24,8 +24,8 @@ import com.yxkang.android.sample.db.DatabaseManager;
 import java.util.HashMap;
 
 /**
- * Manages all of the services that can be returned by {@link ApplicationManager#getService(String)}.
- * Used by {@link ApplicationManager}.
+ * Manages all of the services that can be returned by {@link ServiceManager#getService(String)}.
+ * Used by {@link ServiceManager}.
  */
 @SuppressWarnings("all")
 final class ServiceRegistry {
@@ -38,7 +38,7 @@ final class ServiceRegistry {
 
     static {
 
-        registerService(ApplicationManager.DATABASE_SERVICE, new CachedServiceFetcher<DatabaseManager>() {
+        registerService(ServiceManager.DATABASE_SERVICE, new CachedServiceFetcher<DatabaseManager>() {
             @Override
             public DatabaseManager createService(Context context) {
                 return new DatabaseManager(context);
@@ -58,7 +58,7 @@ final class ServiceRegistry {
     /**
      * Gets a system service from a given context.
      */
-    public static Object getSystemService(ApplicationManager manager, Context context, String name) {
+    public static Object getSystemService(ServiceManager manager, Context context, String name) {
         ServiceFetcher<?> fetcher = SYSTEM_SERVICE_FETCHERS.get(name);
         return fetcher != null ? fetcher.getService(manager, context) : null;
     }
@@ -77,7 +77,7 @@ final class ServiceRegistry {
      * These objects must only be created during static initialization.
      */
     interface ServiceFetcher<T> {
-        T getService(ApplicationManager manager, Context context);
+        T getService(ServiceManager manager, Context context);
     }
 
     /**
@@ -92,7 +92,7 @@ final class ServiceRegistry {
         }
 
         @Override
-        public final T getService(ApplicationManager manager, Context context) {
+        public final T getService(ServiceManager manager, Context context) {
             final Object[] cache = manager.mServiceCache;
             synchronized (cache) {
                 // Fetch or create the service.
@@ -116,7 +116,7 @@ final class ServiceRegistry {
         private T mCachedInstance;
 
         @Override
-        public final T getService(ApplicationManager manager, Context unused) {
+        public final T getService(ServiceManager manager, Context unused) {
             synchronized (StaticServiceFetcher.this) {
                 if (mCachedInstance == null) {
                     mCachedInstance = createService();
@@ -141,7 +141,7 @@ final class ServiceRegistry {
         private T mCachedInstance;
 
         @Override
-        public final T getService(ApplicationManager manager, Context context) {
+        public final T getService(ServiceManager manager, Context context) {
             synchronized (StaticContextServiceFetcher.this) {
                 if (mCachedInstance == null) {
                     mCachedInstance = createService(context.getApplicationContext());
