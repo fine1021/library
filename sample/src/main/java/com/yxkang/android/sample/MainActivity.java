@@ -28,6 +28,8 @@ import com.yxkang.android.sample.application.SampleApplication;
 import com.yxkang.android.sample.application.ServiceManager;
 import com.yxkang.android.sample.bean.BatteryInfo;
 import com.yxkang.android.sample.bean.DisplayInfoBean;
+import com.yxkang.android.sample.common.AndroidLogHandler;
+import com.yxkang.android.sample.common.LoggerHelper;
 import com.yxkang.android.sample.db.DatabaseManager;
 import com.yxkang.android.sample.media.MediaScannerService;
 import com.yxkang.android.sample.service.MediaModifyService;
@@ -40,6 +42,8 @@ import java.io.File;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 @SuppressWarnings({"TryWithIdenticalCatches", "ConstantConditions"})
@@ -57,10 +61,15 @@ public class MainActivity extends AppCompatActivity {
     public static final int MOUNT_PERMISSIONS_REQUEST_CODE = 0x03;
     public static final int WRITE_PERMISSIONS_REQUEST_CODE = 0x04;
 
+    private AndroidLogHandler logHandler = new AndroidLogHandler();
+    private Logger logger = Logger.getLogger(TAG);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        logger.addHandler(logHandler);
+        LoggerHelper.initLogger(logger);
         findViewById(R.id.bt_support_library).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         String value = Settings.Global.getString(getContentResolver(), "table_name", "unknown");
-        Log.i(TAG, "table_name = " + value);
+        logger.info("table_name = " + value);
         serviceManager = new ServiceManager();
         databaseManager = (DatabaseManager) serviceManager.getService(this, ServiceManager.DATABASE_SERVICE);
         if (isMarshmallow()) {
@@ -113,8 +122,8 @@ public class MainActivity extends AppCompatActivity {
             LauncherUtil.dumpShortcut(this);
         }
         ContextUtil.isServiceRunning(this, MediaModifyService.class.getName());
-        Log.i(TAG, "ProcessName = " + ContextUtil.getProcessName());
-        Log.i(TAG, "ProcessName = " + ContextUtil.getProcessName(this, android.os.Process.myPid()));
+        logger.log(Level.INFO, "ProcessName = {0}", ContextUtil.getProcessName());
+        logger.log(Level.INFO, "ProcessName = {0}", ContextUtil.getProcessName(this, android.os.Process.myPid()));
     }
 
     @Override
@@ -398,6 +407,7 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         ThreadPoolFactory.getCachedThreadPool().shutdownNow();
         mHandler.removeCallbacksAndMessages(null);
+        logger.removeHandler(logHandler);
     }
 
     private static class MainHandler extends WeakReferenceHandler<MainActivity> {
