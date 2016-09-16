@@ -8,8 +8,8 @@ android {
     buildToolsVersion '24.0.2'
     defaultConfig {
         minSdkVersion 10
-        versionCode 13
-        versionName '1.0.4'
+        versionCode 15
+        versionName '1.0.5'
     }
     buildTypes {
         release {
@@ -29,11 +29,11 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:24.2.0'
+    compile 'com.android.support:appcompat-v7:24.2.1'
 }
 
 ext {
-    releaseVersion = '1.0.4'
+    releaseVersion = '1.0.5'
 }
 
 
