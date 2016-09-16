@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.yxkang.android.fragment.EditDialogFragment;
 import com.yxkang.android.os.WeakReferenceHandler;
 import com.yxkang.android.provider.Settings;
 import com.yxkang.android.sample.application.SampleApplication;
@@ -47,7 +48,7 @@ import java.util.logging.Logger;
 
 
 @SuppressWarnings({"TryWithIdenticalCatches", "ConstantConditions"})
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements EditDialogFragment.OnDialogEventListener {
 
     private static final String TAG = "MainActivity";
     private final MainHandler mHandler = new MainHandler(this);
@@ -110,6 +111,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showBatteryInfo();
+            }
+        });
+        findViewById(R.id.bt_edit_dialog).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showEditDialog();
             }
         });
         String value = Settings.Global.getString(getContentResolver(), "table_name", "unknown");
@@ -283,6 +290,16 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
 
+    private void showEditDialog() {
+        EditDialogFragment dialogFragment = new EditDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(EditDialogFragment.PARAM_TAG, "edit");
+        bundle.putString(EditDialogFragment.PARAM_TITLE, "Edit Dialog");
+        bundle.putString(EditDialogFragment.PARAM_TEXT, "Edit Dialog");
+        dialogFragment.setArguments(bundle);
+        dialogFragment.show(getSupportFragmentManager(), "edit");
+    }
+
     private void showRebootOptions() {
         new MaterialDialog.Builder(this)
                 .title("Reboot Options")
@@ -408,6 +425,19 @@ public class MainActivity extends AppCompatActivity {
         ThreadPoolFactory.getCachedThreadPool().shutdownNow();
         mHandler.removeCallbacksAndMessages(null);
         logger.removeHandler(logHandler);
+    }
+
+    @Override
+    public void onDialogViewCreated(EditDialogFragment fragment, String tag) {
+        Log.v(TAG, "onDialogViewCreated: tag = " + tag);
+        fragment.getTextInputEditText().setHint("Please Input Text");
+        fragment.getTextInputLayout().setHint("Please Input Text");
+        //fragment.getTextInputEditText().setInputType(EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_VARIATION_PASSWORD);
+    }
+
+    @Override
+    public void onDialogInputFinished(String text, String tag) {
+        Log.v(TAG, "onDialogViewCreated: text = " + text + ", tag = " + tag);
     }
 
     private static class MainHandler extends WeakReferenceHandler<MainActivity> {

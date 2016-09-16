@@ -63,6 +63,13 @@
             android:text="@string/battery"
             android:textAllCaps="false"/>
 
+        <Button
+            android:id="@+id/bt_edit_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:text="@string/edit_dialog"
+            android:textAllCaps="false"/>
+
     </LinearLayout>
 
 

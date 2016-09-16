@@ -31,6 +31,7 @@
     <string name="reboot">Reboot(4A)</string>
     <string name="media">Media</string>
     <string name="battery">Battery Info</string>
+    <string name="edit_dialog">Edit Dialog</string>
     <string name="modify_media">Modify Media</string>
     <string name="scan_qq_music">Scan QQ Music</string>
     <string name="lock">Lock</string>
