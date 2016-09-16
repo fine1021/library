@@ -19,14 +19,14 @@ public abstract class LoopAction {
      *
      * @return {@code true} if the current status is {@link Status#PENDING}, otherwise is {@code false}
      */
-    boolean isReady() {
+    protected boolean isReady() {
         return status == Status.PENDING;
     }
 
     /**
      * set the action status {@link Status#RUNNING}, used by {@link LoopHandler}
      */
-    void preExecute() {
+    protected void preExecute() {
         status = Status.RUNNING;
     }
 
@@ -38,7 +38,7 @@ public abstract class LoopAction {
     /**
      * set the action status {@link Status#FINISHED}, used by {@link LoopHandler}
      */
-    void postExecute() {
+    protected void postExecute() {
         status = Status.FINISHED;
     }
 
@@ -49,6 +49,15 @@ public abstract class LoopAction {
      */
     public Status getStatus() {
         return status;
+    }
+
+    /**
+     * set the current action status
+     *
+     * @param status the action status
+     */
+    protected void setStatus(Status status) {
+        this.status = status;
     }
 
     /**

@@ -6,8 +6,6 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 
-import java.lang.ref.WeakReference;
-
 /**
  * Created by fine on 2016/9/16.
  * <p>LoopHandler used for Multi-loop and Multi-action,
@@ -18,7 +16,7 @@ public final class LoopHandler {
     private static final String TAG = "LoopHandler";
 
     private final SparseBooleanArray array = new SparseBooleanArray();
-    private final SparseArray<WeakReference<LoopAction>> actions = new SparseArray<>();
+    private final SparseArray<LoopAction> actions = new SparseArray<>();
 
     private LoopHandler() {
         array.clear();
@@ -88,6 +86,7 @@ public final class LoopHandler {
      *
      * @return the loop action, or {@code null} if not exists
      */
+    @Nullable
     public LoopAction getAction() {
         return getAction(0);
     }
@@ -100,11 +99,7 @@ public final class LoopHandler {
      */
     @Nullable
     public LoopAction getAction(int key) {
-        WeakReference<LoopAction> reference = actions.get(key);
-        if (reference == null) {
-            return null;
-        }
-        return reference.get();
+        return actions.get(key);
     }
 
     /**
@@ -123,8 +118,7 @@ public final class LoopHandler {
      * @param action the loop action
      */
     public void setAction(int key, LoopAction action) {
-        WeakReference<LoopAction> reference = new WeakReference<>(action);
-        actions.put(key, reference);
+        actions.put(key, action);
     }
 
     /**
@@ -146,6 +140,12 @@ public final class LoopHandler {
             action.execute();
             action.postExecute();
             actions.delete(key);
+        } else {
+            if (action == null) {
+                Log.v(TAG, "loopFinished: action == null");
+            } else {
+                Log.w(TAG, "loopFinished: action status = " + action.getStatus().name());
+            }
         }
     }
 
