@@ -150,6 +150,8 @@ public final class LoopHandler {
     }
 
     /**
+     * sleep all the time, until the {@link #wake()} has been called by others
+     *
      * @see #wait()
      */
     public void sleep() {
@@ -163,6 +165,9 @@ public final class LoopHandler {
     }
 
     /**
+     * sleep the millis time, until the {@link #wake()} has been called by others or time up
+     *
+     * @param millis the maximum time to sleep in milliseconds.
      * @see #wait(long)
      */
     public void sleep(long millis) {
@@ -176,6 +181,8 @@ public final class LoopHandler {
     }
 
     /**
+     * wake all the threads that is waiting this object
+     *
      * @see #notifyAll()
      */
     public void wake() {
