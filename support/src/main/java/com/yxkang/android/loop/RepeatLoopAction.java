@@ -6,6 +6,11 @@ package com.yxkang.android.loop;
 public abstract class RepeatLoopAction extends LoopAction {
 
     @Override
+    protected boolean isReady() {
+        return true;
+    }
+
+    @Override
     protected void postExecute() {
         super.postExecute();
         setStatus(Status.PENDING);
