@@ -3,10 +3,9 @@ apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    buildToolsVersion "24.0.3"
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 24
+        minSdkVersion 10
         versionCode 1
         versionName '1.0.0'
         consumerProguardFiles 'proguard-rules.pro'

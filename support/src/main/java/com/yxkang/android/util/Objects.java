@@ -6,7 +6,7 @@ import java.util.Comparator;
 /**
  * Utility methods for objects.
  */
-public final class Objects {
+final class Objects {
 
     public static <T> int compare(T a, T b, Comparator<? super T> c) {
         if (a == b) {

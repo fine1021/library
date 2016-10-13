@@ -22,7 +22,7 @@ class MediaScannerService extends IMediaScannerService.Stub {
 
     private final RemoteCallbackList<IMediaScannerListener> callbackList = new RemoteCallbackList<>();
 
-    public MediaScannerService(Context context) {
+    MediaScannerService(Context context) {
         this.context = context.getApplicationContext();
     }
 

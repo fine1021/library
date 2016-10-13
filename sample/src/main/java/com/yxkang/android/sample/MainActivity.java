@@ -18,6 +18,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.GravityEnum;
@@ -29,6 +31,7 @@ import com.yxkang.android.sample.application.SampleApplication;
 import com.yxkang.android.sample.application.ServiceManager;
 import com.yxkang.android.sample.bean.BatteryInfo;
 import com.yxkang.android.sample.bean.DisplayInfoBean;
+import com.yxkang.android.sample.bean.StorageInfo;
 import com.yxkang.android.sample.common.AndroidLogHandler;
 import com.yxkang.android.sample.common.LoggerHelper;
 import com.yxkang.android.sample.db.DatabaseManager;
@@ -40,6 +43,8 @@ import com.yxkang.android.util.RootUtil;
 import com.yxkang.android.util.ThreadPoolFactory;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -69,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements EditDialogFragmen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setNeedsMenuKey();
         logger.addHandler(logHandler);
         LoggerHelper.initLogger(logger);
         findViewById(R.id.bt_support_library).setOnClickListener(new View.OnClickListener() {
@@ -117,6 +123,12 @@ public class MainActivity extends AppCompatActivity implements EditDialogFragmen
             @Override
             public void onClick(View v) {
                 showEditDialog();
+            }
+        });
+        findViewById(R.id.bt_storage).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showStorageInfo();
             }
         });
         String value = Settings.Global.getString(getContentResolver(), "table_name", "unknown");
@@ -268,6 +280,37 @@ public class MainActivity extends AppCompatActivity implements EditDialogFragmen
         Toast.makeText(MainActivity.this, "Start Scan Files", Toast.LENGTH_SHORT).show();
     }
 
+    private void setNeedsMenuKey() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            return;
+        }
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
+            try {
+                int flags = WindowManager.LayoutParams.class.getField("FLAG_NEEDS_MENU_KEY").getInt(null);
+                getWindow().addFlags(flags);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                Method setNeedsMenuKey = Window.class.getDeclaredMethod("setNeedsMenuKey", int.class);
+                setNeedsMenuKey.setAccessible(true);
+                int value = WindowManager.LayoutParams.class.getField("NEEDS_MENU_SET_TRUE").getInt(null);
+                setNeedsMenuKey.invoke(getWindow(), value);
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void showDisplayInfo() {
         DisplayInfoBean bean = new DisplayInfoBean(this);
         new MaterialDialog.Builder(this)
@@ -285,6 +328,18 @@ public class MainActivity extends AppCompatActivity implements EditDialogFragmen
                 .title("Battery Information")
                 .titleGravity(GravityEnum.START)
                 .content(batteryInfo.toString())
+                .contentGravity(GravityEnum.START)
+                .positiveText(android.R.string.ok)
+                .show();
+    }
+
+    private void showStorageInfo() {
+        StorageInfo storageInfo = new StorageInfo();
+        String text = storageInfo.getStorageInformation(this);
+        new MaterialDialog.Builder(this)
+                .title("Storage Information")
+                .titleGravity(GravityEnum.START)
+                .content(text)
                 .contentGravity(GravityEnum.START)
                 .positiveText(android.R.string.ok)
                 .show();

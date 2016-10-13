@@ -47,7 +47,7 @@ public class MediaScannerManager {
         private MediaScannerListener listener;
 
 
-        public ListenerTransport(MediaScannerListener listener) {
+        ListenerTransport(MediaScannerListener listener) {
             this.listener = listener;
         }
 
@@ -76,6 +76,10 @@ public class MediaScannerManager {
 
         if (scannerService == null) {
             Log.e(TAG, "scannerService == null");
+            return;
+        }
+        if (mListeners.containsKey(listener)) {
+            Log.w(TAG, "listener has already been added");
             return;
         }
 
