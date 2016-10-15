@@ -3,13 +3,17 @@ import proguard.gradle.ProGuardTask
 apply plugin: 'com.android.library'
 apply plugin: 'com.novoda.bintray-release'
 
+def versionMajor = 1
+def versionMinor = 0
+def versionPatch = 6
+
 android {
     compileSdkVersion 24
     buildToolsVersion '24.0.3'
     defaultConfig {
         minSdkVersion 10
-        versionCode 15
-        versionName '1.0.5'
+        versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
     }
     buildTypes {
         release {
@@ -33,7 +37,7 @@ dependencies {
 }
 
 ext {
-    releaseVersion = '1.0.5'
+    releaseVersion = "${versionMajor}.${versionMinor}.${versionPatch}"
 }
 
 

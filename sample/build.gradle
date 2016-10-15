@@ -56,4 +56,5 @@ dependencies {
         transitive = true
     }
     compile project(':support-fragment')
+    compile project(':support-provider')
 }

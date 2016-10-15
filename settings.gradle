@@ -1,1 +1,1 @@
-include ':shimmer', ':showcaseview', ':viewpagerindicator', ':support', ':sample', ':provider', ':support-fragment'
+include ':shimmer', ':showcaseview', ':viewpagerindicator', ':support', ':sample', ':provider', ':support-fragment', ':support-provider'
