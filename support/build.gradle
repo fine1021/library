@@ -37,7 +37,32 @@ dependencies {
 }
 
 ext {
-    releaseVersion = "${versionMajor}.${versionMinor}.${versionPatch}"
+    // installv1
+    bintrayRepo = 'maven'
+    bintrayName = 'support'
+
+    // library
+    libraryGroupId = 'com.yxkang.android'
+    libraryVersion = "${versionMajor}.${versionMinor}.${versionPatch}"
+    libraryName = 'support'
+    libraryArtifact = 'support'
+    libraryUserOrg = 'fine1021'
+    libraryDescription = 'a support library for android'
+
+    // url
+    siteUrl = 'https://github.com/fine1021/library'
+    gitUrl = 'https://github.com/fine1021/library.git'
+    issueUrl = 'https://github.com/fine1021/library/issues'
+
+    // developer
+    developerId = 'fine1021'
+    developerName = 'fine'
+    developerEmail = 'fine1021@gmail.com'
+
+    // licenses
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
 }
 
 
@@ -57,7 +82,7 @@ task buildSupportJar(dependsOn: ['build']) << {
     delete 'build/intermediates/classes/release/com/yxkang/android/R$attr.class'
     delete 'build/intermediates/classes/release/com/yxkang/android/R$string.class'
     delete 'build/intermediates/classes/release/com/yxkang/android/R$styleable.class'
-    execute("support-${project.releaseVersion}.jar", "build/intermediates/classes/release")
+    execute("support-${project.libraryVersion}.jar", "build/intermediates/classes/release")
 }
 
 
@@ -65,7 +90,7 @@ task buildReleaseJar(dependsOn: ['compileReleaseJavaWithJavac'], type: Jar) {
 
     // appendix = "demo"
     baseName = "support"
-    version = project.releaseVersion
+    version = project.libraryVersion
     classifier = "release"
 
     // 后缀名
@@ -115,12 +140,12 @@ Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 publish {
-    userOrg = 'fine1021'
-    repoName = 'maven'
-    groupId = 'com.yxkang.android'
-    artifactId = 'support'
-    publishVersion = project.releaseVersion
-    description = 'a support library for android'
+    userOrg = libraryUserOrg
+    repoName = bintrayRepo
+    groupId = libraryGroupId
+    artifactId = libraryArtifact
+    publishVersion = libraryVersion
+    description = libraryDescription
     website = 'https://github.com/fine1021/library'
     issueTracker = "${website}/issues"
     repository = "${website}.git"
@@ -129,4 +154,5 @@ publish {
     dryRun = false
 }
 
-//apply from: './bintray.gradle'
+//apply from: './installv1.gradle'
+//apply from: './bintrayv1.gradle'
