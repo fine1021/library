@@ -16,12 +16,12 @@ import java.util.List;
  */
 
 @SuppressWarnings("ALL")
-public final class StorageUtils {
+public final class Storage {
 
-    private static final String TAG = "StorageUtils";
+    private static final String TAG = "Storage";
 
     @NonNull
-    public static List<String> getStorageDirectory(Context context) {
+    public static List<String> getVolumePaths(Context context) {
         List<String> list = new ArrayList<>();
         try {
             StorageManager storageManager = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);

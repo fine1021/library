@@ -18,8 +18,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.GravityEnum;
@@ -39,12 +37,11 @@ import com.yxkang.android.sample.media.MediaScannerService;
 import com.yxkang.android.sample.service.MediaModifyService;
 import com.yxkang.android.util.ContextUtil;
 import com.yxkang.android.util.LauncherUtil;
+import com.yxkang.android.util.NavigationBar;
 import com.yxkang.android.util.RootUtil;
 import com.yxkang.android.util.ThreadPoolFactory;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -74,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements EditDialogFragmen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setNeedsMenuKey();
+        NavigationBar.setNeedsMenuKey(this);
         logger.addHandler(logHandler);
         LoggerHelper.initLogger(logger);
         findViewById(R.id.bt_support_library).setOnClickListener(new View.OnClickListener() {
@@ -278,37 +275,6 @@ public class MainActivity extends AppCompatActivity implements EditDialogFragmen
         service.putExtra(MediaScannerService.EXTRA_SCAN_PATH, root);
         startService(service);
         Toast.makeText(MainActivity.this, "Start Scan Files", Toast.LENGTH_SHORT).show();
-    }
-
-    private void setNeedsMenuKey() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            return;
-        }
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
-            try {
-                int flags = WindowManager.LayoutParams.class.getField("FLAG_NEEDS_MENU_KEY").getInt(null);
-                getWindow().addFlags(flags);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-            }
-        } else {
-            try {
-                Method setNeedsMenuKey = Window.class.getDeclaredMethod("setNeedsMenuKey", int.class);
-                setNeedsMenuKey.setAccessible(true);
-                int value = WindowManager.LayoutParams.class.getField("NEEDS_MENU_SET_TRUE").getInt(null);
-                setNeedsMenuKey.invoke(getWindow(), value);
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     private void showDisplayInfo() {

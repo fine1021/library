@@ -14,9 +14,9 @@ import java.io.IOException;
  * Bitmap Utils
  */
 @SuppressWarnings("ALL")
-public class BitmapUtil {
+public class BitmapThumbnail {
 
-    private static final String TAG = "BitmapUtil";
+    private static final String TAG = "BitmapThumbnail";
 
     private static final int UNCONSTRAINED = -1;
 

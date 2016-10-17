@@ -5,7 +5,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 
-import com.yxkang.android.util.StorageUtils;
+import com.yxkang.android.util.Storage;
 
 import java.util.List;
 import java.util.Locale;
@@ -23,7 +23,7 @@ public class StorageInfo {
 
     public String getStorageInformation(Context context) {
         StringBuilder builder = new StringBuilder();
-        List<String> list = StorageUtils.getStorageDirectory(context);
+        List<String> list = Storage.getVolumePaths(context);
         if (!list.isEmpty()) {
             for (String s : list) {
                 builder.append("StorageDirectory：").append(s).append("\n");

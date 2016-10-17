@@ -9,7 +9,7 @@ import android.widget.ImageView;
 
 import com.yxkang.android.image.core.ref.RefImageView;
 import com.yxkang.android.media.MediaFile;
-import com.yxkang.android.util.BitmapUtil;
+import com.yxkang.android.util.BitmapThumbnail;
 import com.yxkang.android.util.Logger;
 
 import java.util.ArrayList;
@@ -291,9 +291,9 @@ public class ImageLoader {
                     }
 
                     if (MediaFile.isImageFileType(filePath)) {
-                        task.bitmap = BitmapUtil.createImageThumbnail(filePath, configuration.imageSize.getWidth(), configuration.imageSize.getHeight(), true);
+                        task.bitmap = BitmapThumbnail.createImageThumbnail(filePath, configuration.imageSize.getWidth(), configuration.imageSize.getHeight(), true);
                     } else if (MediaFile.isVideoFileType(filePath)) {
-                        task.bitmap = BitmapUtil.createVideoThumbnail(filePath, configuration.imageSize.getWidth(), configuration.imageSize.getHeight(), true);
+                        task.bitmap = BitmapThumbnail.createVideoThumbnail(filePath, configuration.imageSize.getWidth(), configuration.imageSize.getHeight(), true);
                     }
 
                     if (task.cancelTask.get()) {
