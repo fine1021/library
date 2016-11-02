@@ -12,6 +12,8 @@ import android.util.Log;
 
 import com.yxkang.android.exception.CrashHandler;
 import com.yxkang.android.exception.CrashListenerAdapter;
+import com.yxkang.android.util.Provider;
+import com.yxkang.android.util.Singleton;
 
 import org.apache.log4j.Level;
 
@@ -30,12 +32,12 @@ public class SampleApplication extends Application {
 
     private static final String LOG_TAG = "TrackApplication";
     private static SampleApplication sApplication = null;
+    private static Provider<SampleApplication> applicationProvider;
     private final ConcurrentHashMap<String, WeakReference<? extends Activity>> map = new ConcurrentHashMap<>();
     private final ReentrantLock lock = new ReentrantLock();
     private ActivityLifecycle lifecycle = new ActivityLifecycle();
 
     @Override
-
     public void onCreate() {
         super.onCreate();
         Log.i(LOG_TAG, "Application onCreate");
@@ -64,6 +66,12 @@ public class SampleApplication extends Application {
                 Log.w(LOG_TAG, "don't have WRITE_EXTERNAL_STORAGE permission");
             }
         }
+        applicationProvider = Singleton.provider(new Provider<SampleApplication>() {
+            @Override
+            public SampleApplication get() {
+                return sApplication;
+            }
+        });
     }
 
     /**
@@ -98,10 +106,7 @@ public class SampleApplication extends Application {
     }
 
     public static SampleApplication instance() {
-        if (sApplication == null) {
-            sApplication = new SampleApplication();
-        }
-        return sApplication;
+        return applicationProvider.get();
     }
 
     public void put(String key, WeakReference<? extends Activity> weakReference) {
