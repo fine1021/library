@@ -12,6 +12,9 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import com.yxkang.android.sample.bean.MessageEvent;
+
+import org.greenrobot.eventbus.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,6 +88,7 @@ public class MediaModifyService extends IntentService {
                 Log.v(TAG, "no need to modify media information");
             }
         }
+        EventBus.getDefault().post(new MessageEvent(MessageEvent.MODIFY_MEDIA_COMPLETE));
     }
 
     private String parseTitle(String displayName) {

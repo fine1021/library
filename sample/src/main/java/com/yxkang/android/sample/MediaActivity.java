@@ -11,23 +11,29 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.yxkang.android.sample.bean.MessageEvent;
 import com.yxkang.android.sample.media.MediaScannerService;
+import com.yxkang.android.sample.service.MediaModifyService;
+import com.yxkang.android.util.Storage;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("ConstantConditions")
 public class MediaActivity extends AppCompatActivity {
 
+    public static final String EXTERNAL_QQ_MUSIC_PATH = "/Android/data/com.tencent.qqmusic/files/qqmusic/song";
+    public static final String INTERNAL_QQ_MUSIC_PATH = "/qqmusic/song";
     private static final String TAG = MediaActivity.class.getSimpleName();
     private final ArrayList<AudioInfo> audioInfos = new ArrayList<>();
     private ProgressDialog progressDialog;
+    private List<String> paths = new ArrayList<>();
+    private int storage_index = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +43,7 @@ public class MediaActivity extends AppCompatActivity {
         findViewById(R.id.bt_am_modify).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EventBus.getDefault().post(new MessageEvent(MessageEvent.SHOW_DIALOG));
+                EventBus.getDefault().post(new MessageEvent(MessageEvent.SHOW_DIALOG_MODIFY));
                 EventBus.getDefault().post(new MessageEvent(MessageEvent.LOAD_MEDIA_INFO));
             }
         });
@@ -47,9 +53,10 @@ public class MediaActivity extends AppCompatActivity {
                 scanQQMusicFiles();
             }
         });
+        paths.addAll(Storage.getVolumePaths(this));
     }
 
-    private synchronized void showProgressDialog() {
+    private synchronized void showProgressDialog(String text) {
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
             progressDialog = null;
@@ -59,7 +66,7 @@ public class MediaActivity extends AppCompatActivity {
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.setIndeterminate(false);
         progressDialog.setCancelable(false);
-        progressDialog.setMessage(getString(R.string.waiting_please));
+        progressDialog.setMessage(text);
         progressDialog.show();
     }
 
@@ -84,9 +91,13 @@ public class MediaActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvent event) {
         switch (event.eventType) {
-            case MessageEvent.SHOW_DIALOG:
-                showProgressDialog();
+            case MessageEvent.SCAN_MEDIA_COMPLETE:
+                scanQQMusicFiles();
                 break;
+            case MessageEvent.SHOW_DIALOG_MODIFY:
+                showProgressDialog(getString(R.string.waiting_please));
+                break;
+            case MessageEvent.MODIFY_MEDIA_COMPLETE:
             case MessageEvent.DISMISS_DIALOG:
                 dismissProgressDialog();
                 break;
@@ -94,15 +105,32 @@ public class MediaActivity extends AppCompatActivity {
     }
 
     private void scanQQMusicFiles() {
-        String root = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/com.tencent.qqmusic/files/qqmusic/song";
-        if (root.startsWith("/storage/emulated/0")) {
-            root = Environment.getExternalStorageDirectory().getAbsolutePath() + "/qqmusic/song";
+        int size = paths.size();
+        if (size < 1) {
+            Log.d(TAG, "scanQQMusicFiles: lack of storage space");
+        } else {
+            if (storage_index == size) {
+                Intent service = new Intent(getApplicationContext(), MediaModifyService.class);
+                service.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startService(service);
+                showProgressDialog(getString(R.string.waiting_please));
+                Log.d(TAG, "scanQQMusicFiles: no more storage space, start modify");
+                return;
+            }
+            String path = paths.get(storage_index);
+            boolean isPrimary = isPrimaryStorage(path);
+            /**
+             * QQ Music 是按照内部存储和SD卡来区分歌曲存储路径的，不关心是否是默认存储空间
+             */
+            path += storage_index == 0 ? INTERNAL_QQ_MUSIC_PATH : EXTERNAL_QQ_MUSIC_PATH;
+            Log.d(TAG, "scanQQMusicFiles: isPrimary = " + isPrimary + ", path = " + path);
+            Intent service = new Intent(this, MediaScannerService.class);
+            service.putExtra(MediaScannerService.EXTRA_SCAN_TYPE, MediaScannerService.SCAN_DIR);
+            service.putExtra(MediaScannerService.EXTRA_SCAN_PATH, path);
+            startService(service);
+            showProgressDialog(getString(R.string.scan_media_dir, path));
+            storage_index++;
         }
-        Intent service = new Intent(this, MediaScannerService.class);
-        service.putExtra(MediaScannerService.EXTRA_SCAN_TYPE, MediaScannerService.SCAN_DIR);
-        service.putExtra(MediaScannerService.EXTRA_SCAN_PATH, root);
-        startService(service);
-        Toast.makeText(MediaActivity.this, "Start Scan Files", Toast.LENGTH_SHORT).show();
     }
 
     private void loadMediaInfo() {
@@ -162,6 +190,10 @@ public class MediaActivity extends AppCompatActivity {
         String data;
         String display_name;
         String title;
+    }
+
+    private boolean isPrimaryStorage(String path) {
+        return Environment.getExternalStorageDirectory().getAbsolutePath().equals(path);
     }
 
     @Override

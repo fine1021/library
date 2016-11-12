@@ -2,10 +2,13 @@ package com.yxkang.android.widget;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.IntDef;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.EditText;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 
 /**
@@ -13,7 +16,17 @@ import java.util.ArrayList;
  */
 public class EditTextExtend extends EditText {
 
-    private Drawable left, top, right, bottom;
+    @IntDef({DIRECTION_LEFT, DIRECTION_UP, DIRECTION_RIGHT, DIRECTION_BOTTOM})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Direction {
+    }
+
+    public static final int DIRECTION_LEFT = 0;
+    public static final int DIRECTION_UP = 1;
+    public static final int DIRECTION_RIGHT = 2;
+    public static final int DIRECTION_BOTTOM = 3;
+
+    private Drawable[] drawables;
     private ArrayList<OnBoundaryDrawableClickListener> listeners;
 
     public EditTextExtend(Context context) {
@@ -31,40 +44,48 @@ public class EditTextExtend extends EditText {
     @Override
     public void setCompoundDrawables(Drawable left, Drawable top, Drawable right, Drawable bottom) {
         super.setCompoundDrawables(left, top, right, bottom);
-        this.left = left;
-        this.top = top;
-        this.right = right;
-        this.bottom = bottom;
+        drawables = getCompoundDrawables();
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        float x = event.getX();
-        float y = event.getY();
-        int offset;
-        if (left != null) {
-            offset = left.getBounds().width();
-            if (x < offset && x > 0) {
-                notifyBoundaryDrawableClick(0);
-            }
-        }
-        if (top != null) {
-            offset = top.getBounds().height();
-            if (y < offset && y > 0) {
-                notifyBoundaryDrawableClick(1);
-            }
-        }
-        if (right != null) {
-            offset = getWidth() - right.getBounds().width();
-            if (x > offset && x < getWidth()) {
-                notifyBoundaryDrawableClick(2);
-            }
-        }
-        if (bottom != null) {
-            offset = getHeight() - bottom.getBounds().height();
-            if (y > offset && y < getHeight()) {
-                notifyBoundaryDrawableClick(3);
-            }
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_UP:
+                if (drawables == null) {
+                    break;
+                }
+                float x = event.getX();
+                float y = event.getY();
+                int offset;
+                Drawable drawable = drawables[0];
+                if (drawable != null) {
+                    offset = drawable.getBounds().width();
+                    if (x < offset && x > 0) {
+                        notifyBoundaryDrawableClick(DIRECTION_LEFT);
+                    }
+                }
+                drawable = drawables[1];
+                if (drawable != null) {
+                    offset = drawable.getBounds().height();
+                    if (y < offset && y > 0) {
+                        notifyBoundaryDrawableClick(DIRECTION_UP);
+                    }
+                }
+                drawable = drawables[2];
+                if (drawable != null) {
+                    offset = getWidth() - drawable.getBounds().width();
+                    if (x > offset && x < getWidth()) {
+                        notifyBoundaryDrawableClick(DIRECTION_RIGHT);
+                    }
+                }
+                drawable = drawables[3];
+                if (drawable != null) {
+                    offset = getHeight() - drawable.getBounds().height();
+                    if (y > offset && y < getHeight()) {
+                        notifyBoundaryDrawableClick(DIRECTION_BOTTOM);
+                    }
+                }
+                break;
         }
         return super.onTouchEvent(event);
     }
@@ -73,9 +94,9 @@ public class EditTextExtend extends EditText {
         /**
          * call back on boundary drawable click
          *
-         * @param direction 0-left, 1-top, 2-right, 3-bottom
+         * @param direction such as {@link #DIRECTION_UP}
          */
-        void onBoundaryDrawableClick(int direction);
+        void onBoundaryDrawableClick(@Direction int direction);
     }
 
     public void addBoundaryDrawableClickListener(OnBoundaryDrawableClickListener listener) {
@@ -87,14 +108,13 @@ public class EditTextExtend extends EditText {
 
     public void removeBoundaryDrawableClickListener(OnBoundaryDrawableClickListener listener) {
         if (listeners != null) {
-            int i = listeners.indexOf(listener);
-            if (i >= 0) {
-                listeners.remove(i);
+            if (listeners.contains(listener)) {
+                listeners.remove(listener);
             }
         }
     }
 
-    private void notifyBoundaryDrawableClick(int direction) {
+    private void notifyBoundaryDrawableClick(@Direction int direction) {
         if (listeners != null) {
             for (OnBoundaryDrawableClickListener listener : listeners) {
                 listener.onBoundaryDrawableClick(direction);
