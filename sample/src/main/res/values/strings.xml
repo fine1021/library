@@ -41,4 +41,6 @@
     <string name="title_activity_lock">LockActivity</string>
     <string name="title_activity_drag">DragActivity</string>
     <string name="scan_media_dir">扫描媒体文件目录\n%s</string>
+    <string name="action_day">日间模式</string>
+    <string name="action_night">夜间模式</string>
 </resources>
