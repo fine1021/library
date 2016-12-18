@@ -45,13 +45,7 @@ public class BitmapThumbnail {
         } catch (OutOfMemoryError oom) {
             Log.e(TAG, "Unable to decode file " + filePath + ". OutOfMemoryError.", oom);
         } finally {
-            try {
-                if (stream != null) {
-                    stream.close();
-                }
-            } catch (IOException ex) {
-                Log.e(TAG, "", ex);
-            }
+            IoUtils.closeQuietly(stream);
         }
 
         if (extract) {

@@ -53,14 +53,14 @@ public class TableUtil {
             Table table = clazz.getAnnotation(Table.class);
             String tableName = TextUtils.isEmpty(table.name()) ? clazz.getSimpleName() : table.name();
             Log.i(TAG, "table = " + tableName);
-            int[] fieldCount = getFieldCount(clazz);
-            if (fieldCount[0] < 1) {
+            AnalyticalResult result = analyzeFieldCount(clazz);
+            if (result.getAnnotationCount() < 1) {
                 throw new AnnotationSQLException("need more than one annotation field");
             }
-            if (fieldCount[0] != sColumns.size()) {
+            if (result.getAnnotationCount() != sColumns.size()) {
                 throw new AnnotationSQLException("more than one field has the same order");
             }
-            if (fieldCount[1] > 1) {
+            if (result.getPrimaryCount() > 1) {
                 throw new AnnotationSQLException("only allow no more than one primary key");
             }
             StringBuilder builder = new StringBuilder();
@@ -103,7 +103,7 @@ public class TableUtil {
         return TEXT;
     }
 
-    private static int[] getFieldCount(Class<?> clazz) {
+    private static AnalyticalResult analyzeFieldCount(Class<?> clazz) {
         int annotationCount = 0;
         int primaryCount = 0;
         sColumns.clear();
@@ -123,7 +123,10 @@ public class TableUtil {
                 if (info.primary) primaryCount++;
             }
         }
-        return new int[]{annotationCount, primaryCount};
+        AnalyticalResult result = new AnalyticalResult();
+        result.setAnnotationCount(annotationCount);
+        result.setPrimaryCount(primaryCount);
+        return result;
     }
 
     private static void buildSQLStatement(StringBuilder builder) {
@@ -181,6 +184,28 @@ public class TableUtil {
             if (null != db) {
                 db.execSQL(sql);
             }
+        }
+    }
+
+    private static class AnalyticalResult {
+
+        private int annotationCount = 0;
+        private int primaryCount = 0;
+
+        int getAnnotationCount() {
+            return annotationCount;
+        }
+
+        void setAnnotationCount(int annotationCount) {
+            this.annotationCount = annotationCount;
+        }
+
+        int getPrimaryCount() {
+            return primaryCount;
+        }
+
+        void setPrimaryCount(int primaryCount) {
+            this.primaryCount = primaryCount;
         }
     }
 

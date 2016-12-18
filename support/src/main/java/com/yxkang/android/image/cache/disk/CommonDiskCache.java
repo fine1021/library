@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 
+import com.yxkang.android.util.IoUtils;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -57,9 +59,7 @@ public class CommonDiskCache implements DiskCache {
             bitmap.compress(compressFormat, compressQuality, stream);
             result = true;
         } finally {
-            if (stream != null) {
-                stream.close();
-            }
+            IoUtils.closeQuietly(stream);
         }
         if (recycle && bitmap != null) {
             bitmap.recycle();

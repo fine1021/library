@@ -15,6 +15,9 @@ public final class IoUtils {
      * @param closeable the generic class
      */
     public static void close(Closeable closeable) {
+        if (closeable == null) {
+            return;
+        }
         try {
             closeable.close();
         } catch (IOException e) {
@@ -28,6 +31,9 @@ public final class IoUtils {
      * @param closeable the generic class
      */
     public static void closeQuietly(Closeable closeable) {
+        if (closeable == null) {
+            return;
+        }
         try {
             closeable.close();
         } catch (IOException ignored) {
