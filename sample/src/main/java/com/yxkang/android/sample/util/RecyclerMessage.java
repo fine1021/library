@@ -7,7 +7,11 @@ package com.yxkang.android.sample.util;
 @SuppressWarnings("ALL")
 public final class RecyclerMessage {
 
+    static final int FLAG_NONE = 0;
+    static final int FLAG_IN_USE = 1;
+
     private RecyclerMessage next;
+    private int flags = FLAG_NONE;
 
     private static RecyclerMessage sPool;
     private static final Object sPoolSync = new Object();
@@ -20,6 +24,7 @@ public final class RecyclerMessage {
                 RecyclerMessage m = sPool;
                 sPool = m.next;
                 m.next = null;
+                m.flags = FLAG_NONE;    // clear in-use flag
                 sPoolSize--;
                 return m;
             }
@@ -39,6 +44,10 @@ public final class RecyclerMessage {
     }
 
     public void recycle() {
+        if (isInUse()) {
+            return;
+        }
+
         clearForRecycle();
 
         synchronized (sPoolSync) {
@@ -50,7 +59,11 @@ public final class RecyclerMessage {
         }
     }
 
-    private void clearForRecycle() {
+    boolean isInUse() {
+        return ((flags & FLAG_IN_USE) == FLAG_IN_USE);
+    }
 
+    void clearForRecycle() {
+        flags = FLAG_IN_USE;
     }
 }
