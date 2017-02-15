@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;
 import android.util.Log;
 
+import com.yxkang.android.util.BitmapUtils;
+
 import java.util.LinkedHashMap;
 
 /**
@@ -29,7 +31,7 @@ public final class LruMemoryCache implements MemoryCache {
 
         @Override
         protected int sizeOf(String key, Bitmap value) {
-            return value.getRowBytes() * value.getHeight();
+            return BitmapUtils.getByteCount(value);
         }
 
         @Override

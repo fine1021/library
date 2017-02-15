@@ -3,6 +3,7 @@ package com.yxkang.android.image.cache.memory;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.yxkang.android.util.BitmapUtils;
 import com.yxkang.android.util.LfuCache;
 import com.yxkang.android.util.LfuLinkedHashMap;
 
@@ -30,7 +31,7 @@ public final class LfuMemoryCache implements MemoryCache {
 
         @Override
         protected int sizeOf(String key, Bitmap value) {
-            return value.getRowBytes() * value.getHeight();
+            return BitmapUtils.getByteCount(value);
         }
 
         @Override
