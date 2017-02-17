@@ -8,7 +8,7 @@ import com.yxkang.android.util.Pools;
 
 public class SimpleRecycler extends Pools.SimpleRecyclable {
 
-    private static Pools.SynchronizedPool<SimpleRecycler> sPool = new Pools.SynchronizedPool<>(10);
+    private static final Pools.SynchronizedPool<SimpleRecycler> sPool = new Pools.SynchronizedPool<>(10);
 
     public static SimpleRecycler obtain() {
         SimpleRecycler simpleRecycler = sPool.obtain();
@@ -20,8 +20,4 @@ public class SimpleRecycler extends Pools.SimpleRecyclable {
         sPool.recycle(this);
     }
 
-    @Override
-    public void clearRecycledFlags() {
-        super.clearRecycledFlags();
-    }
 }

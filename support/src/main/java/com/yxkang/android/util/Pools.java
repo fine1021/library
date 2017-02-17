@@ -71,10 +71,11 @@ public final class Pools {
     public interface Recyclable {
 
         /**
-         * Clear the recycled flags, so it can be reused and recycled, if use {@link SimplePool} or
-         * {@link SynchronizedPool}, it will be invoked automatically
+         * Called when the instance is been reused, clear the recycled flags, and so on.
+         * if use {@link SimplePool} or{@link SynchronizedPool}, it will be invoked automatically when reusing,
+         * do not invoke manually
          */
-        void clearRecycledFlags();
+        void onReuse();
 
         /**
          * Whether it has been recycled
@@ -89,10 +90,10 @@ public final class Pools {
         void recycle();
 
         /**
-         * Clear the resource for recycle, if use {@link SimplePool} or {@link SynchronizedPool},
-         * it will be invoked automatically
+         * Clear the resource for recycle. if use {@link SimplePool} or {@link SynchronizedPool},
+         * it will be invoked automatically when recycling, do not invoke manually
          */
-        void clearForRecycle();
+        void onRecycle();
     }
 
     /**
@@ -104,7 +105,7 @@ public final class Pools {
 
         @CallSuper
         @Override
-        public void clearRecycledFlags() {
+        public void onReuse() {
             mRecycled = false;
         }
 
@@ -115,7 +116,7 @@ public final class Pools {
 
         @CallSuper
         @Override
-        public void clearForRecycle() {
+        public void onRecycle() {
             mRecycled = true;
         }
     }
@@ -156,7 +157,7 @@ public final class Pools {
                 mPool[lastPooledIndex] = null;
                 mPoolSize--;
                 if (instance instanceof Recyclable) {
-                    ((Recyclable) instance).clearRecycledFlags();
+                    ((Recyclable) instance).onReuse();
                 }
                 return instance;
             }
@@ -170,7 +171,7 @@ public final class Pools {
                 if (recyclable.isRecycled()) {
                     throw new IllegalStateException("Already recycled!");
                 }
-                recyclable.clearForRecycle();
+                recyclable.onRecycle();
             } else {
                 if (isInPool(instance)) {
                     throw new IllegalStateException("Already in the pool!");
