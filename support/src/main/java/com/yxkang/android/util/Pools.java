@@ -71,13 +71,6 @@ public final class Pools {
     public interface Recyclable {
 
         /**
-         * Called when the instance is been reused, clear the recycled flags, and so on.
-         * if use {@link SimplePool} or{@link SynchronizedPool}, it will be invoked automatically when reusing,
-         * do not invoke manually
-         */
-        void onReuse();
-
-        /**
          * Whether it has been recycled
          *
          * @return Whether the instance has been recycled.
@@ -88,12 +81,6 @@ public final class Pools {
          * Recycle the instance
          */
         void recycle();
-
-        /**
-         * Clear the resource for recycle. if use {@link SimplePool} or {@link SynchronizedPool},
-         * it will be invoked automatically when recycling, do not invoke manually
-         */
-        void onRecycle();
     }
 
     /**
@@ -103,9 +90,13 @@ public final class Pools {
 
         private boolean mRecycled = false;
 
+        /**
+         * Called when the instance is been reused, clear the recycled flags, and so on.
+         * if use {@link SimplePool} or{@link SynchronizedPool}, it will be invoked automatically when reusing,
+         * do not invoke manually
+         */
         @CallSuper
-        @Override
-        public void onReuse() {
+        protected void onReuse() {
             mRecycled = false;
         }
 
@@ -114,9 +105,12 @@ public final class Pools {
             return mRecycled;
         }
 
+        /**
+         * Clear the resource for recycle. if use {@link SimplePool} or {@link SynchronizedPool},
+         * it will be invoked automatically when recycling, do not invoke manually
+         */
         @CallSuper
-        @Override
-        public void onRecycle() {
+        protected void onRecycle() {
             mRecycled = true;
         }
     }
@@ -156,8 +150,8 @@ public final class Pools {
                 T instance = (T) mPool[lastPooledIndex];
                 mPool[lastPooledIndex] = null;
                 mPoolSize--;
-                if (instance instanceof Recyclable) {
-                    ((Recyclable) instance).onReuse();
+                if (instance instanceof SimpleRecyclable) {
+                    ((SimpleRecyclable) instance).onReuse();
                 }
                 return instance;
             }
@@ -166,12 +160,12 @@ public final class Pools {
 
         @Override
         public boolean recycle(T instance) {
-            if (instance instanceof Recyclable) {
-                Recyclable recyclable = (Recyclable) instance;
-                if (recyclable.isRecycled()) {
+            if (instance instanceof SimpleRecyclable) {
+                SimpleRecyclable simpleRecyclable = (SimpleRecyclable) instance;
+                if (simpleRecyclable.isRecycled()) {
                     throw new IllegalStateException("Already recycled!");
                 }
-                recyclable.onRecycle();
+                simpleRecyclable.onRecycle();
             } else {
                 if (isInPool(instance)) {
                     throw new IllegalStateException("Already in the pool!");
