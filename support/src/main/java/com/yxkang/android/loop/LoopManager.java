@@ -22,4 +22,10 @@ public final class LoopManager {
         }
         return handler;
     }
+
+    public static void clearCache() {
+        synchronized (LoopManager.class) {
+            sLoopArray.clear();
+        }
+    }
 }
