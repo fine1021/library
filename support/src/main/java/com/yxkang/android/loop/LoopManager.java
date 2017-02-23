@@ -23,6 +23,15 @@ public final class LoopManager {
         return handler;
     }
 
+    public static LoopHandler myLoopHandler() {
+        final int size = sLoopArray.size();
+        return myLoopHandler(size);
+    }
+
+    public static int indexOfLoopHandler(LoopHandler loopHandler) {
+        return sLoopArray.indexOfValue(loopHandler);
+    }
+
     public static void clearCache() {
         synchronized (LoopManager.class) {
             sLoopArray.clear();

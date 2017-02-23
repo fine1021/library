@@ -17,6 +17,7 @@ public class SimpleRecycler extends Pools.SimpleRecyclable {
 
     @Override
     public void recycle() {
+        super.recycle();
         sPool.recycle(this);
     }
 
