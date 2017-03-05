@@ -9,12 +9,12 @@ android {
             storePassword 'yexiaokang'
         }
     }
-    compileSdkVersion 24
-    buildToolsVersion '24.0.3'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
     defaultConfig {
         applicationId "com.yxkang.android.sample"
         minSdkVersion 14
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 3
         versionName '1.0.2'
     }
@@ -31,29 +31,31 @@ android {
     }
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
-            if (variant.buildType.name.equals('release')) {
+            if (variant.buildType.name == 'release') {
                 def releaseName = "Sample_V".concat(defaultConfig.versionName).concat(".apk")
                 output.outputFile = new File(output.outputFile.parent, releaseName)
-            } else if (variant.buildType.name.equals('debug')) {
+            } else if (variant.buildType.name == 'debug') {
                 println(variant.buildType.name)
             }
         }
-    }
-    productFlavors {
     }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':support')
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:design:24.2.1'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'de.mindpipe.android:android-logging-log4j:1.0.3'
     compile 'log4j:log4j:1.2.17'
     compile 'org.slf4j:slf4j-api:1.7.21'
     compile 'org.slf4j:slf4j-log4j12:1.7.21'
-    compile 'com.afollestad.material-dialogs:core:0.9.1.0'
+    compile 'com.afollestad.material-dialogs:core:0.9.3.0'
     compile project(':support-fragment')
     compile project(':support-provider')
+    compile('com.android.support:appcompat-v7:25.2.0') {
+        exclude group: 'com.android.support', module: 'animated-vector-drawable'
+    }
+    compile('com.android.support:design:25.2.0') {
+        exclude group: 'com.android.support', module: 'animated-vector-drawable'
+    }
 }
