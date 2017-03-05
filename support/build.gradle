@@ -33,7 +33,7 @@ android {
         main {
             java {
                 srcDirs 'src/main/java'
-                exclude 'com/yxkang/android/eventbus/*'
+                exclude 'com/yxkang/android/eventbus/**'
             }
         }
     }
