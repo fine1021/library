@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.yxkang.android.util.StatusBarManager;
+import com.yxkang.android.widget.MarqueeTextView;
 
 
 public class StatusBarActivity extends AppCompatActivity {
@@ -21,6 +22,8 @@ public class StatusBarActivity extends AppCompatActivity {
         setContentView(R.layout.activity_status_bar);
         StatusBarManager.test(this);
         StatusBarManager.setStatusBar(this, findViewById(R.id.container), getActionBarHeight());
+        MarqueeTextView textView = (MarqueeTextView) findViewById(R.id.text_status_bar);
+        textView.startScroll(true);
     }
 
     private int getActionBarHeight() {
