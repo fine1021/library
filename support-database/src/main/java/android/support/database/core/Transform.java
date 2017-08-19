@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteException;
 import android.support.database.Behaviour;
 import android.support.database.Column;
 import android.support.database.behaviour.DeleteBehaviour;
+import android.support.database.behaviour.ExistBehaviour;
 import android.support.database.behaviour.InsertBehaviour;
 import android.support.database.behaviour.QueryBehaviour;
 import android.support.database.behaviour.UpdateBehaviour;
@@ -29,7 +30,9 @@ enum Transform {
 
     UPDATE(Behaviour.UPDATE),
 
-    QUERY(Behaviour.QUERY);
+    QUERY(Behaviour.QUERY),
+
+    EXIST(Behaviour.EXIST);
 
     private int type;
 
@@ -67,6 +70,21 @@ enum Transform {
                     String limit = queryBehaviour.limit();
                     result = (T) db.query(distinct, tableName, columns, selection, selectionArgs, groupBy, having, orderBy, limit);
                 }
+                break;
+            case Behaviour.EXIST:
+                if (behaviour == null || !(behaviour instanceof ExistBehaviour)) {
+                    throw new IllegalArgumentException("Behaviour type error");
+                }
+                ExistBehaviour existBehaviour = (ExistBehaviour) behaviour;
+                boolean distinct = existBehaviour.distinct();
+                String[] columns = existBehaviour.columns();
+                String selection = existBehaviour.selection();
+                String[] selectionArgs = existBehaviour.selectionArgs();
+                String groupBy = existBehaviour.groupBy();
+                String having = existBehaviour.having();
+                String orderBy = existBehaviour.orderBy();
+                String limit = existBehaviour.limit();
+                result = (T) db.query(distinct, tableName, columns, selection, selectionArgs, groupBy, having, orderBy, limit);
                 break;
         }
         return result;

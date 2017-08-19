@@ -134,7 +134,7 @@ public class SQLiteSession implements Session {
         final TableFetcher fetcher = TableFetcher.getInstance();
         android.support.database.Table table = fetcher.getTable(clazz);
         if (table != null) {
-            SQLiteDatabase db = getWritableDatabase();
+            SQLiteDatabase db = getReadableDatabase();
             Cursor cursor = Transform.QUERY.transform(db, table, behaviour);
             if (cursor != null) {
                 List<T> list = new ArrayList<>();
@@ -171,7 +171,7 @@ public class SQLiteSession implements Session {
         android.support.database.Table table = fetcher.getTable(entry.getClass());
         if (table != null) {
             String tableName = table.getName();
-            SQLiteDatabase db = getWritableDatabase();
+            SQLiteDatabase db = getReadableDatabase();
             ContentValues values = getContentValues(entry, false);
             StringBuilder sql = new StringBuilder(120);
             int setValuesSize = values.size();
@@ -200,8 +200,14 @@ public class SQLiteSession implements Session {
         final TableFetcher fetcher = TableFetcher.getInstance();
         android.support.database.Table table = fetcher.getTable(clazz);
         if (table != null) {
-            SQLiteDatabase db = getWritableDatabase();
-
+            SQLiteDatabase db = getReadableDatabase();
+            Cursor cursor = Transform.EXIST.transform(db, table, behaviour);
+            boolean exist = false;
+            if (cursor != null) {
+                exist = cursor.getCount() > 0;
+                cursor.close();
+            }
+            return exist;
         }
         return false;
     }
