@@ -111,26 +111,35 @@ public final class TableUtil {
         if (columns == null || columns.isEmpty()) {
             throw new SQLiteException("table " + tableName + " has no column");
         }
+        final boolean compositeKeys = table.getPrimaryKeyCount() > 1;
         int primaryKeyCount = 0;
+        StringBuilder keysBuilder = new StringBuilder();
         for (int i = 0, N = columns.size(); i < N; i++) {
             if (i > 0) {
                 builder.append(COMMA);
             }
             Column column = columns.get(i);
-            buildColumnStatement(column, builder);
-            if (column.isPrimaryKey()) {
+            buildColumnStatement(table, column, builder);
+            if (compositeKeys && column.isPrimaryKey()) {
+                if (primaryKeyCount > 0) {
+                    keysBuilder.append(COMMA);
+                }
+                keysBuilder.append(column.getName());
                 primaryKeyCount++;
             }
-            if (primaryKeyCount > 1) {
-                throw new SQLiteException("only allow at most one PRIMARY KEY");
-            }
+        }
+        if (compositeKeys) {
+            builder.append(COMMA).append(CRLF);
+            builder.append(PRIMARY_KEY).append(SPACE).append("(");
+            builder.append(keysBuilder.toString()).append(")");
         }
         builder.append(");");
     }
 
-    public static void buildColumnStatement(Column column, StringBuilder builder) {
+    public static void buildColumnStatement(Table table, Column column, StringBuilder builder) {
         String columnName = column.getName();
         String columnType = columnType(column.getType());
+        boolean compositeKeys = table.getPrimaryKeyCount() > 1;
         boolean isPrimaryKey = column.isPrimaryKey();
         boolean isNotNull = column.isNotNull();
         boolean isAutoincrement = column.isAutoincrement();
@@ -141,14 +150,14 @@ public final class TableUtil {
             if (!INTEGER.equals(columnType)) {
                 throw new SQLiteException("AUTOINCREMENT constraint can only use on Integer type");
             }
-            if (isPrimaryKey) {
+            if (isPrimaryKey && !compositeKeys) {
                 builder.append(SPACE).append(PRIMARY_KEY);
                 builder.append(SPACE).append(AUTOINCREMENT);
             } else {
                 builder.append(SPACE).append(AUTOINCREMENT);
             }
         } else {
-            if (isPrimaryKey) {
+            if (isPrimaryKey && !compositeKeys) {
                 builder.append(SPACE).append(PRIMARY_KEY);
             }
         }

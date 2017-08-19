@@ -10,5 +10,7 @@ public interface Table {
 
     String getName();
 
+    int getPrimaryKeyCount();
+
     List<Column> getColumns();
 }

@@ -11,6 +11,7 @@ import java.util.List;
 public class Table implements android.support.database.Table {
 
     private String mName;
+    private int mPrimaryKeyCount;
     private List<Column> mColumns;
 
     public void setName(String name) {
@@ -20,6 +21,15 @@ public class Table implements android.support.database.Table {
     @Override
     public String getName() {
         return mName;
+    }
+
+    @Override
+    public int getPrimaryKeyCount() {
+        return mPrimaryKeyCount;
+    }
+
+    public void setPrimaryKeyCount(int primaryKeyCount) {
+        mPrimaryKeyCount = primaryKeyCount;
     }
 
     public void setColumns(List<Column> columns) {
@@ -35,6 +45,7 @@ public class Table implements android.support.database.Table {
     public String toString() {
         return "Table{" +
                 "mName='" + mName + '\'' +
+                ", mPrimaryKeyCount=" + mPrimaryKeyCount +
                 ", mColumns=" + mColumns +
                 '}';
     }

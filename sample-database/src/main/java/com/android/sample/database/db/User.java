@@ -12,8 +12,10 @@ public class User {
 
     @Column(name = "_id", primaryKey = true)
     private int id;
-    @Column(name = "user_name", notNull = true)
+    @Column(name = "user_name")
     private String name;
+    @Column
+    private int sex;
     @Column
     private int age;
 
@@ -33,6 +35,14 @@ public class User {
         this.name = name;
     }
 
+    public int getSex() {
+        return sex;
+    }
+
+    public void setSex(int sex) {
+        this.sex = sex;
+    }
+
     public int getAge() {
         return age;
     }
@@ -46,6 +56,7 @@ public class User {
         return "User{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", sex=" + sex +
                 ", age=" + age +
                 '}';
     }

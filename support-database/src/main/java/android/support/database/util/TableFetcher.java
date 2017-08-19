@@ -48,16 +48,21 @@ public class TableFetcher {
             table1.setName(TableUtil.getTableName(clazz, t));
             Field[] fields = clazz.getDeclaredFields();
             List<Column> columns = new ArrayList<>();
+            int primaryKeyCount = 0;
             for (Field field : fields) {
                 if (field.isAnnotationPresent(android.support.database.annotation.Column.class)) {
                     android.support.database.annotation.Column column = field.getAnnotation(
                             android.support.database.annotation.Column.class);
                     columns.add(TableUtil.getColumn(field, column));
+                    if (column.primaryKey()) {
+                        primaryKeyCount++;
+                    }
                 }
             }
             if (mTableMonitor != null) {
                 columns = mTableMonitor.onTableFetch(table1.getName(), columns);
             }
+            table1.setPrimaryKeyCount(primaryKeyCount);
             table1.setColumns(columns);
             sTableMap.put(clazz, table1);
             return table1;
