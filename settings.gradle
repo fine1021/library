@@ -1,1 +1,1 @@
-include ':support', ':sample', ':provider', ':support-fragment', ':support-provider'
+include ':support', ':sample', ':provider', ':support-fragment', ':support-provider', ':support-database', ':sample-database'
