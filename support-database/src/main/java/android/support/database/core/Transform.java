@@ -107,21 +107,25 @@ enum Transform {
                 break;
             case Behaviour.UPDATE:
                 if (behaviour == null || behaviour == Update.PRIMARY_KEY) {
-                    List<android.support.database.Column> columns = table.getColumns();
-                    android.support.database.Column c = null;
+                    int primaryKeyCount = table.getPrimaryKeyCount();
+                    if (primaryKeyCount == 0) {
+                        throw new SQLiteException("lack of PRIMARY KEY for update");
+                    }
+                    List<Column> columns = table.getColumns();
+                    String[] whereArgs = new String[primaryKeyCount];
+                    StringBuilder whereBuilder = new StringBuilder(120);
+                    int i = 0;
                     for (Column column : columns) {
                         if (column.isPrimaryKey()) {
-                            c = column;
-                            break;
+                            String columnName = column.getName();
+                            whereBuilder.append((i > 0) ? " AND " : "");
+                            whereBuilder.append(columnName);
+                            whereArgs[i++] = values.getAsString(columnName);
+                            whereBuilder.append("=?");
+                            values.remove(columnName);
                         }
                     }
-                    if (c == null) {
-                        throw new SQLiteException("need a PRIMARY KEY for update");
-                    }
-                    String columnName = c.getName();
-                    String columnValue = values.getAsString(columnName);
-                    String whereClause = columnName + "=?";
-                    String[] whereArgs = new String[]{columnValue};
+                    String whereClause = whereBuilder.toString();
                     result = db.update(tableName, values, whereClause, whereArgs);
                 } else {
                     UpdateBehaviour updateBehaviour = (UpdateBehaviour) behaviour;
