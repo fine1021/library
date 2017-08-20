@@ -436,7 +436,7 @@ public class SQLiteSession implements Session {
         }
     }
 
-    private static <T> ContentValues getContentValues(T entry, boolean includeNullValue) {
+    private static <T> ContentValues getContentValues(T entry, boolean includeNullField) {
         Class<?> clazz = entry.getClass();
         final TableFetcher fetcher = TableFetcher.getInstance();
         android.support.database.Table table = fetcher.getTable(clazz);
@@ -444,7 +444,7 @@ public class SQLiteSession implements Session {
         List<android.support.database.Column> columns = table.getColumns();
         if (columns != null && !columns.isEmpty()) {
             for (Column column : columns) {
-                getColumnValue(entry, column, values, includeNullValue);
+                getColumnValue(entry, column, values, includeNullField);
             }
         }
         LOGGER.trace("get values ok, size = %d", values.size());
@@ -452,7 +452,7 @@ public class SQLiteSession implements Session {
     }
 
     private static <T> void getColumnValue(T entry, Column column, ContentValues values,
-                                           boolean includeNullValue) {
+                                           boolean includeNullField) {
         Class<?> clazz = column.getType();
         String className = clazz.getSimpleName();
         String columnName = column.getName();
@@ -465,7 +465,7 @@ public class SQLiteSession implements Session {
                 if (value != null) {
                     values.put(columnName, value);
                 } else {
-                    if (includeNullValue) {
+                    if (includeNullField) {
                         values.put(columnName, "");
                     }
                 }
@@ -543,7 +543,7 @@ public class SQLiteSession implements Session {
                 if (value != null) {
                     values.put(columnName, value);
                 } else {
-                    if (includeNullValue) {
+                    if (includeNullField) {
                         values.put(columnName, "");
                     }
                 }
@@ -557,7 +557,7 @@ public class SQLiteSession implements Session {
                 if (value != null) {
                     values.put(columnName, value);
                 } else {
-                    if (includeNullValue) {
+                    if (includeNullField) {
                         values.put(columnName, "");
                     }
                 }
@@ -571,7 +571,7 @@ public class SQLiteSession implements Session {
                 if (value != null) {
                     values.put(columnName, value ? "1" : "0");
                 } else {
-                    if (includeNullValue) {
+                    if (includeNullField) {
                         values.put(columnName, "");
                     }
                 }
@@ -585,7 +585,7 @@ public class SQLiteSession implements Session {
                 if (value != null) {
                     values.put(columnName, value);
                 } else {
-                    if (includeNullValue) {
+                    if (includeNullField) {
                         values.put(columnName, "");
                     }
                 }
@@ -599,7 +599,7 @@ public class SQLiteSession implements Session {
                 if (value != null) {
                     values.put(columnName, value);
                 } else {
-                    if (includeNullValue) {
+                    if (includeNullField) {
                         values.put(columnName, "");
                     }
                 }
@@ -613,7 +613,7 @@ public class SQLiteSession implements Session {
                 if (value != null) {
                     values.put(columnName, value);
                 } else {
-                    if (includeNullValue) {
+                    if (includeNullField) {
                         values.put(columnName, "");
                     }
                 }
@@ -627,7 +627,7 @@ public class SQLiteSession implements Session {
                 if (value != null) {
                     values.put(columnName, value);
                 } else {
-                    if (includeNullValue) {
+                    if (includeNullField) {
                         values.put(columnName, "");
                     }
                 }
@@ -641,7 +641,7 @@ public class SQLiteSession implements Session {
                 if (value != null) {
                     values.put(columnName, String.valueOf(value));
                 } else {
-                    if (includeNullValue) {
+                    if (includeNullField) {
                         values.put(columnName, "");
                     }
                 }
@@ -655,7 +655,7 @@ public class SQLiteSession implements Session {
                 if (value != null) {
                     values.put(columnName, String.valueOf(value.getTime()));
                 } else {
-                    if (includeNullValue) {
+                    if (includeNullField) {
                         values.put(columnName, "");
                     }
                 }
