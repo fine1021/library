@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
 
 def versionMajor = 1
 def versionMinor = 0
@@ -21,6 +22,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            consumerProguardFiles 'proguard-rules.pro'
         }
     }
 }
@@ -34,20 +36,44 @@ dependencies {
 }
 
 ext {
-    moduleName = 'support-database'
-    moduleVersion = "${versionMajor}.${versionMinor}.${versionPatch}"
+    // installv1
+    bintrayRepo = 'maven'
+    bintrayName = 'support-database'
+
+    // library
+    libraryGroupId = 'com.android.support'
+    libraryVersion = "${versionMajor}.${versionMinor}.${versionPatch}"
+    libraryName = 'support-database'
+    libraryArtifact = 'support-database'
+    libraryUserOrg = 'fine1021'
+    libraryDescription = 'a support database library for android'
+
+    // url
+    siteUrl = 'https://github.com/fine1021/library'
+    gitUrl = 'https://github.com/fine1021/library.git'
+    issueUrl = 'https://github.com/fine1021/library/issues'
+
+    // developer
+    developerId = 'fine1021'
+    developerName = 'fine'
+    developerEmail = 'fine1021@gmail.com'
+
+    // licenses
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
 }
 
 task binaryJar(dependsOn: ['compileReleaseJavaWithJavac'], type: Jar) {
 
-    baseName = project.moduleName
+    baseName = 'support-database'
 //    appendix = "bridge"
-    version = project.moduleVersion
+    version = "${versionMajor}.${versionMinor}.${versionPatch}"
 //    classifier = "release"
     extension = "jar"
 
     // [baseName]-[appendix]-[version]-[classifier].[extension]
-    // archiveName = "log4j2-android.jar"
+    // archiveName = "support-database.jar"
 
     def srcClassDir = [project.buildDir.absolutePath + "/intermediates/classes/release"];
     from srcClassDir
@@ -59,9 +85,9 @@ task binaryJar(dependsOn: ['compileReleaseJavaWithJavac'], type: Jar) {
 
 task sourcesJar(type: Jar) {
 
-    baseName = project.moduleName
+    baseName = 'support-database'
 //    appendix = "bridge"
-    version = project.moduleVersion
+    version = "${versionMajor}.${versionMinor}.${versionPatch}"
     classifier = "sources"
     extension = "jar"
 
@@ -76,12 +102,30 @@ task javadoc(type: Javadoc) {
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
 
-    baseName = project.moduleName
+    baseName = 'support-database'
 //    appendix = "bridge"
-    version = project.moduleVersion
+    version = "${versionMajor}.${versionMinor}.${versionPatch}"
     classifier = "javadoc"
     extension = "jar"
 
     from javadoc.destinationDir
+}
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+publish {
+    userOrg = libraryUserOrg
+    repoName = bintrayRepo
+    groupId = libraryGroupId
+    artifactId = libraryArtifact
+    publishVersion = libraryVersion
+    description = libraryDescription
+    website = 'https://github.com/fine1021/library'
+    issueTracker = "${website}/issues"
+    repository = "${website}.git"
+    bintrayUser = properties.getProperty("bintray.user")
+    bintrayKey = properties.getProperty("bintray.apikey")
+    dryRun = false
 }
 
