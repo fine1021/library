@@ -4,9 +4,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.support.database.Column;
 import android.support.database.Table;
+import android.support.database.log.Logger;
+import android.support.database.log.StatusLogger;
 import android.support.database.strategy.TableMonitor;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.lang.reflect.Field;
 import java.sql.Blob;
@@ -14,12 +15,13 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by yexiaokang on 2017/8/17.
+ * TableUtil
  */
 
+@SuppressWarnings("WeakerAccess")
 public final class TableUtil {
 
-    private static final String TAG = "TableUtil";
+    private static final Logger LOGGER = StatusLogger.getLogger();
 
     private static final String INTEGER = "INTEGER";
     private static final String REAL = "REAL";
@@ -97,7 +99,7 @@ public final class TableUtil {
                 buildSQLStatement(table, builder);
                 sql = builder.toString();
             }
-            Log.d(TAG, "createTable: sql = " + sql);
+            LOGGER.info("createTable: sql = %s", sql);
             if (db != null) {
                 db.execSQL(sql);
             }
@@ -150,11 +152,15 @@ public final class TableUtil {
             if (!INTEGER.equals(columnType)) {
                 throw new SQLiteException("AUTOINCREMENT constraint can only use on Integer type");
             }
-            if (isPrimaryKey && !compositeKeys) {
-                builder.append(SPACE).append(PRIMARY_KEY);
-                builder.append(SPACE).append(AUTOINCREMENT);
+            if (isPrimaryKey) {
+                if (compositeKeys) {
+                    throw new SQLiteException("AUTOINCREMENT constraint is conflict with composite primary keys");
+                } else {
+                    builder.append(SPACE).append(PRIMARY_KEY);
+                    builder.append(SPACE).append(AUTOINCREMENT);
+                }
             } else {
-                builder.append(SPACE).append(AUTOINCREMENT);
+                throw new SQLiteException("AUTOINCREMENT constraint can only use on PRIMARY KEY");
             }
         } else {
             if (isPrimaryKey && !compositeKeys) {
@@ -189,6 +195,7 @@ public final class TableUtil {
         if (table != null) {
             String tableName = table.getName();
             String sql = DELETE + SPACE + tableName + ";";
+            LOGGER.info("deleteTable: sql = %s", sql);
             if (null != db) {
                 db.execSQL(sql);
             }
@@ -209,6 +216,7 @@ public final class TableUtil {
         if (table != null) {
             String tableName = table.getName();
             String sql = DROP + SPACE + tableName + ";";
+            LOGGER.info("dropTable: sql = %s", sql);
             if (null != db) {
                 db.execSQL(sql);
             }
@@ -240,5 +248,13 @@ public final class TableUtil {
             return BLOB;
         }
         return TEXT;
+    }
+
+    public static boolean isAutoincrement(Column column) {
+        return column.isPrimaryKey() && isIntegerType(column.getClass());
+    }
+
+    public static boolean isIntegerType(Class<?> clazz) {
+        return clazz == int.class || clazz == Integer.class;
     }
 }

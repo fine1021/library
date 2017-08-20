@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.database.Behaviour;
 import android.support.database.Column;
 import android.support.database.Session;
+import android.support.database.log.Logger;
+import android.support.database.log.StatusLogger;
 import android.support.database.sqlite.AnnotationSQLiteHelper;
 import android.support.database.strategy.Delete;
 import android.support.database.strategy.Insert;
@@ -13,7 +15,6 @@ import android.support.database.strategy.Query;
 import android.support.database.strategy.Update;
 import android.support.database.util.TableFetcher;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ import java.util.List;
 
 public class SQLiteSession implements Session {
 
-    private static final String TAG = "SQLiteSession";
+    private static final Logger LOGGER = StatusLogger.getLogger();
 
     private final AnnotationSQLiteHelper mHelper;
 
@@ -173,17 +174,27 @@ public class SQLiteSession implements Session {
             String tableName = table.getName();
             SQLiteDatabase db = getReadableDatabase();
             ContentValues values = getContentValues(entry, false);
-            StringBuilder sql = new StringBuilder(120);
-            int setValuesSize = values.size();
-            String[] selectionArgs = new String[setValuesSize];
+            final int primaryKeyCount = table.getPrimaryKeyCount();
+            if (primaryKeyCount > 0) {
+                // Priority primary key query
+                List<Column> columns = table.getColumns();
+                for (Column column : columns) {
+                    if (!column.isPrimaryKey()) {
+                        values.remove(column.getName());
+                    }
+                }
+            }
+            StringBuilder selectionBuilder = new StringBuilder(120);
+            int size = values.size();
+            String[] selectionArgs = new String[size];
             int i = 0;
             for (String colName : values.keySet()) {
-                sql.append((i > 0) ? " AND " : "");
-                sql.append(colName);
+                selectionBuilder.append((i > 0) ? " AND " : "");
+                selectionBuilder.append(colName);
                 selectionArgs[i++] = values.getAsString(colName);
-                sql.append("=?");
+                selectionBuilder.append("=?");
             }
-            String selection = sql.toString();
+            String selection = selectionBuilder.toString();
             Cursor cursor = db.query(tableName, null, selection, selectionArgs, null, null, null);
             boolean exist = false;
             if (cursor != null) {
@@ -229,67 +240,170 @@ public class SQLiteSession implements Session {
 
     private static <T> void setColumnValue(T entry, Column column, Cursor cursor, int columnIndex) {
         Class<?> clazz = column.getType();
+        String className = clazz.getSimpleName();
+        String columnName = column.getName();
         Field field = column.getField();
         field.setAccessible(true);
         if (clazz == String.class) {
             try {
                 String value = cursor.getString(columnIndex);
+                LOGGER.debug("setColumnValue: %s type, %s = %s", className, columnName, value);
                 field.set(entry, value);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-        } else if (clazz == int.class || clazz == Integer.class) {
+        } else if (clazz == int.class) {
             try {
                 int value = cursor.getInt(columnIndex);
+                LOGGER.debug("setColumnValue: %s type, %s = %s", className, columnName, value);
                 field.set(entry, value);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-        } else if (clazz == float.class || clazz == Float.class) {
+        } else if (clazz == float.class) {
             try {
                 float value = cursor.getFloat(columnIndex);
+                LOGGER.debug("setColumnValue: %s type, %s = %s", className, columnName, value);
                 field.set(entry, value);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-        } else if (clazz == boolean.class || clazz == Boolean.class) {
+        } else if (clazz == boolean.class) {
             try {
                 String value = cursor.getString(columnIndex);
+                LOGGER.debug("setColumnValue: %s type, %s = %s", className, columnName, value);
                 field.set(entry, ofBoolean(value));
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-        } else if (clazz == byte.class || clazz == Byte.class) {
+        } else if (clazz == byte.class) {
             try {
                 byte value = (byte) cursor.getInt(columnIndex);
+                LOGGER.debug("setColumnValue: %s type, %s = %s", className, columnName, value);
                 field.set(entry, value);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-        } else if (clazz == short.class || clazz == Short.class) {
+        } else if (clazz == short.class) {
             try {
                 short value = cursor.getShort(columnIndex);
+                LOGGER.debug("setColumnValue: %s type, %s = %s", className, columnName, value);
                 field.set(entry, value);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-        } else if (clazz == long.class || clazz == Long.class) {
+        } else if (clazz == long.class) {
             try {
                 long value = cursor.getLong(columnIndex);
+                LOGGER.debug("setColumnValue: %s type, %s = %s", className, columnName, value);
                 field.set(entry, value);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-        } else if (clazz == double.class || clazz == Double.class) {
+        } else if (clazz == double.class) {
             try {
                 double value = cursor.getDouble(columnIndex);
+                LOGGER.debug("setColumnValue: %s type, %s = %s", className, columnName, value);
                 field.set(entry, value);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-        } else if (clazz == char.class || clazz == Character.class) {
+        } else if (clazz == char.class) {
             try {
                 String value = cursor.getString(columnIndex);
+                LOGGER.debug("setColumnValue: %s type, %s = %s", className, columnName, value);
+                field.set(entry, TextUtils.isEmpty(value) ? null : value.charAt(0));
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        } else if (clazz == Integer.class) {
+            try {
+                String value = cursor.getString(columnIndex);
+                LOGGER.debug("setColumnValue: %s type, %s = %s", className, columnName, value);
+                if (TextUtils.isEmpty(value)) {
+                    field.set(entry, null);
+                } else {
+                    field.set(entry, ofInteger(value));
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        } else if (clazz == Float.class) {
+            try {
+                String value = cursor.getString(columnIndex);
+                LOGGER.debug("setColumnValue: %s type, %s = %s", className, columnName, value);
+                if (TextUtils.isEmpty(value)) {
+                    field.set(entry, null);
+                } else {
+                    field.set(entry, ofFloat(value));
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        } else if (clazz == Boolean.class) {
+            try {
+                String value = cursor.getString(columnIndex);
+                LOGGER.debug("setColumnValue: %s type, %s = %s", className, columnName, value);
+                if (TextUtils.isEmpty(value)) {
+                    field.set(entry, null);
+                } else {
+                    field.set(entry, ofBoolean(value));
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        } else if (clazz == Byte.class) {
+            try {
+                String value = cursor.getString(columnIndex);
+                LOGGER.debug("setColumnValue: %s type, %s = %s", className, columnName, value);
+                if (TextUtils.isEmpty(value)) {
+                    field.set(entry, null);
+                } else {
+                    field.set(entry, ofByte(value));
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        } else if (clazz == Short.class) {
+            try {
+                String value = cursor.getString(columnIndex);
+                LOGGER.debug("setColumnValue: %s type, %s = %s", className, columnName, value);
+                if (TextUtils.isEmpty(value)) {
+                    field.set(entry, null);
+                } else {
+                    field.set(entry, ofShort(value));
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        } else if (clazz == Long.class) {
+            try {
+                String value = cursor.getString(columnIndex);
+                LOGGER.debug("setColumnValue: %s type, %s = %s", className, columnName, value);
+                if (TextUtils.isEmpty(value)) {
+                    field.set(entry, null);
+                } else {
+                    field.set(entry, ofLong(value));
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        } else if (clazz == Double.class) {
+            try {
+                String value = cursor.getString(columnIndex);
+                LOGGER.debug("setColumnValue: %s type, %s = %s", className, columnName, value);
+                if (TextUtils.isEmpty(value)) {
+                    field.set(entry, null);
+                } else {
+                    field.set(entry, ofDouble(value));
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        } else if (clazz == Character.class) {
+            try {
+                String value = cursor.getString(columnIndex);
+                LOGGER.debug("setColumnValue: %s type, %s = %s", className, columnName, value);
                 field.set(entry, TextUtils.isEmpty(value) ? null : value.charAt(0));
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -297,17 +411,22 @@ public class SQLiteSession implements Session {
         } else if (clazz == Date.class) {
             try {
                 String value = cursor.getString(columnIndex);
-                long time = ofLong(value);
-                if (time > 0) {
-                    field.set(entry, new Date(time));
-                } else {
+                LOGGER.debug("setColumnValue: %s type, %s = %s", className, columnName, value);
+                if (TextUtils.isEmpty(value)) {
                     field.set(entry, null);
+                } else {
+                    long time = ofLong(value);
+                    if (time > 0) {
+                        field.set(entry, new Date(time));
+                    } else {
+                        field.set(entry, null);
+                    }
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
         } else {
-            Log.w(TAG, "setColumnValue: clazz = " + clazz.toString());
+            LOGGER.warn("setColumnValue: clazz = %s", clazz.toString());
             try {
                 String value = cursor.getString(columnIndex);
                 field.set(entry, value);
@@ -328,18 +447,21 @@ public class SQLiteSession implements Session {
                 getColumnValue(entry, column, values, includeNullValue);
             }
         }
+        LOGGER.trace("get values ok, size = %d", values.size());
         return values;
     }
 
     private static <T> void getColumnValue(T entry, Column column, ContentValues values,
                                            boolean includeNullValue) {
         Class<?> clazz = column.getType();
+        String className = clazz.getSimpleName();
         String columnName = column.getName();
         Field field = column.getField();
         field.setAccessible(true);
         if (clazz == String.class) {
             try {
                 String value = (String) field.get(entry);
+                LOGGER.debug("getColumnValue: %s type, %s = %s", className, columnName, value);
                 if (value != null) {
                     values.put(columnName, value);
                 } else {
@@ -353,6 +475,7 @@ public class SQLiteSession implements Session {
         } else if (clazz == int.class) {
             try {
                 int value = field.getInt(entry);
+                LOGGER.debug("getColumnValue: %s type, %s = %s", className, columnName, value);
                 values.put(columnName, value);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -360,6 +483,7 @@ public class SQLiteSession implements Session {
         } else if (clazz == float.class) {
             try {
                 float value = field.getFloat(entry);
+                LOGGER.debug("getColumnValue: %s type, %s = %s", className, columnName, value);
                 values.put(columnName, value);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -367,6 +491,7 @@ public class SQLiteSession implements Session {
         } else if (clazz == boolean.class) {
             try {
                 boolean value = field.getBoolean(entry);
+                LOGGER.debug("getColumnValue: %s type, %s = %s", className, columnName, value);
                 values.put(columnName, value ? "1" : "0");
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -374,6 +499,7 @@ public class SQLiteSession implements Session {
         } else if (clazz == byte.class) {
             try {
                 byte value = field.getByte(entry);
+                LOGGER.debug("getColumnValue: %s type, %s = %s", className, columnName, value);
                 values.put(columnName, value);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -381,6 +507,7 @@ public class SQLiteSession implements Session {
         } else if (clazz == short.class) {
             try {
                 short value = field.getShort(entry);
+                LOGGER.debug("getColumnValue: %s type, %s = %s", className, columnName, value);
                 values.put(columnName, value);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -388,6 +515,7 @@ public class SQLiteSession implements Session {
         } else if (clazz == long.class) {
             try {
                 long value = field.getLong(entry);
+                LOGGER.debug("getColumnValue: %s type, %s = %s", className, columnName, value);
                 values.put(columnName, value);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -395,6 +523,7 @@ public class SQLiteSession implements Session {
         } else if (clazz == double.class) {
             try {
                 double value = field.getDouble(entry);
+                LOGGER.debug("getColumnValue: %s type, %s = %s", className, columnName, value);
                 values.put(columnName, value);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -402,6 +531,7 @@ public class SQLiteSession implements Session {
         } else if (clazz == char.class) {
             try {
                 char value = field.getChar(entry);
+                LOGGER.debug("getColumnValue: %s type, %s = %s", className, columnName, value);
                 values.put(columnName, String.valueOf(value));
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -409,11 +539,12 @@ public class SQLiteSession implements Session {
         } else if (clazz == Integer.class) {
             try {
                 Integer value = (Integer) field.get(entry);
+                LOGGER.debug("getColumnValue: %s type, %s = %s", className, columnName, value);
                 if (value != null) {
                     values.put(columnName, value);
                 } else {
                     if (includeNullValue) {
-                        values.put(columnName, 0);
+                        values.put(columnName, "");
                     }
                 }
             } catch (IllegalAccessException e) {
@@ -422,11 +553,12 @@ public class SQLiteSession implements Session {
         } else if (clazz == Float.class) {
             try {
                 Float value = (Float) field.get(entry);
+                LOGGER.debug("getColumnValue: %s type, %s = %s", className, columnName, value);
                 if (value != null) {
                     values.put(columnName, value);
                 } else {
                     if (includeNullValue) {
-                        values.put(columnName, (float) 0);
+                        values.put(columnName, "");
                     }
                 }
             } catch (IllegalAccessException e) {
@@ -435,11 +567,12 @@ public class SQLiteSession implements Session {
         } else if (clazz == Boolean.class) {
             try {
                 Boolean value = (Boolean) field.get(entry);
+                LOGGER.debug("getColumnValue: %s type, %s = %s", className, columnName, value);
                 if (value != null) {
                     values.put(columnName, value ? "1" : "0");
                 } else {
                     if (includeNullValue) {
-                        values.put(columnName, "0");
+                        values.put(columnName, "");
                     }
                 }
             } catch (IllegalAccessException e) {
@@ -448,11 +581,12 @@ public class SQLiteSession implements Session {
         } else if (clazz == Byte.class) {
             try {
                 Byte value = (Byte) field.get(entry);
+                LOGGER.debug("getColumnValue: %s type, %s = %s", className, columnName, value);
                 if (value != null) {
                     values.put(columnName, value);
                 } else {
                     if (includeNullValue) {
-                        values.put(columnName, (byte) 0);
+                        values.put(columnName, "");
                     }
                 }
             } catch (IllegalAccessException e) {
@@ -461,11 +595,12 @@ public class SQLiteSession implements Session {
         } else if (clazz == Short.class) {
             try {
                 Short value = (Short) field.get(entry);
+                LOGGER.debug("getColumnValue: %s type, %s = %s", className, columnName, value);
                 if (value != null) {
                     values.put(columnName, value);
                 } else {
                     if (includeNullValue) {
-                        values.put(columnName, (short) 0);
+                        values.put(columnName, "");
                     }
                 }
             } catch (IllegalAccessException e) {
@@ -474,11 +609,12 @@ public class SQLiteSession implements Session {
         } else if (clazz == Long.class) {
             try {
                 Long value = (Long) field.get(entry);
+                LOGGER.debug("getColumnValue: %s type, %s = %s", className, columnName, value);
                 if (value != null) {
                     values.put(columnName, value);
                 } else {
                     if (includeNullValue) {
-                        values.put(columnName, (long) 0);
+                        values.put(columnName, "");
                     }
                 }
             } catch (IllegalAccessException e) {
@@ -487,11 +623,12 @@ public class SQLiteSession implements Session {
         } else if (clazz == Double.class) {
             try {
                 Double value = (Double) field.get(entry);
+                LOGGER.debug("getColumnValue: %s type, %s = %s", className, columnName, value);
                 if (value != null) {
                     values.put(columnName, value);
                 } else {
                     if (includeNullValue) {
-                        values.put(columnName, (double) 0);
+                        values.put(columnName, "");
                     }
                 }
             } catch (IllegalAccessException e) {
@@ -500,11 +637,12 @@ public class SQLiteSession implements Session {
         } else if (clazz == Character.class) {
             try {
                 Character value = (Character) field.get(entry);
+                LOGGER.debug("getColumnValue: %s type, %s = %s", className, columnName, value);
                 if (value != null) {
                     values.put(columnName, String.valueOf(value));
                 } else {
                     if (includeNullValue) {
-                        values.put(columnName, String.valueOf('\u0000'));
+                        values.put(columnName, "");
                     }
                 }
             } catch (IllegalAccessException e) {
@@ -513,24 +651,65 @@ public class SQLiteSession implements Session {
         } else if (clazz == Date.class) {
             try {
                 Date value = (Date) field.get(entry);
+                LOGGER.debug("getColumnValue: %s type, %s = %s", className, columnName, value);
                 if (value != null) {
                     values.put(columnName, String.valueOf(value.getTime()));
                 } else {
                     if (includeNullValue) {
-                        values.put(columnName, 0);
+                        values.put(columnName, "");
                     }
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
         } else {
-            Log.w(TAG, "getColumnValue: clazz = " + clazz.toString());
+            LOGGER.warn("getColumnValue: clazz = %s", clazz.toString());
             try {
                 String value = (String) field.get(entry);
                 values.put(columnName, ofNullable(value));
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private static int ofInteger(String value) {
+        try {
+            return Integer.valueOf(value);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    private static float ofFloat(String value) {
+        try {
+            return Float.valueOf(value);
+        } catch (Exception e) {
+            return 0f;
+        }
+    }
+
+    private static byte ofByte(String value) {
+        try {
+            return Byte.valueOf(value);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    private static short ofShort(String value) {
+        try {
+            return Short.valueOf(value);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    private static double ofDouble(String value) {
+        try {
+            return Double.valueOf(value);
+        } catch (Exception e) {
+            return 0;
         }
     }
 

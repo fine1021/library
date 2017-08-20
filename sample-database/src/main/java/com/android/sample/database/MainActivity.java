@@ -2,6 +2,7 @@ package com.android.sample.database;
 
 import android.os.Bundle;
 import android.support.database.Session;
+import android.support.database.log.StatusLogger;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -22,18 +23,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        StatusLogger.getLogger().setDebugEnabled(true);
+        StatusLogger.getLogger().setInfoEnabled(true);
         MySQLiteHelper mySQLiteHelper = new MySQLiteHelper(this);
         mSession = mySQLiteHelper.getSession();
         user.setId(1);
         user.setName("fine");
         user.setAge(10);
-        mSession.replace(user);
+        //mSession.replace(user);
         debug();
 
         findViewById(android.R.id.button1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 long time = System.currentTimeMillis();
+                user.setId(10);
                 user.setName(String.valueOf(time));
                 mSession.replace(user);
                 debug();

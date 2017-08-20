@@ -18,6 +18,10 @@ public class User {
     private int sex;
     @Column
     private int age;
+    @Column
+    private Integer mInteger = 1;
+    @Column
+    private Double mDouble;
 
     public int getId() {
         return id;
@@ -51,6 +55,22 @@ public class User {
         this.age = age;
     }
 
+    public Integer getInteger() {
+        return mInteger;
+    }
+
+    public void setInteger(Integer integer) {
+        mInteger = integer;
+    }
+
+    public Double getDouble() {
+        return mDouble;
+    }
+
+    public void setDouble(Double aDouble) {
+        mDouble = aDouble;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -58,6 +78,8 @@ public class User {
                 ", name='" + name + '\'' +
                 ", sex=" + sex +
                 ", age=" + age +
+                ", mInteger=" + mInteger +
+                ", mDouble=" + mDouble +
                 '}';
     }
 }

@@ -63,4 +63,22 @@ public interface InsertBehaviour extends Behaviour {
     int CONFLICT_NONE = SQLiteDatabase.CONFLICT_NONE;
 
     int conflictAlgorithm();
+
+    /**
+     * A column declared <tt>INTEGER PRIMARY KEY</tt> will autoincrement.
+     * <p>
+     * Note that the integer key is one greater than the largest key that was in the table
+     * just prior to the insert. The new key will be unique over all keys currently in the table,
+     * but it might overlap with keys that have been previously deleted from the table.
+     * To create keys that are unique over the lifetime of the table,
+     * add the <tt>AUTOINCREMENT</tt> keyword to the <tt>INTEGER PRIMARY KEY</tt> declaration.
+     * Then the key chosen will be one more than the largest key that has ever existed
+     * in that table. If the largest possible key has previously existed in that table,
+     * then the <tt>INSERT</tt> will fail with an <tt>SQLITE_FULL</tt> error code.
+     * <p>
+     *
+     * @return {@code true} include the integer auto-increment field value when insert a record,
+     * otherwise {@code false}
+     */
+    boolean includeAutoincrement();
 }

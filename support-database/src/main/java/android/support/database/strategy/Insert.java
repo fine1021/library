@@ -1,12 +1,19 @@
 package android.support.database.strategy;
 
 import android.support.database.Behaviour;
+import android.support.database.behaviour.InsertBehaviour;
 
 /**
  * Created by yexiaokang on 2017/8/19.
  */
 
 public enum Insert implements Behaviour {
+
+    /**
+     * Use the following when no conflict action is specified.
+     * This is the normal insert behaviour
+     */
+    NONE,
 
     /**
      * When a UNIQUE constraint violation occurs, the pre-existing rows that
@@ -24,7 +31,10 @@ public enum Insert implements Behaviour {
     REPLACE,
 
     /**
-     * Use the following when no conflict action is specified.
+     * Same as {@link Insert#REPLACE}.
+     * <p>When replace a record, it will exclude the autoincrement field
+     *
+     * @see InsertBehaviour#includeAutoincrement()
      */
-    NONE
+    REPLACE_EXCLUDE_AUTOINCREMENT
 }

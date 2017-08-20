@@ -10,4 +10,9 @@ public abstract class AbstractInsertBehaviour implements InsertBehaviour {
     public int conflictAlgorithm() {
         return CONFLICT_NONE;
     }
+
+    @Override
+    public boolean includeAutoincrement() {
+        return false;
+    }
 }

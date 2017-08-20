@@ -1,5 +1,9 @@
 apply plugin: 'com.android.library'
 
+def versionMajor = 1
+def versionMinor = 0
+def versionPatch = 0
+
 android {
     compileSdkVersion 25
     buildToolsVersion "26.0.1"
@@ -7,8 +11,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -29,3 +33,56 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     testCompile 'junit:junit:4.12'
 }
+
+ext {
+    moduleName = 'support-database'
+    moduleVersion = "${versionMajor}.${versionMinor}.${versionPatch}"
+}
+
+task binaryJar(dependsOn: ['compileReleaseJavaWithJavac'], type: Jar) {
+
+    baseName = project.moduleName
+//    appendix = "bridge"
+    version = project.moduleVersion
+//    classifier = "release"
+    extension = "jar"
+
+    // [baseName]-[appendix]-[version]-[classifier].[extension]
+    // archiveName = "log4j2-android.jar"
+
+    def srcClassDir = [project.buildDir.absolutePath + "/intermediates/classes/release"];
+    from srcClassDir
+
+    exclude "**/BuildConfig.class"
+    exclude "**/R.class"
+    exclude "**/R\$*.class"
+}
+
+task sourcesJar(type: Jar) {
+
+    baseName = project.moduleName
+//    appendix = "bridge"
+    version = project.moduleVersion
+    classifier = "sources"
+    extension = "jar"
+
+    from android.sourceSets.main.java.srcDirs
+}
+
+task javadoc(type: Javadoc) {
+    failOnError false
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+
+    baseName = project.moduleName
+//    appendix = "bridge"
+    version = project.moduleVersion
+    classifier = "javadoc"
+    extension = "jar"
+
+    from javadoc.destinationDir
+}
+

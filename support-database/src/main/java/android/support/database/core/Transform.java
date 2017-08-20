@@ -14,6 +14,7 @@ import android.support.database.strategy.Delete;
 import android.support.database.strategy.Insert;
 import android.support.database.strategy.Query;
 import android.support.database.strategy.Update;
+import android.support.database.util.TableUtil;
 
 import java.util.List;
 
@@ -96,12 +97,35 @@ enum Transform {
         switch (type) {
             case Behaviour.INSERT:
                 if (behaviour == null || behaviour == Insert.NONE) {
+                    List<Column> columns = table.getColumns();
+                    for (Column column : columns) {
+                        if (TableUtil.isAutoincrement(column)) {
+                            values.remove(column.getName());
+                        }
+                    }
                     result = db.insert(tableName, null, values);
                 } else if (behaviour == Insert.REPLACE) {
+                    result = db.replace(tableName, null, values);
+                } else if (behaviour == Insert.REPLACE_EXCLUDE_AUTOINCREMENT) {
+                    List<Column> columns = table.getColumns();
+                    for (Column column : columns) {
+                        if (TableUtil.isAutoincrement(column)) {
+                            values.remove(column.getName());
+                        }
+                    }
                     result = db.replace(tableName, null, values);
                 } else {
                     InsertBehaviour insertBehaviour = (InsertBehaviour) behaviour;
                     int conflictAlgorithm = insertBehaviour.conflictAlgorithm();
+                    boolean includeAutoincrement = insertBehaviour.includeAutoincrement();
+                    if (!includeAutoincrement) {
+                        List<Column> columns = table.getColumns();
+                        for (Column column : columns) {
+                            if (TableUtil.isAutoincrement(column)) {
+                                values.remove(column.getName());
+                            }
+                        }
+                    }
                     result = db.insertWithOnConflict(tableName, null, values, conflictAlgorithm);
                 }
                 break;
