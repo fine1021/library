@@ -25,6 +25,20 @@ android {
             consumerProguardFiles 'proguard-rules.pro'
         }
     }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+afterEvaluate {
+    tasks.withType(Javadoc) {
+        docTask -> docTask.failOnError = false
+    }
+    tasks.getByName("preBuild") {
+        doLast {
+            println("------------------afterEvaluate preBuild task doLast----------------------")
+        }
+    }
 }
 
 dependencies {
