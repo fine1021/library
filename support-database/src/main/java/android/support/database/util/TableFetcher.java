@@ -2,8 +2,9 @@ package android.support.database.util;
 
 import android.support.database.Column;
 import android.support.database.Table;
+import android.support.database.log.Logger;
+import android.support.database.log.StatusLogger;
 import android.support.database.strategy.TableMonitor;
-import android.util.Log;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.Map;
 
 public class TableFetcher {
 
-    private static final String TAG = "TableFetcher";
+    private static final Logger LOGGER = StatusLogger.getLogger();
 
     private static Map<Class<?>, Table> sTableMap = new HashMap<>();
 
@@ -67,7 +68,7 @@ public class TableFetcher {
             sTableMap.put(clazz, table1);
             return table1;
         } else {
-            Log.w(TAG, clazz.toString() + " don't have a Table annotation");
+            LOGGER.error("%s don't have a Table annotation", clazz.toString());
             return null;
         }
     }
