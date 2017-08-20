@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         user.setId(1);
         user.setName("fine");
         user.setAge(10);
-        //mSession.replace(user);
+        mSession.replace(user);
         debug();
 
         findViewById(android.R.id.button1).setOnClickListener(new View.OnClickListener() {
@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 long time = System.currentTimeMillis();
                 user.setId(10);
+                user.setBytes(new byte[]{1, 2, 3});
                 user.setName(String.valueOf(time));
                 mSession.replace(user);
                 debug();

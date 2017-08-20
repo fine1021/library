@@ -244,10 +244,11 @@ public final class TableUtil {
             return VARCHAR;
         } else if (clazz == Date.class) {
             return TEXT;
-        } else if (clazz == Blob.class) {
+        } else if (clazz == Blob.class || clazz == byte[].class) {
             return BLOB;
+        } else {
+            throw new SQLiteException("Not supported clazz type " + clazz.toString());
         }
-        return TEXT;
     }
 
     public static boolean isAutoincrement(Column column) {

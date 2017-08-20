@@ -3,6 +3,8 @@ package com.android.sample.database.db;
 import android.support.database.annotation.Column;
 import android.support.database.annotation.Table;
 
+import java.util.Arrays;
+
 /**
  * Created by yexiaokang on 2017/8/17.
  */
@@ -22,6 +24,8 @@ public class User {
     private Integer mInteger = 1;
     @Column
     private Double mDouble;
+    @Column
+    private byte[] mBytes;
 
     public int getId() {
         return id;
@@ -71,6 +75,14 @@ public class User {
         mDouble = aDouble;
     }
 
+    public byte[] getBytes() {
+        return mBytes;
+    }
+
+    public void setBytes(byte[] bytes) {
+        mBytes = bytes;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -80,6 +92,7 @@ public class User {
                 ", age=" + age +
                 ", mInteger=" + mInteger +
                 ", mDouble=" + mDouble +
+                ", mBytes=" + Arrays.toString(mBytes) +
                 '}';
     }
 }

@@ -144,6 +144,7 @@ public class SQLiteSession implements Session {
                         T entry = clazz.newInstance();
                         List<android.support.database.Column> columns = table.getColumns();
                         if (columns != null && !columns.isEmpty()) {
+                            LOGGER.info("start set all columns values");
                             for (Column column : columns) {
                                 String columnName = column.getName();
                                 int columnIndex = cursor.getColumnIndex(columnName);
@@ -151,6 +152,7 @@ public class SQLiteSession implements Session {
                                     setColumnValue(entry, column, cursor, columnIndex);
                                 }
                             }
+                            LOGGER.info("set all columns values complete");
                         }
                         list.add(entry);
                     } catch (InstantiationException e) {
@@ -239,7 +241,7 @@ public class SQLiteSession implements Session {
     }
 
     private static <T> void setColumnValue(T entry, Column column, Cursor cursor, int columnIndex) {
-        Class<?> clazz = column.getType();
+        Class<?> clazz = column.getField().getType();
         String className = clazz.getSimpleName();
         String columnName = column.getName();
         Field field = column.getField();
@@ -425,14 +427,19 @@ public class SQLiteSession implements Session {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-        } else {
-            LOGGER.warn("setColumnValue: clazz = %s", clazz.toString());
+        } else if (clazz == byte[].class) {
             try {
-                String value = cursor.getString(columnIndex);
-                field.set(entry, value);
+                byte[] bytes = cursor.getBlob(columnIndex);
+                if (bytes != null) {
+                    LOGGER.debug("setColumnValue: %s type, %s length = %d", className,
+                            columnName, bytes.length);
+                }
+                field.set(entry, bytes);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
+        } else {
+            LOGGER.warn("setColumnValue: not support clazz = %s", className);
         }
     }
 
@@ -443,9 +450,11 @@ public class SQLiteSession implements Session {
         ContentValues values = new ContentValues();
         List<android.support.database.Column> columns = table.getColumns();
         if (columns != null && !columns.isEmpty()) {
+            LOGGER.info("start get all columns values");
             for (Column column : columns) {
                 getColumnValue(entry, column, values, includeNullField);
             }
+            LOGGER.info("get all columns values complete");
         }
         LOGGER.trace("get values ok, size = %d", values.size());
         return values;
@@ -453,7 +462,7 @@ public class SQLiteSession implements Session {
 
     private static <T> void getColumnValue(T entry, Column column, ContentValues values,
                                            boolean includeNullField) {
-        Class<?> clazz = column.getType();
+        Class<?> clazz = column.getField().getType();
         String className = clazz.getSimpleName();
         String columnName = column.getName();
         Field field = column.getField();
@@ -662,14 +671,23 @@ public class SQLiteSession implements Session {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-        } else {
-            LOGGER.warn("getColumnValue: clazz = %s", clazz.toString());
+        } else if (clazz == byte[].class) {
             try {
-                String value = (String) field.get(entry);
-                values.put(columnName, ofNullable(value));
+                byte[] bytes = (byte[]) field.get(entry);
+                if (bytes != null) {
+                    LOGGER.debug("getColumnValue: %s type, %s length = %d", className, columnName, bytes.length);
+                    values.put(columnName, bytes);
+                } else {
+                    LOGGER.debug("getColumnValue: %s type, %s empty bytes", className, columnName);
+                    if (includeNullField) {
+                        values.put(columnName, new byte[0]);
+                    }
+                }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
+        } else {
+            LOGGER.warn("getColumnValue: not support clazz = %s", className);
         }
     }
 
