@@ -18,13 +18,6 @@ public @interface Column {
     String name() default "";
 
     /**
-     * set the type of the column
-     *
-     * @return the field column type
-     */
-    Class<?> type() default void.class;
-
-    /**
      * set the primary key
      *
      * @return {@code true} if this field is primary key, otherwise {@code false}

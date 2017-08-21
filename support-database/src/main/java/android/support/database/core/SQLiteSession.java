@@ -241,7 +241,7 @@ public class SQLiteSession implements Session {
     }
 
     private static <T> void setColumnValue(T entry, Column column, Cursor cursor, int columnIndex) {
-        Class<?> clazz = column.getField().getType();
+        Class<?> clazz = column.getType();
         String className = clazz.getSimpleName();
         String columnName = column.getName();
         Field field = column.getField();
@@ -439,7 +439,7 @@ public class SQLiteSession implements Session {
                 e.printStackTrace();
             }
         } else {
-            LOGGER.warn("setColumnValue: not support clazz = %s", className);
+            LOGGER.warn("setColumnValue: not support clazz = %s", clazz.toString());
         }
     }
 
@@ -462,7 +462,7 @@ public class SQLiteSession implements Session {
 
     private static <T> void getColumnValue(T entry, Column column, ContentValues values,
                                            boolean includeNullField) {
-        Class<?> clazz = column.getField().getType();
+        Class<?> clazz = column.getType();
         String className = clazz.getSimpleName();
         String columnName = column.getName();
         Field field = column.getField();
@@ -687,7 +687,7 @@ public class SQLiteSession implements Session {
                 e.printStackTrace();
             }
         } else {
-            LOGGER.warn("getColumnValue: not support clazz = %s", className);
+            LOGGER.warn("getColumnValue: not support clazz = %s", clazz.toString());
         }
     }
 
@@ -744,12 +744,5 @@ public class SQLiteSession implements Session {
         } catch (Exception e) {
             return 0;
         }
-    }
-
-    private static String ofNullable(String value) {
-        if (TextUtils.isEmpty(value)) {
-            return "";
-        }
-        return value;
     }
 }

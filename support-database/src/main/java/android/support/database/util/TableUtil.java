@@ -10,7 +10,6 @@ import android.support.database.strategy.TableMonitor;
 import android.text.TextUtils;
 
 import java.lang.reflect.Field;
-import java.sql.Blob;
 import java.util.Date;
 import java.util.List;
 
@@ -56,10 +55,7 @@ public final class TableUtil {
         if (TextUtils.isEmpty(columnName)) {
             columnName = field.getName();
         }
-        Class<?> columnType = column.type();
-        if (columnType == void.class) {
-            columnType = field.getType();
-        }
+        Class<?> columnType = field.getType();
         boolean isPrimaryKey = column.primaryKey();
         boolean isNotNull = column.notNull();
         boolean isAutoincrement = column.autoincrement();
@@ -244,7 +240,7 @@ public final class TableUtil {
             return VARCHAR;
         } else if (clazz == Date.class) {
             return TEXT;
-        } else if (clazz == Blob.class || clazz == byte[].class) {
+        } else if (clazz == byte[].class) {
             return BLOB;
         } else {
             throw new SQLiteException("Not supported clazz type " + clazz.toString());
