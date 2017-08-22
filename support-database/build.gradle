@@ -55,7 +55,7 @@ ext {
     bintrayName = 'support-database'
 
     // library
-    libraryGroupId = 'com.simple.android'
+    libraryGroupId = 'com.android.database'
     libraryVersion = "${versionMajor}.${versionMinor}.${versionPatch}"
     libraryName = 'support-database'
     libraryArtifact = 'support-database'

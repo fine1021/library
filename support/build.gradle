@@ -74,26 +74,6 @@ ext {
 }
 
 
-def execute(String target, String classDir) {
-    exec {
-        executable "jar"
-        args "cvf", target
-        args "-C", classDir
-        args "", "."
-    }
-}
-
-task buildSupportJar(dependsOn: ['build']) << {
-    delete 'build/intermediates/classes/release/com/yxkang/android/view'
-    delete 'build/intermediates/classes/release/com/yxkang/android/BuildConfig.class'
-    delete "build/intermediates/classes/release/com/yxkang/android/R.class"
-    delete 'build/intermediates/classes/release/com/yxkang/android/R$attr.class'
-    delete 'build/intermediates/classes/release/com/yxkang/android/R$string.class'
-    delete 'build/intermediates/classes/release/com/yxkang/android/R$styleable.class'
-    execute("support-${project.libraryVersion}.jar", "build/intermediates/classes/release")
-}
-
-
 task buildReleaseJar(dependsOn: ['compileReleaseJavaWithJavac'], type: Jar) {
 
     // appendix = "demo"
