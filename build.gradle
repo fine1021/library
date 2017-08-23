@@ -27,12 +27,6 @@ allprojects {
     }
 }
 
-// gradlew wrapper
-/*task wrapper(type: Wrapper) {
-    gradleVersion = '2.10'
-    distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
-}*/
-
 task clean(type: Delete) {
     delete rootProject.buildDir
 }

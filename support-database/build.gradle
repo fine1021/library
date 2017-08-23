@@ -50,32 +50,13 @@ dependencies {
 }
 
 ext {
-    // installv1
-    bintrayRepo = 'maven'
-    bintrayName = 'support-database'
-
-    // library
-    libraryGroupId = 'com.android.database'
-    libraryVersion = "${versionMajor}.${versionMinor}.${versionPatch}"
-    libraryName = 'support-database'
-    libraryArtifact = 'support-database'
-    libraryUserOrg = 'fine1021'
-    libraryDescription = 'a support database library for android'
-
-    // url
-    siteUrl = 'https://github.com/fine1021/library'
-    gitUrl = 'https://github.com/fine1021/library.git'
-    issueUrl = 'https://github.com/fine1021/library/issues'
-
-    // developer
-    developerId = 'fine1021'
-    developerName = 'fine'
-    developerEmail = 'fine1021@gmail.com'
-
-    // licenses
-    licenseName = 'The Apache Software License, Version 2.0'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    allLicenses = ["Apache-2.0"]
+    USER_ORG = 'fine1021'
+    REPO_NAME = 'maven'
+    GROUP_ID = 'com.android.database'
+    ARTIFACT_ID = 'support-database'
+    DESCRIPTION = 'a support database library for android'
+    PUBLISH_VERSION = "${versionMajor}.${versionMinor}.${versionPatch}"
+    WEB_SITE = 'https://github.com/fine1021/library'
 }
 
 task binaryJar(dependsOn: ['compileReleaseJavaWithJavac'], type: Jar) {
@@ -129,13 +110,13 @@ Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 publish {
-    userOrg = libraryUserOrg
-    repoName = bintrayRepo
-    groupId = libraryGroupId
-    artifactId = libraryArtifact
-    publishVersion = libraryVersion
-    description = libraryDescription
-    website = 'https://github.com/fine1021/library'
+    userOrg = USER_ORG
+    repoName = REPO_NAME
+    groupId = GROUP_ID
+    artifactId = ARTIFACT_ID
+    publishVersion = PUBLISH_VERSION
+    description = DESCRIPTION
+    website = WEB_SITE
     issueTracker = "${website}/issues"
     repository = "${website}.git"
     bintrayUser = properties.getProperty("bintray.user")
