@@ -14,7 +14,7 @@ import android.support.database.strategy.Delete;
 import android.support.database.strategy.Insert;
 import android.support.database.strategy.Query;
 import android.support.database.strategy.Update;
-import android.support.database.util.TableUtil;
+import android.support.database.util.TableUtils;
 
 import java.util.List;
 
@@ -99,7 +99,7 @@ enum Transform {
                 if (behaviour == null || behaviour == Insert.NONE) {
                     List<Column> columns = table.getColumns();
                     for (Column column : columns) {
-                        if (TableUtil.isAutoincrement(column)) {
+                        if (TableUtils.isAutoincrement(column)) {
                             values.remove(column.getName());
                         }
                     }
@@ -109,7 +109,7 @@ enum Transform {
                 } else if (behaviour == Insert.REPLACE_EXCLUDE_AUTOINCREMENT) {
                     List<Column> columns = table.getColumns();
                     for (Column column : columns) {
-                        if (TableUtil.isAutoincrement(column)) {
+                        if (TableUtils.isAutoincrement(column)) {
                             values.remove(column.getName());
                         }
                     }
@@ -121,7 +121,7 @@ enum Transform {
                     if (!includeAutoincrement) {
                         List<Column> columns = table.getColumns();
                         for (Column column : columns) {
-                            if (TableUtil.isAutoincrement(column)) {
+                            if (TableUtils.isAutoincrement(column)) {
                                 values.remove(column.getName());
                             }
                         }

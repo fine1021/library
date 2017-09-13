@@ -46,7 +46,7 @@ public class TableFetcher {
             android.support.database.annotation.Table t = clazz.getAnnotation(
                     android.support.database.annotation.Table.class);
             android.support.database.core.Table table1 = new android.support.database.core.Table();
-            table1.setName(TableUtil.getTableName(clazz, t));
+            table1.setName(TableUtils.getTableName(clazz, t));
             Field[] fields = clazz.getDeclaredFields();
             List<Column> columns = new ArrayList<>();
             int primaryKeyCount = 0;
@@ -54,7 +54,7 @@ public class TableFetcher {
                 if (field.isAnnotationPresent(android.support.database.annotation.Column.class)) {
                     android.support.database.annotation.Column column = field.getAnnotation(
                             android.support.database.annotation.Column.class);
-                    columns.add(TableUtil.getColumn(field, column));
+                    columns.add(TableUtils.getColumn(field, column));
                     if (column.primaryKey()) {
                         primaryKeyCount++;
                     }

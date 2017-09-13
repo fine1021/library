@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.database.Session;
 import android.support.database.core.SQLiteSession;
-import android.support.database.util.TableUtil;
+import android.support.database.util.TableUtils;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -35,7 +35,7 @@ public abstract class AnnotationSQLiteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        TableUtil.createTables(db, mClasses);
+        TableUtils.createTables(db, mClasses);
     }
 
     @Override
@@ -45,7 +45,7 @@ public abstract class AnnotationSQLiteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        TableUtil.dropTables(db, mClasses);
+        TableUtils.dropTables(db, mClasses);
     }
 
     public Session getSession() {
@@ -62,6 +62,6 @@ public abstract class AnnotationSQLiteHelper extends SQLiteOpenHelper {
     }
 
     protected final void debug(Class<?>[] classes) {
-        TableUtil.createTables(null, classes);
+        TableUtils.createTables(null, classes);
     }
 }

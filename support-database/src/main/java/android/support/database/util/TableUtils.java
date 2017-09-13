@@ -14,11 +14,11 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * TableUtil
+ * TableUtils
  */
 
 @SuppressWarnings("WeakerAccess")
-public final class TableUtil {
+public final class TableUtils {
 
     private static final Logger LOGGER = StatusLogger.getLogger();
 
