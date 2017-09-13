@@ -248,7 +248,7 @@ public final class TableUtil {
     }
 
     public static boolean isAutoincrement(Column column) {
-        return column.isPrimaryKey() && isIntegerType(column.getClass());
+        return column.isPrimaryKey() && isIntegerType(column.getType());
     }
 
     public static boolean isIntegerType(Class<?> clazz) {
