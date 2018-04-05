@@ -32,7 +32,7 @@ public class MediaModifyService extends IntentService {
     public static final String FULL_MODE = "FullMode";
     private final ArrayList<AudioInfo> audioInfos = new ArrayList<>();
     private static final String TAG = MediaModifyService.class.getSimpleName();
-    private static final Pattern MUSIC_FILE_PATTERN = Pattern.compile("^([^;]+)(/[[a-zA-Z0-9]+/])?.(flac|ape|mp3|aac|wma|ogg|wav)$");
+    private static final Pattern MUSIC_FILE_PATTERN = Pattern.compile("^([^;\\[]]+)(\\[[a-zA-Z0-9]+])?.(flac|ape|mp3|aac|wma|ogg|wav)$");
 
     private static final Logger logger = LoggerFactory.getLogger(MediaModifyService.class);
 
