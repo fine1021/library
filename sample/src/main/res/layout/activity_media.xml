@@ -24,4 +24,11 @@
         android:text="@string/scan_qq_music"
         android:textAllCaps="false"/>
 
+    <Button
+        android:id="@+id/bt_am_full_modify"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:text="@string/full_modify_music"
+        android:textAllCaps="false"/>
+
 </LinearLayout>

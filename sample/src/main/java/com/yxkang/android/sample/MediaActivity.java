@@ -53,6 +53,15 @@ public class MediaActivity extends AppCompatActivity {
                 scanQQMusicFiles();
             }
         });
+        findViewById(R.id.bt_am_full_modify).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventBus.getDefault().post(new MessageEvent(MessageEvent.SHOW_DIALOG_MODIFY));
+                Intent service = new Intent(getApplicationContext(), MediaModifyService.class);
+                service.putExtra(MediaModifyService.FULL_MODE, true);
+                startService(service);
+            }
+        });
         paths.addAll(Storage.getVolumePaths(this));
     }
 
@@ -111,7 +120,7 @@ public class MediaActivity extends AppCompatActivity {
         } else {
             if (storage_index == size) {
                 Intent service = new Intent(getApplicationContext(), MediaModifyService.class);
-                service.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                service.putExtra(MediaModifyService.FULL_MODE, false);
                 startService(service);
                 showProgressDialog(getString(R.string.waiting_please));
                 Log.d(TAG, "scanQQMusicFiles: no more storage space, start modify");
@@ -119,7 +128,7 @@ public class MediaActivity extends AppCompatActivity {
             }
             String path = paths.get(storage_index);
             boolean isPrimary = isPrimaryStorage(path);
-            /**
+            /*
              * QQ Music 是按照内部存储和SD卡来区分歌曲存储路径的，不关心是否是默认存储空间
              */
             path += storage_index == 0 ? INTERNAL_QQ_MUSIC_PATH : EXTERNAL_QQ_MUSIC_PATH;

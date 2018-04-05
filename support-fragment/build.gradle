@@ -3,7 +3,7 @@ apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    buildToolsVersion '27.0.3'
     defaultConfig {
         minSdkVersion 10
         versionCode 1
@@ -23,10 +23,10 @@ ext {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:25.2.0'
-    compile 'com.android.support:design:25.2.0'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.android.support:appcompat-v7:25.4.0'
+    implementation 'com.android.support:design:25.4.0'
 }
 
 Properties properties = new Properties()
@@ -38,7 +38,7 @@ publish {
     groupId = 'com.yxkang.android'
     artifactId = 'support-fragment'
     publishVersion = project.releaseVersion
-    description = 'a support fragment library for android'
+    desc = 'a support fragment library for android'
     website = 'https://github.com/fine1021/library'
     issueTracker = "${website}/issues"
     repository = "${website}.git"

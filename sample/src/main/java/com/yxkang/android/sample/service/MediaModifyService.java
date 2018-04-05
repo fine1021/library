@@ -19,6 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -27,8 +29,10 @@ import java.util.ArrayList;
  */
 public class MediaModifyService extends IntentService {
 
+    public static final String FULL_MODE = "FullMode";
     private final ArrayList<AudioInfo> audioInfos = new ArrayList<>();
     private static final String TAG = MediaModifyService.class.getSimpleName();
+    private static final Pattern MUSIC_FILE_PATTERN = Pattern.compile("^([^;]+)(/[[a-zA-Z0-9]+/])?.(flac|ape|mp3|aac|wma|ogg|wav)$");
 
     private static final Logger logger = LoggerFactory.getLogger(MediaModifyService.class);
 
@@ -47,7 +51,11 @@ public class MediaModifyService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
-            loadMediaInfo();
+            if (intent.getBooleanExtra(FULL_MODE, false)) {
+                loadMediaInfoFull();
+            } else {
+                loadMediaInfo();
+            }
         }
     }
 
@@ -103,7 +111,7 @@ public class MediaModifyService extends IntentService {
         ContentResolver resolver = getContentResolver();
         for (AudioInfo info : audioInfos) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || hasWritePermission) {
-                logger.info("{}/{}", info.display_name, info.title);
+                logger.info("modifyMediaInfo: {}/{}", info.display_name, info.title);
             } else {
                 Log.i(TAG, "modifyMediaInfo: " + info.display_name + "/" + info.title);
             }
@@ -113,12 +121,53 @@ public class MediaModifyService extends IntentService {
             values.put(MediaStore.Audio.Media.TITLE, info.title);
             int updated = resolver.update(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values, where, selectionArgs);
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || hasWritePermission) {
-                logger.debug("updated = {}", updated);
+                logger.debug("modifyMediaInfo: updated = {}", updated);
             } else {
                 Log.d(TAG, "modifyMediaInfo: updated = " + updated);
             }
         }
         audioInfos.clear();
+    }
+
+    private void loadMediaInfoFull() {
+        ContentResolver resolver = getContentResolver();
+        Cursor cursor = resolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                String data = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
+                String display_name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
+                String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || hasWritePermission) {
+                    logger.info("{}/{}", display_name, title);
+                } else {
+                    Log.i(TAG, "loadMediaInfoFull: " + display_name + "/" + title);
+                }
+                title = parseTitleFull(display_name);
+                AudioInfo info = new AudioInfo();
+                info.data = data;
+                info.title = title;
+                info.display_name = display_name;
+                audioInfos.add(info);
+            }
+            cursor.close();
+        }
+        modifyMediaInfo();
+        EventBus.getDefault().post(new MessageEvent(MessageEvent.MODIFY_MEDIA_COMPLETE));
+    }
+
+    private String parseTitleFull(String displayName) {
+        Matcher matcher = MUSIC_FILE_PATTERN.matcher(displayName);
+        if (matcher.matches()) {
+            Log.i(TAG, "parseTitleFull: group0 = " + matcher.group(0));
+            Log.i(TAG, "parseTitleFull: group1 = " + matcher.group(1));
+            return matcher.group(1);
+        } else {
+            int end = displayName.lastIndexOf("[");
+            if (end == -1) {
+                end = displayName.lastIndexOf(".");
+            }
+            return displayName.substring(0, end).trim();
+        }
     }
 
     private static class AudioInfo {

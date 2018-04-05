@@ -9,14 +9,14 @@ android {
             storePassword 'yexiaokang'
         }
     }
-    compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "com.yxkang.android.sample"
         minSdkVersion 14
-        targetSdkVersion 25
-        versionCode 3
-        versionName '1.0.2'
+        targetSdkVersion 27
+        versionCode 4
+        versionName '1.0.3'
     }
     buildTypes {
         release {
@@ -30,10 +30,10 @@ android {
         }
     }
     applicationVariants.all { variant ->
-        variant.outputs.each { output ->
+        variant.outputs.all { output ->
             if (variant.buildType.name == 'release') {
                 def releaseName = "Sample_V".concat(defaultConfig.versionName).concat(".apk")
-                output.outputFile = new File(output.outputFile.parent, releaseName)
+                output.outputFileName = releaseName
             } else if (variant.buildType.name == 'debug') {
                 println(variant.buildType.name)
             }
@@ -42,20 +42,20 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':support')
-    compile 'org.greenrobot:eventbus:3.0.0'
-    compile 'de.mindpipe.android:android-logging-log4j:1.0.3'
-    compile 'log4j:log4j:1.2.17'
-    compile 'org.slf4j:slf4j-api:1.7.21'
-    compile 'org.slf4j:slf4j-log4j12:1.7.21'
-    compile 'com.afollestad.material-dialogs:core:0.9.3.0'
-    compile project(':support-fragment')
-    compile project(':support-provider')
-    compile('com.android.support:appcompat-v7:25.2.0') {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation project(':support')
+    implementation 'org.greenrobot:eventbus:3.0.0'
+    implementation 'de.mindpipe.android:android-logging-log4j:1.0.3'
+    implementation 'log4j:log4j:1.2.17'
+    implementation 'org.slf4j:slf4j-api:1.7.25'
+    implementation 'org.slf4j:slf4j-log4j12:1.7.25'
+    implementation 'com.afollestad.material-dialogs:core:0.9.5.0'
+    implementation project(':support-fragment')
+    implementation project(':support-provider')
+    implementation('com.android.support:appcompat-v7:27.1.0') {
         exclude group: 'com.android.support', module: 'animated-vector-drawable'
     }
-    compile('com.android.support:design:25.2.0') {
+    implementation('com.android.support:design:27.1.0') {
         exclude group: 'com.android.support', module: 'animated-vector-drawable'
     }
 }

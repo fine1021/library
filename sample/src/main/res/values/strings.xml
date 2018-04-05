@@ -35,6 +35,7 @@
     <string name="edit_dialog">Edit Dialog</string>
     <string name="modify_media">Modify Media</string>
     <string name="scan_qq_music">Scan QQ Music</string>
+    <string name="full_modify_music">Full Modify Music</string>
     <string name="lock">Lock</string>
     <string name="drag">Drag</string>
     <string name="waiting_please">请稍后&#8230;</string>
